@@ -16,16 +16,16 @@ function GardenFrame({ bloom = 0 }: { bloom?: number }) {
       <div className="absolute inset-x-0 bottom-0" />
 
       {/* Background layer: large, lighter clusters spread tall for coverage */}
-      <div className="absolute inset-x-0 bottom-0 h-[52%] opacity-40">
+      <div className="absolute inset-x-0 bottom-0 h-[52%] opacity-100">
         <div className="mx-auto max-w-7xl px-2 space-y-6">
           <MeadowRow
-            count={4}
+            count={12}
             scale={1.2}
             progress={bloom}
             colors={[intPsychTheme.accent, "#cfe8ff", "#8ec5ff"]}
           />
           <MeadowRow
-            count={5}
+            count={15}
             flip
             scale={2.5}
             progress={bloom}
@@ -35,10 +35,10 @@ function GardenFrame({ bloom = 0 }: { bloom?: number }) {
       </div>
 
       {/* Midground layer */}
-      <div className="absolute inset-x-0 bottom-0 h-[46%] opacity-50">
+      <div className="absolute inset-x-0 bottom-0 h-[46%] opacity-100">
         <div className="mx-auto max-w-6xl px-3 space-y-4">
           <MeadowRow
-            count={6}
+            count={10}
             scale={1.5}
             progress={bloom}
             colors={[intPsychTheme.secondary, "#ffd7a3", "#ffbe6b"]}
@@ -58,7 +58,7 @@ function GardenFrame({ bloom = 0 }: { bloom?: number }) {
       </div>
 
       {/* Foreground layer: densest at the base for a lush look */}
-      <div className="absolute inset-x-0 bottom-0 h-[34%] opacity-80">
+      <div className="absolute inset-x-0 bottom-0 h-[34%] opacity-100">
         <div className="mx-auto max-w-5xl px-4 space-y-3">
           <MeadowRow
             count={10}
@@ -97,7 +97,17 @@ function GardenFrame({ bloom = 0 }: { bloom?: number }) {
       <div className="absolute inset-x-0 bottom-0 h-[10%] opacity-100">
         <div className="mx-auto max-w-5xl px-4 space-y-3">
           <MeadowRow
-            count={12}
+            count={10}
+            scale={4.5}
+            progress={bloom}
+            colors={[
+              intPsychTheme.primary,
+              intPsychTheme.secondary,
+              intPsychTheme.accent,
+            ]}
+          />
+          <MeadowRow
+            count={10}
             scale={5}
             progress={bloom}
             colors={[

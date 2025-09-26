@@ -41,8 +41,8 @@ export default function ClinicianHome() {
         throw new Error(`${r.status} ${msg}`);
       }
       const data = await r.json();
-      router.push(`/report/${data.patient.id}`);
       console.log("[searchPatient] received patient data", data);
+      router.push(`/report/${data.patient.id}`);
     } catch (error) {
       console.error("Error searching patient:", error);
     }
@@ -58,9 +58,9 @@ export default function ClinicianHome() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 w-full max-w-3xl px-4"
-        style={{ marginTop: "20vh" }}
+        style={{ marginTop: "30vh" }}
       >
-        <div className="rounded-3xl border border-gray-200 bg-white/20 backdrop-blur-sm shadow-md">
+        <div className="rounded-3xl border border-gray-200 bg-white/50 backdrop-blur-sm shadow-md">
           <div className="p-6 md:p-8">
             {/* Header */}
             <div className="mb-4 flex items-center gap-3">
