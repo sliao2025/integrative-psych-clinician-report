@@ -45,7 +45,7 @@ export async function GET(req: Request) {
   const firstToken = tokens[0] ?? "";
   const lastToken = tokens.length > 1 ? tokens[tokens.length - 1] : "";
   console.log(firstToken, lastToken);
-  let where: any;
+  let where: {};
   if (firstToken && lastToken) {
     // Require both ends to appear within the single `name` field
     where = {
