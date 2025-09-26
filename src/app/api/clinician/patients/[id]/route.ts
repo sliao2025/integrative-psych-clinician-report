@@ -1,22 +1,24 @@
 // src/app/api/clinician/patients/[id]/route.ts
 export const runtime = "nodejs";
 
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/app/lib/prisma";
 
 export async function GET(
-  _req: Request,
-  { params }: { params: { id: string } }
+  _req: NextRequest,
+  ctx: { params: Promise<{ id: string }> }
 ) {
+  const { id: rawId } = await ctx.params;
+  const id = rawId?.trim();
+
   const session = await getServerSession(authOptions);
   const clinicianEmail = session?.user?.email ?? "";
   if (!clinicianEmail || !/@psych-nyc\.com$/i.test(clinicianEmail)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const id = params.id?.trim();
   if (!id) {
     return NextResponse.json({ error: "Missing id" }, { status: 400 });
   }
