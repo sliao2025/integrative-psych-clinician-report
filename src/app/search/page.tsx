@@ -42,7 +42,7 @@ export default function ClinicianHome() {
       }
       const data = await r.json();
       console.log("[searchPatient] received patient data", data);
-      router.push(`/report/${data.patient.id}`);
+      router.push(`/report/${data.patient.user.id}`);
     } catch (error) {
       console.error("Error searching patient:", error);
     }
@@ -144,8 +144,9 @@ export default function ClinicianHome() {
                   <Search />
                 </button>
               </div>
-              <p className="text-xs text-gray-500">
-                Tip: The input is sensitive to typos, but not case.
+              <p className="text-xs text-slate-600">
+                Tip: If you can't find your patient, try to ensure the first
+                letters of each name are capital
               </p>
             </div>
           </div>

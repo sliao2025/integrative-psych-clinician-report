@@ -14,6 +14,7 @@
     "@prisma/client": "^6.16.2",
     "argon2": "^0.44.0",
     "framer-motion": "^12.23.22",
+    "google-auth-library": "^10.3.0",
     "lucide-react": "^0.544.0",
     "next": "15.5.4",
     "next-auth": "^4.24.11",

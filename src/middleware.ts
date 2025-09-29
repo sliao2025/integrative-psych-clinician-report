@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const protectedPrefixes = ["/clinician"];
+const protectedPrefixes = ["/search", "/report"];
 
 export async function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
@@ -13,12 +13,6 @@ export async function middleware(req: NextRequest) {
   // Handle the root path explicitly
   if (pathname === "/") {
     const url = new URL("/auth/signin", req.url);
-    // if (!(token || guest)) url.searchParams.set("callbackUrl", "/intake");
-    // const resp = NextResponse.redirect(url);
-    // if (token && guest) {
-    //   resp.cookies.set("guest", "", { path: "/", maxAge: 0 });
-    //   resp.cookies.delete("guest");
-    // }
     const resp = NextResponse.redirect(url);
     return resp;
   }
@@ -29,21 +23,13 @@ export async function middleware(req: NextRequest) {
     const signInUrl = new URL("/auth/signin", req.url);
     signInUrl.searchParams.set("callbackUrl", `${pathname}${search || ""}`);
     const resp = NextResponse.redirect(signInUrl);
-    if (token && guest) {
-      resp.cookies.set("guest", "", { path: "/", maxAge: 0 });
-      resp.cookies.delete("guest");
-    }
     return resp;
   }
 
   const resp = NextResponse.next();
-  if (guest) {
-    resp.cookies.set("guest", "", { path: "/", maxAge: 0 });
-    resp.cookies.delete("guest");
-  }
   return resp;
 }
 
 export const config = {
-  matcher: ["/", "/intake/:path*", "/sessions/:path*"],
+  matcher: ["/", "/search/:path*", "/report/:path*"],
 };

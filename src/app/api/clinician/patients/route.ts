@@ -4,12 +4,13 @@ import { authOptions } from "../../../api/auth/[...nextauth]/route";
 import { prisma } from "@/app/lib/prisma";
 
 /**
+ * GET /api/clinician/patients?firstName=First&lastName=Last
+ *    or
  * GET /api/clinician/patients?name=First%20Last
  *
- * Returns the single most recently matching patient for the signed-in clinician.
- * - Parses the provided `name` into tokens.
- * - If two or more tokens: require both first and last tokens to be present in `User.name` (case-insensitive).
- * - If one token: match `User.name` containing that token (case-insensitive).
+ * Matches the **first** patient whose Profile.json contains
+ *   { firstName: <exact>, lastName: <exact> }
+ * using JSON-path filters. Comparison is exact & case-sensitive.
  */
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
@@ -20,57 +21,59 @@ export async function GET(req: Request) {
   }
 
   const { searchParams } = new URL(req.url);
-  // Prefer ?name=... but allow legacy ?firstName=&lastName=
-  const rawName =
-    searchParams.get("name")?.trim() ||
-    [searchParams.get("firstName"), searchParams.get("lastName")]
-      .filter(Boolean)
-      .join(" ")
-      .trim();
 
-  if (!rawName) {
+  // Prefer explicit firstName/lastName; otherwise parse from `name`
+  let firstName = (searchParams.get("firstName") || "").trim();
+  let lastName = (searchParams.get("lastName") || "").trim();
+
+  if ((!firstName || !lastName) && searchParams.get("name")) {
+    const tokens = searchParams
+      .get("name")!
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    if (tokens.length >= 2) {
+      firstName = firstName || tokens[0];
+      lastName = lastName || tokens[tokens.length - 1];
+    }
+  }
+
+  if (!firstName || !lastName) {
     return NextResponse.json(
-      { error: "Missing 'name' query parameter" },
+      {
+        error:
+          "Missing 'firstName' and 'lastName' (or 'name') query parameters",
+      },
       { status: 400 }
     );
   }
 
-  // Tokenize: collapse multiple spaces and split
-  const tokens = rawName
-    .split(/\s+/)
-    .map((t) => t.trim())
-    .filter(Boolean);
-
-  // Infer first/last from tokens for stricter matching (first token, last token)
-  const firstToken = tokens[0] ?? "";
-  const lastToken = tokens.length > 1 ? tokens[tokens.length - 1] : "";
-  console.log(firstToken, lastToken);
-  let where: {};
-  if (firstToken && lastToken) {
-    // Require both ends to appear within the single `name` field
-    where = {
-      AND: [
-        { name: { contains: firstToken } },
-        { name: { contains: lastToken } },
-      ],
-    };
-  } else {
-    // Single token: match anywhere in `name`
-    where = {
-      name: { contains: firstToken },
-    };
-  }
-
   try {
-    const patient = await prisma.user.findFirst({
-      where,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        image: true,
-        profile: true,
+    // JSON-path exact matching on related Profile.json
+    // Uses Prisma JSON path filters: { path: [..], equals: value }
+    const patient = await prisma.profile.findFirst({
+      where: {
+        AND: [
+          {
+            json: {
+              path: "$.firstName",
+              equals: firstName,
+            },
+          },
+          {
+            json: {
+              path: "$.lastName",
+              equals: lastName,
+            },
+          },
+        ],
       },
+      select: {
+        userId: true,
+        json: true,
+        user: true,
+      },
+      orderBy: { updatedAt: "desc" },
     });
 
     if (!patient) {
