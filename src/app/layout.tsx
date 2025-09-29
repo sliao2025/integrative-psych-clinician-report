@@ -4,11 +4,17 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import type { Metadata } from "next";
 import Providers from "./providers";
+import IPLogo from "@/assets/IP_Logo.png";
 
 export const metadata: Metadata = {
   title: "Clinician Portal — Integrative Psych",
   description:
     "Secure access to patient reports for Integrative Psych clinicians.",
+  icons: {
+    icon: [{ url: IPLogo.src, type: "image/png" }],
+    shortcut: [{ url: IPLogo.src, type: "image/png" }],
+    apple: [{ url: IPLogo.src }],
+  },
 };
 
 /**
@@ -18,6 +24,7 @@ export const metadata: Metadata = {
  * - If you later need `useSession()` in client components, add a small
  *   <SessionProvider> wrapper at the root (can be added without changing this file).
  */
+
 export default async function RootLayout({
   children,
 }: {
