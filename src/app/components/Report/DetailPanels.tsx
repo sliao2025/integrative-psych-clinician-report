@@ -63,7 +63,8 @@ export function MedsDetail({ data }: { data: ProfileJson }) {
   const meds = data.currentMedications ?? [];
   const prev = data.previousMedications ?? [];
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
+      <h3 className="text-md font-semibold text-slate-800">Current</h3>
       {meds.length ? (
         <ul className="space-y-3">
           {meds.map((m: any, i: number) => (
@@ -94,17 +95,36 @@ export function MedsDetail({ data }: { data: ProfileJson }) {
           No current medications reported.
         </p>
       )}
-      {prev.length > 0 && (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-          <h4 className="mb-1 text-[13px] font-semibold text-slate-900">
-            Previous medications
-          </h4>
-          <ul className="list-disc pl-5 text-[13px] text-slate-700">
-            {prev.map((m: any, i: number) => (
-              <li key={i}>{m.name}</li>
-            ))}
-          </ul>
-        </div>
+      <h3 className="text-md font-semibold text-slate-800">Previous</h3>
+      {prev.length ? (
+        <ul className="space-y-3">
+          {prev.map((m: any, i: number) => (
+            <li
+              key={i}
+              className="rounded-xl border border-slate-200 bg-slate-50 p-3"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-[13px] font-medium text-slate-900">
+                  {m.name} · {m.dosage}
+                </p>
+                <span className="text-[12px] text-slate-500">
+                  {m.frequency}
+                </span>
+              </div>
+              <p className="text-[12px] text-slate-600">
+                {m.purpose}
+                {m.prescriber ? ` — ${m.prescriber}` : ""}
+              </p>
+              {m.comments && (
+                <p className="mt-1 text-[12px] text-slate-500">{m.comments}</p>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-[13px] text-slate-500">
+          No current medications reported.
+        </p>
       )}
     </div>
   );
@@ -212,6 +232,40 @@ export function FamilyDetail({ data }: { data: ProfileJson }) {
           </p>
         </div>
       )}
+    </div>
+  );
+}
+
+export function PrevTreatmentDetail({ data }: { data: ProfileJson }) {
+  return (
+    <div className="space-y-3">
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+          Summary
+        </h4>
+        <p className="whitespace-pre-wrap text-[13px] text-slate-800">
+          {data.prevTreatmentSummary?.text || "—"}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+            Length of treatment
+          </h4>
+          <p className="text-[13px] text-slate-800">
+            {data.therapyDuration || "—"}
+          </p>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+            Previous diagnosis
+          </h4>
+          <p className="text-[13px] text-slate-800">
+            {data.previousDiagnosis || "—"}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

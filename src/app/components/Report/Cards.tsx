@@ -270,14 +270,14 @@ export function AllergiesCard({
           {data.medicalAllergies.map((a: any, i: number) => (
             <span
               key={i}
-              className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-[12px] text-rose-700"
+              className="rounded-full border border-zinc-200 bg-zinc-100 px-3 py-1 text-[12px] text-zinc-700"
             >
               {a.name}
             </span>
           ))}
         </div>
       ) : (
-        <p className="text-[13px] text-slate-500">None reported</p>
+        <p className="text-[13px] text-slate-500">No allegies reported</p>
       )}
     </Card>
   );
@@ -314,7 +314,9 @@ export function RelationshipsCard({
               r.strength === "pretty_good" &&
                 "border-green-200 bg-green-50 text-green-700",
               r.strength === "not_great" &&
-                "border-amber-200 bg-amber-50 text-amber-700"
+                "border-amber-200 bg-amber-50 text-amber-700",
+              r.strength === "really_bad" &&
+                "border-red-200 bg-red-50 text-red-700"
             )}
           >
             {r.name} • {r.role}
@@ -491,7 +493,9 @@ export function HospitalizationsCard({
           ))}
         </ul>
       ) : (
-        <p className="text-[13px] text-slate-500">None reported</p>
+        <p className="text-[13px] text-slate-500">
+          No hospitalizations reported
+        </p>
       )}
     </Card>
   );

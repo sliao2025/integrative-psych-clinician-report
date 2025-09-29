@@ -31,6 +31,7 @@ import {
   FamilyDetail,
   GlanceDetail,
   AssessmentsDetail,
+  PrevTreatmentDetail,
 } from "./DetailPanels";
 import type { ModalState, Patient, ProfileJson } from "../types";
 import { intPsychTheme, theme } from "../theme";
@@ -353,14 +354,7 @@ export default function PatientReportClient({ id }: { id: string }) {
             <PrevTreatmentCard
               data={data}
               onOpen={() =>
-                open(
-                  "Previous Treatment",
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="whitespace-pre-wrap">
-                      {data.prevTreatmentSummary?.text}
-                    </p>
-                  </div>
-                )
+                open("Previous Treatment", <PrevTreatmentDetail data={data} />)
               }
               className="h-[150px]"
             />

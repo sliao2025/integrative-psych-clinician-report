@@ -38,7 +38,12 @@ export function CenterModal({
       <div className={`relative z-50 w-full ${maxWidth}`}>
         <div className="rounded-2xl bg-white shadow-xl ring-1 ring-slate-200">
           <header className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-            <h3 className="text-base font-semibold text-slate-900">{title}</h3>
+            <h3
+              className={`${dm_serif.className} text-lg text-base font-semibold`}
+              style={{ color: intPsychTheme.primary }}
+            >
+              {title}
+            </h3>
             <button
               onClick={onClose}
               className="cursor-pointer font-semibold rounded-md px-2 py-1 text-slate-500 hover:bg-red-100"
@@ -86,7 +91,7 @@ export function Card({
             <button
               type="button"
               onClick={onExpand}
-              className="cursor-pointer rounded-full border border-slate-200 px-2 py-1 text-[12px] font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200"
+              className="cursor-pointer rounded-lg border border-slate-200 px-2 py-1 text-[12px] font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200"
             >
               <FaExpand className="h-3 w-3" />
             </button>
@@ -192,7 +197,7 @@ export function Gauge({
           style={{
             width: `${100}%`,
             background:
-              "linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%)",
+              "linear-gradient(90deg, #10b94eff 0%, #f5e50bff 50%, #e71313ff 100%)",
           }}
         />
 
