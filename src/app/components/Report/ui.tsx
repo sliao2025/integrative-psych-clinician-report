@@ -1,9 +1,13 @@
-// app/report/components/ui.tsx
 "use client";
 import React from "react";
 import { intPsychTheme, theme } from "../theme";
-import { Expand } from "lucide-react";
 import { FaExpand, FaExpandAlt } from "react-icons/fa";
+import { DM_Serif_Text } from "next/font/google";
+
+const dm_serif = DM_Serif_Text({
+  subsets: ["latin"],
+  weight: ["400"],
+});
 
 export const cx = (...c: any[]) => c.filter(Boolean).join(" ");
 
@@ -11,7 +15,7 @@ export function Backdrop({ onClose }: { onClose: () => void }) {
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm"
+      className="fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-sm"
       aria-hidden
     />
   );
@@ -65,14 +69,17 @@ export function Card({
   return (
     <div
       className={cx(
-        "group overflow-hidden relative w-full rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-md p-4 text-left shadow-sm transition",
+        "group overflow-hidden relative w-full rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm p-4 text-left shadow-sm transition",
         "transform will-change-transform duration-150 ease-out hover:scale-[1.01]",
         className
       )}
     >
       {title && (
         <div className="mb-2 flex items-baseline justify-between gap-3">
-          <div className="flex items-center gap-2 text-slate-900 text-[13px] font-semibold tracking-tight">
+          <div
+            className={`${dm_serif.className} flex items-center gap-2 text-slate-900 text-lg tracking-tight`}
+            style={{ color: intPsychTheme.primary }}
+          >
             {title}
           </div>
           {onExpand && (
@@ -122,15 +129,22 @@ export function KV({
   tooltip,
   truncate = true,
   alignRight = true,
+  className,
 }: {
   label: string;
   value?: React.ReactNode;
   tooltip?: string;
   truncate?: boolean;
   alignRight?: boolean;
+  className?: string;
 }) {
   return (
-    <div className="flex items-baseline justify-between gap-3 py-1.5">
+    <div
+      className={cx(
+        "flex items-baseline justify-between gap-3 py-1.5",
+        className
+      )}
+    >
       <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
         {label}
       </span>
@@ -164,8 +178,8 @@ export function Gauge({
   return (
     <div className="flex w-full flex-col">
       <div className="mb-1 flex items-center justify-between">
-        <p className="text-[13px] font-semibold text-slate-800">{label}</p>
-        <span className="text-[12px] font-bold text-slate-700">
+        <p className="text-[16px] font-bold text-slate-700">{label}</p>
+        <span className="text-[16px] font-bold text-slate-700">
           {score}/{max}
         </span>
       </div>

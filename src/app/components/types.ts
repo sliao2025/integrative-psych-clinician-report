@@ -14,3 +14,5 @@ export type ModalState = {
   content: React.ReactNode;
   maxWidth?: string;
 } | null;
+
+export type Option = { label: string; value: string };

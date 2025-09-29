@@ -46,7 +46,7 @@ export default async function RootLayout({
             className="absolute inset-0 -z-10"
             style={{
               background:
-                "linear-gradient(to top, rgba(7, 255, 36, 0.3), rgba(7, 255, 36, 0.3), rgba(255, 255, 255, 1))",
+                "linear-gradient(to top, rgba(188, 255, 196, 1), rgba(244, 253, 247, 1), rgba(255, 255, 255, 1))",
             }}
           />
           <Providers session={session}>{children}</Providers>

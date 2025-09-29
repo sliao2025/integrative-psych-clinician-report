@@ -161,28 +161,43 @@ export function AssessmentsCard({
           label="GAD-7"
           score={gad}
           max={21}
-          caption="0–4 min · 5–9 mild · 10–14 mod · 15–21 sev"
+          caption="0–4 minimal · 5–9 mild · 10–14 moderate · 15–21 severe"
         />
         <Gauge
           label="PHQ-9"
           score={phq}
           max={27}
-          caption="0–4 min · 5–9 mild · 10–14 mod · 15–27 sev"
+          caption="0–4 minimal · 5–9 mild · 10–14 moderate · 15–19 moderately severe · 20-27 severe"
         />
-        <Gauge label="PSS-4" score={pss} max={16} caption="0–16 stress" />
+        <Gauge
+          label="PSS-4"
+          score={pss}
+          max={16}
+          caption="higher = more stress"
+        />
         {/* Hidden on small screens; visible from md and up */}
         <div className="hidden md:block">
-          <Gauge label="ASRS-5" score={asrs} max={24} caption="screen only" />
+          <Gauge
+            label="ASRS-5"
+            score={asrs}
+            max={24}
+            caption=">14 = possible ADHD symptoms · <14 = ADHD less likely"
+          />
         </div>
         <div className="hidden md:block">
-          <Gauge label="PTSD flags" score={ptsdYes} max={5} caption="# yes" />
+          <Gauge
+            label="PTSD flags"
+            score={ptsdYes}
+            max={5}
+            caption="higher = more PTSD symptoms"
+          />
         </div>
         <div className="hidden md:block">
           <Gauge
             label="ACE Resilience"
             score={ace}
             max={26}
-            caption="protective"
+            caption="higher = more adverse childhood experiences"
           />
         </div>
       </div>
@@ -210,7 +225,7 @@ export function MedsCard({
         </>
       }
       onExpand={onOpen}
-      className={cx(!has && "opacity-80", className)}
+      className={className}
     >
       {has ? (
         <ul className="text-[13px] text-slate-800">

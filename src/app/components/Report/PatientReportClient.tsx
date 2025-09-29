@@ -1,8 +1,9 @@
-// app/report/components/PatientReportClient.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { DM_Serif_Text } from "next/font/google";
 import logo from "@/assets/IP_Logo.png";
@@ -51,6 +52,41 @@ export default function PatientReportClient({ id }: { id: string }) {
     setModal({ title, content, maxWidth });
   const close = () => setModal(null);
 
+  // Lock background scroll when a CenterModal is open (desktop + iOS-safe)
+  useEffect(() => {
+    if (!modal) {
+      // restore
+      const top = (document.body.style.top || "0").replace("px", "");
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      if (top) {
+        const y = -parseInt(top, 10) || 0;
+        window.scrollTo(0, y);
+      }
+      return;
+    }
+
+    // lock
+    const scrollY = window.scrollY;
+    document.body.style.position = "fixed"; // prevents scroll on most browsers
+    document.body.style.top = `-${scrollY}px`; // preserve scroll position
+    document.body.style.width = "100%"; // avoid layout shift
+    document.body.style.overflow = "hidden"; // belt-and-suspenders
+
+    return () => {
+      const top = (document.body.style.top || "0").replace("px", "");
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      if (top) {
+        const y = -parseInt(top, 10) || 0;
+        window.scrollTo(0, y);
+      }
+    };
+  }, [modal]);
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
@@ -126,6 +162,16 @@ export default function PatientReportClient({ id }: { id: string }) {
       <header className="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-slate-200/70">
         <div className="mx-auto max-w-[1500px] px-4 h-14 md:h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <Link href="/search" className="group">
+              <span
+                className="inline-flex border border-slate-200 items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm shadow-sm hover:bg-slate-100/30 transition-all hover:shadow-md"
+                style={{
+                  color: intPsychTheme.secondary,
+                }}
+              >
+                <ArrowLeft className="h-4 w-4 transition-transform" />
+              </span>
+            </Link>
             <Image
               src={logo}
               alt="Integrative Psych"
@@ -134,7 +180,8 @@ export default function PatientReportClient({ id }: { id: string }) {
               className="h-9 w-9 object-contain"
             />
             <span
-              className={`${dm_serif.className} text-lg md:text-xl text-slate-800`}
+              className={`${dm_serif.className} text-xl md:text-2xl text-slate-800`}
+              style={{ color: intPsychTheme.primary }}
             >
               Integrative Psych Clinician Report
             </span>
@@ -158,7 +205,11 @@ export default function PatientReportClient({ id }: { id: string }) {
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1500px] px-4 pt-6 pb-12">
+      <div
+        className="mx-auto max-w-[1500px] px-4 pt-6 pb-12"
+        aria-hidden={modal ? true : false}
+        inert={modal ? "" : (undefined as any)}
+      >
         {/* <Garden bloom={1} /> */}
         <DemographicsHeader
           data={data}
@@ -279,7 +330,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         key={i}
                         className="rounded-xl border border-slate-200 bg-slate-50 p-4"
                       >
-                        <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+                        <h4 className="mb-2 text-md font-semibold text-slate-900">
                           {title}
                         </h4>
                         <p className="whitespace-pre-wrap">{body as string}</p>
@@ -368,11 +419,6 @@ export default function PatientReportClient({ id }: { id: string }) {
             {modal.content}
           </CenterModal>
         )}
-
-        <footer className="mt-6 flex items-center justify-between text-[12px] text-slate-500">
-          <span>Integrative Psych — Clinician View</span>
-          <span>Generated from Intake • v0.7</span>
-        </footer>
       </div>
     </>
   );

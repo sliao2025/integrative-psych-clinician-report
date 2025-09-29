@@ -9,6 +9,10 @@ import {
 import { KV } from "./ui";
 import { ProfileJson } from "../types";
 import React from "react";
+import { DM_Serif_Text } from "next/font/google";
+import { intPsychTheme } from "../theme";
+
+const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 
 export function DemographicsHeader({
   data,
@@ -37,7 +41,10 @@ export function DemographicsHeader({
           )}
 
           <div>
-            <div className="text-2xl font-semibold tracking-tight text-slate-900">
+            <div
+              className={`text-3xl ${dm_serif.className} font-semibold tracking-tight text-slate-900`}
+              style={{ color: intPsychTheme.primary }}
+            >
               {data.firstName} {data.lastName}
             </div>
             <div className="mt-0.5 text-[13px] text-slate-600">

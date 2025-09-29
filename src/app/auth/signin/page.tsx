@@ -15,7 +15,7 @@ export default function LoginPage() {
   return (
     <main className="relative min-h-dvh grid justify-center overflow-hidden">
       {/* Background visuals */}
-      <Garden bloom={1} />
+      <Garden bloom={0.9} />
 
       {/* Centered modal card */}
       <motion.div

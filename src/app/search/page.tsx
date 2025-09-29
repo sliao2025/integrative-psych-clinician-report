@@ -50,17 +50,17 @@ export default function ClinicianHome() {
   return (
     <main className="relative min-h-dvh grid justify-center overflow-hidden">
       {/* Background visuals */}
-      <Garden bloom={40} />
+      <Garden bloom={0.9} />
 
       {/* Centered modal card */}
       <motion.div
         initial={{ y: 16, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 w-full max-w-3xl px-4"
         style={{ marginTop: "30vh" }}
       >
-        <div className="rounded-3xl border border-gray-200 bg-white/50 backdrop-blur-sm shadow-md">
+        <div className="rounded-3xl border border-gray-200 bg-white shadow-md">
           <div className="p-6 md:p-8">
             {/* Header */}
             <div className="mb-4 flex items-center gap-3">
