@@ -74,6 +74,57 @@ export const ACE_RESILIENCE_QUESTIONS: Record<string, string> = {
   r13: "I believed that life is what you make it.",
 };
 
+/** CRAFFT 2.1 — Part A (screening, numeric responses) */
+export const CRAFFT_PARTA_QUESTIONS: Record<string, string> = {
+  daysAlcohol:
+    "On how many days did you drink more than a few sips of beer, wine, or any drink containing alcohol?",
+  daysMarijuana:
+    "On how many days did you use marijuana (weed, oil, vapes, edibles)?",
+  daysOther:
+    "On how many days did you use anything else to get high (for example, other illegal drugs, prescription medications, or over-the-counter medications)?",
+};
+
+/** CRAFFT 2.1 — Part B (six yes/no items) */
+export const CRAFFT_QUESTIONS: Record<string, string> = {
+  car: "Have you ever ridden in a CAR driven by someone (including yourself) who was high or had been using alcohol or drugs?",
+  relax:
+    "Do you ever use alcohol or drugs to RELAX, feel better about yourself, or fit in?",
+  alone:
+    "Do you ever use alcohol or drugs while you are by yourself, or ALONE?",
+  forget: "Do you ever FORGET things you did while using alcohol or drugs?",
+  familyFriends:
+    "Do your FAMILY or FRIENDS ever tell you that you should cut down on your drinking or drug use?",
+  trouble:
+    "Have you ever gotten into TROUBLE while you were using alcohol or drugs?",
+};
+
+export const moodChangeOptions: Option[] = [
+  { value: "sad", label: "Feeling significantly sad or down" },
+  { value: "tired", label: "Significant tiredness" },
+  { value: "mood_swings", label: "Drastic mood changes (high/low)" },
+  { value: "low_self_esteem", label: "Low self esteem" },
+  { value: "guilt", label: "Excessive guilt" },
+  { value: "none", label: "🚫 None of the above" },
+];
+
+export const behaviorChangeOptions: Option[] = [
+  { value: "withdrawal", label: "Withdrawal from friends/activities" },
+  { value: "substances", label: "Problems with alcohol or drug use" },
+  { value: "eating", label: "Significant changes in eating habits" },
+  { value: "anger", label: "Excessive anger/violence" },
+  { value: "daily_problems", label: "Unable to deal with daily problems" },
+  { value: "none", label: "🚫 None of the above" },
+];
+
+export const thoughtChangeOptions: Option[] = [
+  { value: "concentration", label: "Inability to concentrate" },
+  { value: "detachment", label: "Detachment from reality" },
+  { value: "disconnected", label: "Feeling disconnected from others" },
+  { value: "worry", label: "Excessive worry/fear" },
+  { value: "suicidal", label: "Suicidal thinking" },
+  { value: "none", label: "🚫 None of the above" },
+];
+
 export const sexualOrientations: Option[] = [
   { label: "Asexual", value: "asexual" },
   { label: "Bisexual", value: "bisexual" },

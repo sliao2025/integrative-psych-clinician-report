@@ -146,7 +146,7 @@ export function KV({
   return (
     <div
       className={cx(
-        "flex items-baseline justify-between gap-3 py-1.5",
+        "flex items-baseline justify-between gap-10 py-1.5",
         className
       )}
     >

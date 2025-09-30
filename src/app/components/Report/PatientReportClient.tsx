@@ -17,7 +17,6 @@ import {
   MedsCard,
   AllergiesCard,
   RelationshipsCard,
-  FamilyHistoryCard,
   GlanceCard,
   PrevTreatmentCard,
   HospitalizationsCard,
@@ -28,10 +27,10 @@ import {
   AllergiesDetail,
   HospitalizationsDetail,
   RelationshipsDetail,
-  FamilyDetail,
   GlanceDetail,
   AssessmentsDetail,
   PrevTreatmentDetail,
+  StoryDetail,
 } from "./DetailPanels";
 import type { ModalState, Patient, ProfileJson } from "../types";
 import { intPsychTheme, theme } from "../theme";
@@ -219,59 +218,116 @@ export default function PatientReportClient({ id }: { id: string }) {
             open(
               "Demographics",
               <div className="grid grid-cols-2 gap-4 text-[13px]">
-                <KV
-                  label="Name"
-                  value={`${data.firstName} ${data.lastName}`}
-                  truncate={false}
-                />
-                <KV
-                  label="Pronouns"
-                  value={data.pronouns?.[0]?.label}
-                  truncate={false}
-                />
-                <KV label="Age" value={data.age} truncate={false} />
-                <KV
-                  label="DOB"
-                  value={
-                    data.dob ? new Date(data.dob).toLocaleDateString() : "—"
-                  }
-                />
-                <KV label="Phone" value={data.contactNumber} />
-                <KV label="Email" value={data.email} />
-                <KV label="Sex" value="Male" />
-                <KV label="Gender identity" value="Cis male" truncate={false} />
-                <KV
-                  label="Ethnicity"
-                  value={data.ethnicity?.map((e: any) => e.label).join(", ")}
-                  truncate={false}
-                />
-                <KV
-                  label="Religion"
-                  value={data.religion?.map((r: any) => r.label).join(", ")}
-                  truncate={false}
-                />
-                <KV
-                  label="Marital"
-                  value={data.isMarried ? "Married" : "Single"}
-                  truncate={false}
-                />
-                <KV
-                  label="Employment"
-                  value={data.isEmployed ? "Employed" : "Unemployed"}
-                  truncate={false}
-                />
-                <KV
-                  label="Height"
-                  value={`${data.height?.feet || 0}'${
-                    data.height?.inches || 0
-                  }"`}
-                  truncate={false}
-                />
-                <KV
-                  label="Weight"
-                  value={data.weightLbs ? `${data.weightLbs} lb` : "—"}
-                  truncate={false}
-                />
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV
+                    label="Name"
+                    value={`${data.firstName} ${data.lastName}`}
+                    truncate={false}
+                  />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV
+                    label="Pronouns"
+                    value={data.pronouns?.[0]?.label}
+                    truncate={false}
+                  />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV label="Age" value={data.age} truncate={false} />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV label="DOB" value={data.dob ? data.dob : "—"} />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV label="Phone" value={data.contactNumber} />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV label="Email" value={data.email} />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV label="Sex" value="Male" />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV
+                    label="Gender identity"
+                    value="Cis male"
+                    truncate={false}
+                  />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV
+                    label="Ethnicity"
+                    value={data.ethnicity?.map((e: any) => e.label).join(", ")}
+                    truncate={false}
+                  />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV
+                    label="Religion"
+                    value={data.religion?.map((r: any) => r.label).join(", ")}
+                    truncate={false}
+                  />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV
+                    label="Marital"
+                    value={
+                      data.isMarried
+                        ? (() => {
+                            // Helper to convert number to ordinal string
+                            function ordinal(n: number) {
+                              const s = ["th", "st", "nd", "rd"],
+                                v = n % 100;
+                              return (
+                                n +
+                                (s[
+                                  v % 10 === 1 && v !== 11
+                                    ? 1
+                                    : v % 10 === 2 && v !== 12
+                                    ? 2
+                                    : v % 10 === 3 && v !== 13
+                                    ? 3
+                                    : 0
+                                ] || "th") +
+                                " Marriage"
+                              );
+                            }
+                            if (
+                              typeof data.timesMarried === "number" &&
+                              data.timesMarried > 0
+                            ) {
+                              return `Married | ${ordinal(data.timesMarried)}`;
+                            }
+                            return "Married";
+                          })()
+                        : "Single"
+                    }
+                    truncate={false}
+                  />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV
+                    label="Employment"
+                    value={data.isEmployed ? "Employed" : "Unemployed"}
+                    truncate={false}
+                  />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV
+                    label="Height"
+                    value={`${data.height?.feet || 0}'${
+                      data.height?.inches || 0
+                    }"`}
+                    truncate={false}
+                  />
+                </div>
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <KV
+                    label="Weight"
+                    value={data.weightLbs ? `${data.weightLbs} lb` : "—"}
+                    truncate={false}
+                  />
+                </div>
               </div>
             )
           }
@@ -286,7 +342,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                 open(
                   "Presenting Goal(s)",
                   <div className="space-y-3">
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="rounded-xl border border-slate-200 p-4">
                       <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
                         Summary
                       </h4>
@@ -302,7 +358,11 @@ export default function PatientReportClient({ id }: { id: string }) {
               data={data}
               className="h-[320px]"
               onOpen={() =>
-                open("Assessment Details", <AssessmentsDetail data={data} />)
+                open(
+                  "Assessment Details",
+                  <AssessmentsDetail data={data} />,
+                  "max-w-7xl"
+                )
               }
             />
           </div>
@@ -313,31 +373,8 @@ export default function PatientReportClient({ id }: { id: string }) {
               onOpen={() =>
                 open(
                   "Story / History",
-                  <div className="space-y-4">
-                    {[
-                      ["Story", data.storyNarrative?.text],
-                      ["Living Situation", data.livingSituation?.text],
-                      [
-                        "Upbringing Environments",
-                        data.upbringingEnvironments?.text,
-                      ],
-                      [
-                        "Who the patient grew up with",
-                        data.upbringingWhoWith?.text,
-                      ],
-                      ["Cultural / Context", data.cultureContext?.text],
-                    ].map(([title, body], i) => (
-                      <div
-                        key={i}
-                        className="rounded-xl border border-slate-200 bg-slate-50 p-4"
-                      >
-                        <h4 className="mb-2 text-md font-semibold text-slate-900">
-                          {title}
-                        </h4>
-                        <p className="whitespace-pre-wrap">{body as string}</p>
-                      </div>
-                    ))}
-                  </div>
+                  <StoryDetail data={data} />,
+                  "max-w-6xl"
                 )
               }
             />
@@ -395,7 +432,7 @@ export default function PatientReportClient({ id }: { id: string }) {
               data={data}
               onOpen={() =>
                 open(
-                  "Past Hospitalizations",
+                  "Hospitalizations & Injuries",
                   <HospitalizationsDetail data={data} />
                 )
               }

@@ -196,7 +196,7 @@ export function AssessmentsCard({
           <Gauge
             label="ACE Resilience"
             score={ace}
-            max={26}
+            max={52}
             caption="higher = more adverse childhood experiences"
           />
         </div>
@@ -327,37 +327,6 @@ export function RelationshipsCard({
   );
 }
 
-export function FamilyHistoryCard({
-  data,
-  onOpen,
-}: {
-  data: ProfileJson;
-  onOpen: () => void;
-}) {
-  return (
-    <Card
-      title={
-        <>
-          <HeartPulse className="h-4 w-4" />
-          Family History
-        </>
-      }
-      onExpand={onOpen}
-    >
-      <div className="flex flex-wrap gap-2">
-        {(data.familyHistory ?? []).map((d: any, i: number) => (
-          <span
-            key={i}
-            className="rounded-full bg-slate-100 px-3 py-1 text-[12px]"
-          >
-            {d}
-          </span>
-        ))}
-      </div>
-    </Card>
-  );
-}
-
 export function GlanceCard({
   data,
   onOpen,
@@ -427,7 +396,6 @@ export function GlanceCard({
           label="Positive childhood"
           value={data.likedChildhood ? "Yes" : "No"}
         />
-        <KV label="Therapy duration" value={data.therapyDuration || "—"} />
       </div>
     </Card>
   );
@@ -453,9 +421,15 @@ export function PrevTreatmentCard({
       onExpand={onOpen}
       className={className}
     >
-      <p className="line-clamp-4 text-[13px] whitespace-pre-line  leading-relaxed text-slate-700">
-        {data.prevTreatmentSummary?.text}
-      </p>
+      {data.hasReceivedMentalHealthTreatment ? (
+        <p className="line-clamp-4 text-[13px] whitespace-pre-line  leading-relaxed text-slate-700">
+          {data.prevTreatmentSummary?.text}
+        </p>
+      ) : (
+        <p className="text-[13px] text-slate-500">
+          No previous treatment reported
+        </p>
+      )}
     </Card>
   );
 }
@@ -474,7 +448,7 @@ export function HospitalizationsCard({
       title={
         <>
           <Stethoscope className="h-4 w-4" />
-          Hospitalizations
+          Hospitalizations &amp; Injuries
         </>
       }
       onExpand={onOpen}

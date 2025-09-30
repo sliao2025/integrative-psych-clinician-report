@@ -1,7 +1,7 @@
 // app/report/components/DetailPanels.tsx
 "use client";
 import React from "react";
-import { KV, Gauge } from "./ui";
+import { KV, Gauge, Pill } from "./ui";
 import { ProfileJson } from "../types";
 import {
   ACE_RESILIENCE_QUESTIONS,
@@ -10,6 +10,14 @@ import {
   PHQ9_QUESTIONS,
   PSS4_QUESTIONS,
   PTSD_QUESTIONS,
+  moodChangeOptions,
+  behaviorChangeOptions,
+  thoughtChangeOptions,
+  alcoholFrequencyOptions,
+  drinksPerOccasionOptions,
+  degreeOptions,
+  CRAFFT_PARTA_QUESTIONS,
+  CRAFFT_QUESTIONS,
 } from "../text";
 
 const scoreSum = (obj: Record<string, any> = {}) =>
@@ -24,37 +32,140 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4 text-[13px]">
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <div className="rounded-xl border border-slate-200 p-3">
           <KV
             label="Suicidal thoughts"
             value={s?.thoughts === "no" ? "Denied" : "Reported"}
           />
         </div>
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <div className="rounded-xl border border-slate-200 p-3">
           <KV
             label="Wish to be dead"
             value={s?.wishDead === "no" ? "Denied" : "Reported"}
           />
         </div>
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <div className="rounded-xl border border-slate-200 p-3">
           <KV label="Plan" value={s?.plan?.trim() || "None"} />
         </div>
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <div className="rounded-xl border border-slate-200 p-3">
           <KV label="Intention" value={s?.intention?.trim() || "None"} />
         </div>
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <div className="rounded-xl border border-slate-200 p-3">
           <KV
             label="Recent self-harm"
             value={selfHarm?.pastMonth === "no" ? "No" : "Yes"}
           />
         </div>
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <div className="rounded-xl border border-slate-200 p-3">
           <KV
             label="Lifetime self-harm"
             value={selfHarm?.lifetime === "no" ? "No" : "Yes"}
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+export function StoryDetail({ data }: { data: ProfileJson }) {
+  // Gather fields
+  const story = data.storyNarrative?.text?.trim();
+  const living = data.livingSituation?.text?.trim();
+  const culture = data.cultureContext?.text?.trim();
+  const hasCulture = Boolean(culture);
+
+  const grewWith = data.upbringingWhoWith?.text?.trim();
+  const env = data.upbringingEnvironments?.text?.trim();
+
+  const famHistoryList = Array.isArray(data.familyHistory)
+    ? (data.familyHistory as string[]).filter((s) => !!s && s.trim().length > 0)
+    : [];
+
+  const famElaboration = data.familyHistoryElaboration?.text?.trim();
+  const childhoodComment =
+    !data.likedChildhood && data.childhoodNegativeReason?.text
+      ? data.childhoodNegativeReason.text.trim()
+      : "";
+
+  function Box({
+    title,
+    children,
+  }: {
+    title: string;
+    children?: React.ReactNode;
+  }) {
+    return (
+      <div className="rounded-xl border border-slate-200 p-4">
+        <h4 className="mb-2 text-md font-semibold text-slate-900">{title}</h4>
+        <div className="whitespace-pre-wrap text-[13px]">{children ?? "—"}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      <section
+        className={`grid gap-4 ${
+          hasCulture ? "lg:grid-cols-3" : "lg:grid-cols-2"
+        }`}
+      >
+        <Box title="Story">{story || "—"}</Box>
+        <Box title="Living Situation">{living || "—"}</Box>
+        {hasCulture && <Box title="Cultural / Context">{culture}</Box>}
+      </section>
+
+      <h3 className="mb-3 text-sm font-semibold tracking-wide text-slate-900">
+        Upbringing
+      </h3>
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="rounded-xl border border-slate-200  p-4">
+          <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+            Who the patient grew up with
+          </h4>
+          <p className="whitespace-pre-wrap text-[13px]">{grewWith || "—"}</p>
+        </div>
+        <div className="rounded-xl border border-slate-200 p-4">
+          <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+            Upbringing Environments
+          </h4>
+          <p className="whitespace-pre-wrap text-[13px]">{env || "—"}</p>
+        </div>
+      </div>
+
+      <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
+        <h4 className="mb-3 text-[13px] font-semibold text-slate-900">
+          Family History
+        </h4>
+        <div className="grid gap-4 md:grid-cols-[1fr_3fr]">
+          <div>
+            {famHistoryList.length ? (
+              <div className="flex flex-wrap gap-2">
+                {famHistoryList.map((d, i) => (
+                  <Pill key={i} tone="info">
+                    {d}
+                  </Pill>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[13px] text-slate-500">None reported</p>
+            )}
+          </div>
+          <div className="md:border-l md:border-slate-200 md:pl-4">
+            <p className="whitespace-pre-wrap text-[13px]">
+              {famElaboration || "—"}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {childhoodComment && (
+        <div className="mt-4 rounded-xl border border-slate-200 p-4">
+          <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+            Childhood Comments
+          </h4>
+          <p className="whitespace-pre-wrap text-[13px]">{childhoodComment}</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -68,10 +179,7 @@ export function MedsDetail({ data }: { data: ProfileJson }) {
       {meds.length ? (
         <ul className="space-y-3">
           {meds.map((m: any, i: number) => (
-            <li
-              key={i}
-              className="rounded-xl border border-slate-200 bg-slate-50 p-3"
-            >
+            <li key={i} className="rounded-xl border border-slate-200 p-3">
               <div className="flex items-center justify-between">
                 <p className="text-[13px] font-medium text-slate-900">
                   {m.name} · {m.dosage}
@@ -99,10 +207,7 @@ export function MedsDetail({ data }: { data: ProfileJson }) {
       {prev.length ? (
         <ul className="space-y-3">
           {prev.map((m: any, i: number) => (
-            <li
-              key={i}
-              className="rounded-xl border border-slate-200 bg-slate-50 p-3"
-            >
+            <li key={i} className="rounded-xl border border-slate-200 p-3">
               <div className="flex items-center justify-between">
                 <p className="text-[13px] font-medium text-slate-900">
                   {m.name} · {m.dosage}
@@ -155,83 +260,131 @@ export function AllergiesDetail({ data }: { data: ProfileJson }) {
 }
 
 export function HospitalizationsDetail({ data }: { data: ProfileJson }) {
+  const hasHosp =
+    Array.isArray(data.previousHospitalizations) &&
+    data.previousHospitalizations.length > 0;
+  const inj = data.previousInjuries ?? null;
+  const injHasContent =
+    !!inj &&
+    (Boolean(inj.injuryList && inj.injuryList.trim().length) ||
+      Boolean(inj.explanation && inj.explanation.trim().length));
+
   return (
-    <div className="space-y-3">
-      {data.previousHospitalizations?.length ? (
-        <ul className="space-y-3">
-          {data.previousHospitalizations.map((h: any, i: number) => (
-            <li
-              key={i}
-              className="rounded-xl border border-slate-200 bg-slate-50 p-3"
-            >
-              <p className="text-[13px] font-medium text-slate-900">
-                {h.hospitalName}
-              </p>
-              <p className="text-[12px] text-slate-600">
-                {h.date ? new Date(h.date).toLocaleDateString() : "—"} —{" "}
-                {h.location}
-              </p>
-              <p className="text-[12px] text-slate-600">{h.reason}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-[13px] text-slate-500">None reported</p>
-      )}
+    <div className="space-y-5">
+      <section>
+        <h3 className="mb-2 text-md font-semibold text-slate-900">
+          Hospitalizations
+        </h3>
+        {hasHosp ? (
+          <ul className="space-y-3">
+            {data.previousHospitalizations!.map((h: any, i: number) => (
+              <li key={i} className="rounded-xl border border-slate-200 p-3">
+                <p className="text-[13px] font-medium text-slate-900">
+                  {h.hospitalName}
+                </p>
+                <p className="text-[12px] text-slate-600">
+                  {h.date ? new Date(h.date).toLocaleDateString() : "—"} —{" "}
+                  {h.location}
+                </p>
+                <p className="text-[12px] text-slate-600">{h.reason}</p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-[13px] text-slate-500">
+            No hospitalizations reported
+          </p>
+        )}
+      </section>
+
+      <section>
+        <h3 className="mb-2 text-md font-semibold text-slate-900">Injuries</h3>
+        {injHasContent ? (
+          <div className="rounded-xl border border-slate-200 p-4">
+            <div className="grid gap-3 md:grid-cols-2">
+              <div>
+                <h4 className="mb-1 text-[13px] font-semibold text-slate-900">
+                  Injury List
+                </h4>
+                <p className="whitespace-pre-wrap text-[13px] text-slate-800">
+                  {inj!.injuryList || "—"}
+                </p>
+              </div>
+              <div className="md:border-l md:border-slate-200 md:pl-4">
+                <h4 className="mb-1 text-[13px] font-semibold text-slate-900">
+                  Explanation
+                </h4>
+                <p className="whitespace-pre-wrap text-[13px] text-slate-800">
+                  {inj!.explanation || "—"}
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p className="text-[13px] text-slate-500">No injuries reported</p>
+        )}
+      </section>
     </div>
   );
 }
 
 export function RelationshipsDetail({ data }: { data: ProfileJson }) {
-  return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      {(data.relationships ?? []).map((r: any) => (
-        <div
-          key={r.id}
-          className={`rounded-xl border p-3 ${
-            r.strength === "really_good"
-              ? "border-emerald-200 bg-emerald-50"
-              : r.strength === "pretty_good"
-              ? "border-green-200 bg-green-50"
-              : r.strength === "not_great"
-              ? "border-amber-200 bg-amber-50"
-              : "border-slate-200 bg-slate-50"
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <p className="text-[13px] font-medium text-slate-900">
-              {r.name} • {r.role}
-            </p>
-            <span className="text-[12px] text-slate-600">
-              {r.happy ? "Happy" : "Strained"}
-            </span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+  type Strength = "really_bad" | "not_great" | "pretty_good" | "really_good";
+  const strengthLabel = (s: Strength) =>
+    s === "really_good"
+      ? "Really good"
+      : s === "pretty_good"
+      ? "Pretty good"
+      : s === "not_great"
+      ? "Not great"
+      : "Really bad";
 
-export function FamilyDetail({ data }: { data: ProfileJson }) {
+  const strengthStyles = (s: Strength) => {
+    switch (s) {
+      case "really_good":
+        return "border-emerald-200 bg-emerald-50";
+      case "pretty_good":
+        return "border-green-200 bg-green-50";
+      case "not_great":
+        return "border-amber-200 bg-amber-50";
+      default:
+        return "border-rose-200 bg-rose-50";
+    }
+  };
+
+  const moodBadge = (happy: boolean) => {
+    const tone = happy ? "success" : "danger";
+    const label = happy ? "Happy" : "Unhappy";
+    return <Pill tone={tone}>{label}</Pill>;
+  };
+
+  const items = Array.isArray(data.relationships) ? data.relationships : [];
+  if (!items.length) {
+    return <p className="text-[13px] text-slate-500">None reported</p>;
+  }
+
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap gap-2">
-        {(data.familyHistory ?? []).map((d: any, i: number) => (
-          <span
-            key={i}
-            className="rounded-full bg-slate-100 px-3 py-1 text-[12px]"
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((r: any) => (
+          <div
+            key={r.id}
+            className={`rounded-xl border p-3 ${strengthStyles(r.strength)}`}
           >
-            {d}
-          </span>
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-[13px] font-medium text-slate-900 truncate">
+                  {r.name} • {r.role}
+                </p>
+                <p className="text-[12px] text-slate-700">
+                  {strengthLabel(r.strength)} relationship
+                </p>
+              </div>
+              <div className="shrink-0">{moodBadge(Boolean(r.happy))}</div>
+            </div>
+          </div>
         ))}
       </div>
-      {data.familyHistoryElaboration?.text && (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-          <p className="text-[13px] text-slate-700">
-            {data.familyHistoryElaboration.text}
-          </p>
-        </div>
-      )}
     </div>
   );
 }
@@ -239,7 +392,7 @@ export function FamilyDetail({ data }: { data: ProfileJson }) {
 export function PrevTreatmentDetail({ data }: { data: ProfileJson }) {
   return (
     <div className="space-y-3">
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <div className="rounded-xl border border-slate-200 p-4">
         <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
           Summary
         </h4>
@@ -247,9 +400,8 @@ export function PrevTreatmentDetail({ data }: { data: ProfileJson }) {
           {data.prevTreatmentSummary?.text || "—"}
         </p>
       </div>
-
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div className="rounded-xl border border-slate-200 p-4">
           <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
             Length of treatment
           </h4>
@@ -257,7 +409,7 @@ export function PrevTreatmentDetail({ data }: { data: ProfileJson }) {
             {data.therapyDuration || "—"}
           </p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div className="rounded-xl border border-slate-200 p-4">
           <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
             Previous diagnosis
           </h4>
@@ -271,49 +423,75 @@ export function PrevTreatmentDetail({ data }: { data: ProfileJson }) {
 }
 
 export function GlanceDetail({ data }: { data: ProfileJson }) {
+  const labelFor = (
+    options: { value: string; label: string }[],
+    value?: string | null
+  ) =>
+    value ? options.find((o) => o.value === value)?.label ?? value : undefined;
+  const mapValsToLabels = (
+    vals: string[] | undefined,
+    options: { value: string; label: string }[]
+  ) =>
+    (vals ?? [])
+      .map((v) => options.find((o) => o.value === v)?.label ?? v)
+      .join(", ") || "—";
+  const educationLabel =
+    (labelFor(degreeOptions, data.highestDegree) as string | undefined) ?? "—";
+  const alcoholFreqLabel = labelFor(
+    alcoholFrequencyOptions,
+    data.alcoholFrequency
+  );
+  const drinksLabel = labelFor(
+    drinksPerOccasionOptions,
+    data.drinksPerOccasion
+  );
+  let alcoholValue = "—";
+  if (alcoholFreqLabel) {
+    if ((data.alcoholFrequency ?? "") === "none") {
+      alcoholValue = alcoholFreqLabel;
+    } else {
+      alcoholValue = `${alcoholFreqLabel} · ~${
+        drinksLabel ?? "—"
+      } drinks each time`;
+    }
+  }
+
   return (
     <div className="grid grid-cols-2 gap-4 text-[13px]">
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="rounded-xl border border-slate-200 p-3">
         <KV
           label="Occupation"
           value={<span title={data.jobDetails}>{data.jobDetails}</span>}
           truncate={false}
-          className="gap-10"
         />
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="rounded-xl border border-slate-200 p-3">
         <KV
           label="Hobbies"
           value={<span title={data.hobbies}>{data.hobbies}</span>}
           truncate={false}
-          className="gap-10"
         />
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="rounded-xl border border-slate-200 p-3">
         <KV
           label="Diet"
           value={data.dietType?.map((d: any) => d.label).join(", ") || "—"}
+          truncate={false}
         />
       </div>
-
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-        <KV
-          label="Alcohol"
-          value={`Every ${
-            data.alcoholFrequency?.replace("few_", "few ") || "—"
-          } · ~${data.drinksPerOccasion || "—"} drinks each time`}
-        />
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV label="Alcohol" value={alcoholValue} truncate={false} />
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="rounded-xl border border-slate-200 p-3">
         <KV
           label="Sexually active"
           value={data.isSexuallyActive ? "Yes" : "No"}
         />
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="rounded-xl border border-slate-200 p-3">
         <KV label="Partners" value={data.sexualPartners || "—"} />
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="rounded-xl border border-slate-200 p-3">
         <KV
           label="Orientation"
           value={
@@ -321,20 +499,16 @@ export function GlanceDetail({ data }: { data: ProfileJson }) {
           }
         />
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-        <KV label="Education" value={data.highestDegree || "—"} />
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV label="Education" value={educationLabel} />
       </div>
-
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="rounded-xl border border-slate-200 p-3">
         <KV
           label="Positive childhood"
           value={data.likedChildhood ? "Yes" : "No"}
         />
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-        <KV label="Therapy duration" value={data.therapyDuration || "—"} />
-      </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="rounded-xl border border-slate-200 p-3">
         <KV
           label="Substances"
           value={
@@ -342,31 +516,42 @@ export function GlanceDetail({ data }: { data: ProfileJson }) {
               ? (data as any).substancesUsed.map((x: any) => x.label).join(", ")
               : "—"
           }
+          truncate={false}
         />
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="rounded-xl border border-slate-200 p-3">
         <KV
           label="Mood changes"
-          value={(data.moodChanges || []).join(", ") || "—"}
+          value={mapValsToLabels(
+            data.moodChanges as string[] | undefined,
+            moodChangeOptions
+          )}
+          truncate={false}
         />
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="rounded-xl border border-slate-200 p-3">
         <KV
           label="Thought changes"
-          value={(data.thoughtChanges || []).join(", ") || "—"}
+          value={mapValsToLabels(
+            data.thoughtChanges as string[] | undefined,
+            thoughtChangeOptions
+          )}
+          truncate={false}
         />
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="rounded-xl border border-slate-200 p-3">
         <KV
           label="Behavior changes"
-          value={(data.behaviorChanges || []).join(", ") || "—"}
+          value={mapValsToLabels(
+            data.behaviorChanges as string[] | undefined,
+            behaviorChangeOptions
+          )}
+          truncate={false}
         />
       </div>
     </div>
   );
 }
-
-// Replace your existing AssessmentsDetail export with this:
 
 export function AssessmentsDetail({ data }: { data: ProfileJson }) {
   const A = data.assessments ?? {};
@@ -485,7 +670,6 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
     },
   ];
 
-  // --- helpers ---
   const optFor = (
     opts: readonly Opt[],
     key: string | number | undefined | null
@@ -495,13 +679,6 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
     return opts.find((o) => o.key === s);
   };
 
-  const scoreSum = (obj: Record<string, any> = {}) =>
-    Object.values(obj).reduce(
-      (a, v) => a + (typeof v === "string" ? Number(v) || 0 : v || 0),
-      0
-    );
-
-  // --- computed scores ---
   const gadScore = scoreSum(A.gad7);
   const phqScore = scoreSum(A.phq9);
   const pssScore = scoreSum(A.stress);
@@ -511,7 +688,20 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
   ).length;
   const aceScore = scoreSum(A.aceResilience);
 
-  // --- layout helper for a gauge + question list ---
+  const crafftKeys = [
+    "car",
+    "relax",
+    "alone",
+    "forget",
+    "familyFriends",
+    "trouble",
+  ] as const;
+  const crafftB = (A.crafft?.partB ?? {}) as Record<string, any>;
+  const crafftScore = crafftKeys.reduce(
+    (n, k) => n + (String(crafftB[k] ?? "").toLowerCase() === "yes" ? 1 : 0),
+    0
+  );
+
   function Block({
     label,
     score,
@@ -532,26 +722,99 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
     headerNote?: string;
   }) {
     return (
-      <section className="rounded-xl border border-slate-200 bg-white p-4">
-        <div className="mb-3 grid items-center gap-3 md:grid-cols-[220px,1fr]">
+      <section className="rounded-xl border border-slate-200 bg-white p-4 min-w-0">
+        <div className="mb-3 grid items-center gap-3 md:grid-cols-[220px,1fr] min-w-0">
           <Gauge label={label} score={score} max={max} caption={caption} />
-          <div>
+          <div className="min-w-0 overflow-hidden">
             {headerNote ? (
-              <h4 className="text-[13px] font-semibold text-slate-900 mb-1">
+              <h4 className="mb-1 text-[13px] font-semibold text-slate-900">
                 {headerNote}
               </h4>
             ) : null}
-            <ul className="text-[13px] text-slate-800 space-y-1.5">
+            <ul className="text-[13px] text-slate-800 divide-y divide-slate-200 break-words">
               {Object.entries(questions).map(([k, q]) => {
                 const ans = (answers as any)?.[k];
                 const opt = optFor(options, ans);
                 return (
-                  <li key={k} className="flex justify-between">
-                    <div className="flex gap-2 lg:w-xl md:w-sm sm:w-2xs">
+                  <li
+                    key={k}
+                    className="flex items-start justify-between gap-3 py-2 first:pt-0 last:pb-0"
+                  >
+                    <div className="flex gap-2 flex-1 min-w-0">
                       <span className="shrink-0 text-slate-500">•</span>
-                      <span className="flex-1">{q}</span>
+                      <span className="flex-1 min-w-0 break-words">{q}</span>
                     </div>
-                    <div>
+                    <div className="shrink-0">
+                      <span
+                        className={`ml-2 rounded-full px-2 py-0.5 text-[12px] ${
+                          opt?.bg ?? "bg-slate-100"
+                        } ${opt?.text ?? "text-slate-700"}`}
+                      >
+                        {opt?.label ?? "—"}
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  function CRAFFTBlock() {
+    const pA = (A.crafft?.partA ?? {}) as Record<string, any>;
+    const pB = (A.crafft?.partB ?? {}) as Record<string, any>;
+
+    return (
+      <section className="rounded-xl border border-slate-200 bg-white p-4 min-w-0">
+        <div className="mb-3 grid items-start gap-3 md:grid-cols-[220px,1fr] min-w-0">
+          <Gauge
+            label="CRAFFT 2.1"
+            score={crafftScore}
+            max={6}
+            caption="Count of 'Yes' responses (max 6). Part A shows days of use."
+          />
+          <div className="min-w-0 overflow-hidden">
+            <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+              During the past 12 months
+            </h4>
+
+            {/* Part A: Days of use */}
+            <div className="mb-3 grid gap-2 md:grid-cols-3">
+              {Object.entries(CRAFFT_PARTA_QUESTIONS).map(([k, q]) => (
+                <div
+                  key={k}
+                  className="rounded-lg border border-slate-200 bg-slate-50 p-2"
+                >
+                  <div className="text-[12px] text-slate-600 mb-1 leading-snug">
+                    {q}
+                  </div>
+                  <div className="text-[13px] font-semibold text-slate-900">
+                    {pA?.[k] !== undefined && pA?.[k] !== ""
+                      ? `${pA[k]} days`
+                      : "—"}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Part B: Yes/No items */}
+            <ul className="text-[13px] text-slate-800 divide-y divide-slate-200 break-words">
+              {Object.entries(CRAFFT_QUESTIONS).map(([k, q]) => {
+                const ans = pB?.[k];
+                const opt = optFor(yesNo, ans);
+                return (
+                  <li
+                    key={k}
+                    className="flex items-start justify-between gap-3 py-2 first:pt-0 last:pb-0"
+                  >
+                    <div className="flex gap-2 flex-1 min-w-0">
+                      <span className="shrink-0 text-slate-500">•</span>
+                      <span className="flex-1 min-w-0 break-words">{q}</span>
+                    </div>
+                    <div className="shrink-0">
                       <span
                         className={`ml-2 rounded-full px-2 py-0.5 text-[12px] ${
                           opt?.bg ?? "bg-slate-100"
@@ -571,7 +834,7 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3 min-w-0">
       <Block
         label="GAD-7"
         score={gadScore}
@@ -628,6 +891,11 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
         answers={A.aceResilience}
         options={aceTrue5}
       />
+
+      {/* CRAFFT: full-width last row */}
+      <div className="md:col-span-2 2xl:col-span-3">
+        <CRAFFTBlock />
+      </div>
     </div>
   );
 }
