@@ -1,12 +1,19 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { DM_Serif_Text } from "next/font/google";
-import logo from "@/assets/IP_Logo.png";
+import {
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Transition,
+} from "@headlessui/react";
+import logo from "@/assets/IP_Logo_Black.png";
 import { CenterModal, KV } from "./ui";
 import { DemographicsHeader } from "./TopBlocks";
 import {
@@ -35,6 +42,7 @@ import {
 import type { ModalState, Patient, ProfileJson } from "../types";
 import { intPsychTheme, theme } from "../theme";
 import Garden from "../Garden/Garden";
+
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 
 export default function PatientReportClient({ id }: { id: string }) {
@@ -44,7 +52,6 @@ export default function PatientReportClient({ id }: { id: string }) {
   const [modal, setModal] = useState<ModalState>(null);
   const { data: session } = useSession();
 
-  console.log(session?.user?.image);
   const displayName = session?.user?.name ?? "Clinician";
   const clinicianProfilePic = session?.user?.image ?? "";
 
@@ -55,7 +62,6 @@ export default function PatientReportClient({ id }: { id: string }) {
   // Lock background scroll when a CenterModal is open (desktop + iOS-safe)
   useEffect(() => {
     if (!modal) {
-      // restore
       const top = (document.body.style.top || "0").replace("px", "");
       document.body.style.position = "";
       document.body.style.top = "";
@@ -68,12 +74,11 @@ export default function PatientReportClient({ id }: { id: string }) {
       return;
     }
 
-    // lock
     const scrollY = window.scrollY;
-    document.body.style.position = "fixed"; // prevents scroll on most browsers
-    document.body.style.top = `-${scrollY}px`; // preserve scroll position
-    document.body.style.width = "100%"; // avoid layout shift
-    document.body.style.overflow = "hidden"; // belt-and-suspenders
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
 
     return () => {
       const top = (document.body.style.top || "0").replace("px", "");
@@ -87,6 +92,7 @@ export default function PatientReportClient({ id }: { id: string }) {
       }
     };
   }, [modal]);
+
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
@@ -129,7 +135,7 @@ export default function PatientReportClient({ id }: { id: string }) {
             style={{ borderTopColor: intPsychTheme.secondary }}
             className="rounded-full h-12 w-12 mx-auto mb-4 border-4 border-gray-300 border-t-4 border-t-transparent animate-spin"
           />
-          <p className="text-gray-700">{`Preparing your report…`}</p>
+          <p className="text-gray-700">Preparing your report…</p>
         </div>
       </div>
     );
@@ -159,15 +165,15 @@ export default function PatientReportClient({ id }: { id: string }) {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-slate-200/70">
+      {/* --- DROP-IN HEADER (paste inside return) --- */}
+      <header className="relative sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-slate-200/70">
         <div className="mx-auto max-w-[1500px] px-4 h-14 md:h-16 flex items-center justify-between">
+          {/* Left: Back + Logo + Title */}
           <div className="flex items-center gap-3">
-            <Link href="/search" className="group">
+            <Link href="/search" className="group z-10">
               <span
-                className="inline-flex border border-slate-200 items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm shadow-sm hover:bg-slate-100/30 transition-all hover:shadow-md"
-                style={{
-                  color: intPsychTheme.secondary,
-                }}
+                className="inline-flex border bg-white border-slate-200 items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm shadow-sm  transition-all hover:shadow-md"
+                style={{ color: intPsychTheme.secondary }}
               >
                 <ArrowLeft className="h-4 w-4 transition-transform" />
               </span>
@@ -177,40 +183,97 @@ export default function PatientReportClient({ id }: { id: string }) {
               alt="Integrative Psych"
               width={36}
               height={36}
-              className="h-9 w-9 object-contain"
+              className="h-9 w-9 z-10 object-contain"
             />
             <span
-              className={`${dm_serif.className} text-xl md:text-2xl text-slate-800`}
+              className={`${dm_serif.className} z-10 text-xl md:text-2xl text-slate-800`}
               style={{ color: intPsychTheme.primary }}
             >
               Integrative Psych Clinician Report
             </span>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-slate-700 hidden sm:block">
-              {displayName}
-            </span>
-            {clinicianProfilePic ? (
-              <img
-                src={clinicianProfilePic}
-                alt={displayName}
-                width={32}
-                height={32}
-                className="h-8 w-8 rounded-full border border-slate-200"
-              />
-            ) : (
-              <div className="h-8 w-8 rounded-full bg-slate-300" />
-            )}
+
+          {/* Right: Profile menu (can overflow) */}
+          <div className="z-10">
+            <Menu as="div" className="relative inline-block text-left">
+              <div>
+                <MenuButton
+                  className="h-9 w-9 rounded-full overflow-hidden border border-gray-200 bg-white/60 backdrop-blur-sm flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                  title={displayName}
+                  aria-label="Open profile menu"
+                >
+                  {clinicianProfilePic ? (
+                    <img
+                      src={clinicianProfilePic}
+                      alt={displayName}
+                      className="h-full w-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <span className="text-sm font-semibold text-gray-700">
+                      {(displayName?.[0] ?? "G").toUpperCase()}
+                    </span>
+                  )}
+                </MenuButton>
+              </div>
+
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <MenuItems className="absolute right-0 mt-2 w-48 origin-top-right rounded-xl border border-gray-200 bg-white/95 backdrop-blur-sm shadow-lg ring-1 ring-black/5 focus:outline-none z-50">
+                  <div className="py-1">
+                    <div className="px-3 py-2 text-xs text-gray-500 border-b border-gray-100">
+                      <div className="truncate font-medium text-gray-700">
+                        {displayName}
+                      </div>
+                      <div className="truncate">
+                        {session?.user?.email ?? ""}
+                      </div>
+                    </div>
+                    <MenuItem>
+                      {({ active }) => (
+                        <button
+                          onClick={() =>
+                            signOut({ callbackUrl: "/auth/signin" })
+                          }
+                          className={`w-full text-left px-3 py-2 text-sm ${
+                            active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          Logout
+                        </button>
+                      )}
+                    </MenuItem>
+                  </div>
+                </MenuItems>
+              </Transition>
+            </Menu>
+          </div>
+        </div>
+
+        {/* Clip ONLY the garden, not the menu or other header content */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute w-dvw -top-15 left-18">
+            <Garden bloom={0.2} />
           </div>
         </div>
       </header>
+
+      <div className="w-dvw -z-1 h-dvh absolute top-20" />
 
       <div
         className="mx-auto max-w-[1500px] px-4 pt-6 pb-12"
         aria-hidden={modal ? true : false}
         inert={modal ? "" : (undefined as any)}
       >
-        {/* <Garden bloom={1} /> */}
         <DemographicsHeader
           data={data}
           patientDbData={patient}
@@ -274,7 +337,6 @@ export default function PatientReportClient({ id }: { id: string }) {
                     value={
                       data.isMarried
                         ? (() => {
-                            // Helper to convert number to ordinal string
                             function ordinal(n: number) {
                               const s = ["th", "st", "nd", "rd"],
                                 v = n % 100;
