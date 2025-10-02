@@ -47,6 +47,15 @@ export default async function RootLayout({
           If you want a global background layer or safe-area spacer, add it here.
           Keep children wrapped so pages can control their own scroll/overflow.
         */}
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="white-translucent"
+        />
         <div id="app-root" className="relative min-h-dvh">
           <div
             aria-hidden="true"
