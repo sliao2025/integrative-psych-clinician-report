@@ -50,7 +50,7 @@ export default function ClinicianHome() {
   return (
     <main className="relative min-h-dvh grid justify-center overflow-hidden">
       {/* Background visuals */}
-      <Garden bloom={0.9} />
+      <Garden bloom={0.6} />
 
       {/* Centered modal card */}
       <motion.div

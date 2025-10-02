@@ -33,13 +33,13 @@ export function CenterModal({
   maxWidth?: string;
 }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center p-4">
+    <div className="fixed inset-0 z-50 grid place-items-center p-3 sm:p-4">
       <Backdrop onClose={onClose} />
       <div className={`relative z-50 w-full ${maxWidth}`}>
-        <div className="rounded-2xl bg-white shadow-xl ring-1 ring-slate-200">
-          <header className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="rounded-xl sm:rounded-2xl bg-white shadow-xl ring-1 ring-slate-200">
+          <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-100">
             <h3
-              className={`${dm_serif.className} text-lg text-base font-semibold`}
+              className={`${dm_serif.className} text-base sm:text-lg font-semibold`}
               style={{ color: intPsychTheme.primary }}
             >
               {title}
@@ -51,7 +51,7 @@ export function CenterModal({
               ✕
             </button>
           </header>
-          <div className="max-h-[75vh] overflow-y-auto p-6 text-sm leading-relaxed text-slate-700 space-y-4">
+          <div className="max-h-[80vh] sm:max-h-[75vh] overflow-y-auto p-4 sm:p-6 text-[13px] sm:text-sm leading-relaxed text-slate-700 space-y-4">
             {children}
           </div>
         </div>
@@ -74,15 +74,15 @@ export function Card({
   return (
     <div
       className={cx(
-        "group overflow-hidden relative w-full rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm p-4 text-left shadow-sm transition",
-        "transform will-change-transform duration-150 ease-out hover:scale-[1.01]",
+        "group overflow-hidden relative w-full rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm p-3 sm:p-4 text-left shadow-sm transition",
+        "transform will-change-transform duration-150 ease-out hover:scale-[1.005] sm:hover:scale-[1.01]",
         className
       )}
     >
       {title && (
         <div className="mb-2 flex items-baseline justify-between gap-3">
           <div
-            className={`${dm_serif.className} flex items-center gap-2 text-slate-900 text-lg tracking-tight`}
+            className={`${dm_serif.className} flex items-center gap-2 text-slate-900 text-sm sm:text-base md:text-lg tracking-tight`}
             style={{ color: intPsychTheme.primary }}
           >
             {title}
@@ -155,9 +155,11 @@ export function KV({
       </span>
       <span
         title={typeof value === "string" ? tooltip || String(value) : tooltip}
-        className={`text-[13px] text-slate-900 ${
+        className={`text-[12px] sm:text-[13px] text-slate-900 ${
           alignRight ? "text-right" : ""
-        } ${truncate ? "max-w-[18rem] truncate" : "break-words"}`}
+        } ${
+          truncate ? "max-w-[12rem] sm:max-w-[18rem] truncate" : "break-words"
+        }`}
       >
         {value ?? "—"}
       </span>

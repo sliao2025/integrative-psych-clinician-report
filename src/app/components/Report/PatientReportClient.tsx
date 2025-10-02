@@ -166,13 +166,13 @@ export default function PatientReportClient({ id }: { id: string }) {
   return (
     <>
       {/* --- DROP-IN HEADER (paste inside return) --- */}
-      <header className="relative sticky top-0 z-50 bg-white/70 backdrop-blur border-b border-slate-200/70">
-        <div className="mx-auto max-w-[1500px] px-4 h-14 md:h-16 flex items-center justify-between">
+      <header className="relative sticky top-0 z-50 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-slate-200/70">
+        <div className="mx-auto max-w-[1500px] px-3 sm:px-4 h-12 sm:h-14 md:h-16 flex items-center justify-between">
           {/* Left: Back + Logo + Title */}
           <div className="flex items-center gap-3">
-            <Link href="/search" className="group z-10">
+            <Link href="/search" className="group z-10 shrink-0">
               <span
-                className="inline-flex border bg-white border-slate-200 items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm shadow-sm  transition-all hover:shadow-md"
+                className="inline-flex border bg-white border-slate-200 items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm shadow-sm transition-all hover:shadow-md"
                 style={{ color: intPsychTheme.secondary }}
               >
                 <ArrowLeft className="h-4 w-4 transition-transform" />
@@ -183,10 +183,10 @@ export default function PatientReportClient({ id }: { id: string }) {
               alt="Integrative Psych"
               width={36}
               height={36}
-              className="h-9 w-9 z-10 object-contain"
+              className="h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 z-10 object-contain"
             />
             <span
-              className={`${dm_serif.className} z-10 text-xl md:text-2xl text-slate-800`}
+              className={`${dm_serif.className} z-10 text-base sm:text-lg md:text-2xl text-slate-800`}
               style={{ color: intPsychTheme.primary }}
             >
               Integrative Psych Clinician Report
@@ -198,7 +198,7 @@ export default function PatientReportClient({ id }: { id: string }) {
             <Menu as="div" className="relative inline-block text-left">
               <div>
                 <MenuButton
-                  className="h-9 w-9 rounded-full overflow-hidden border border-gray-200 bg-white/60 backdrop-blur-sm flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                  className="h-8 w-8 sm:h-9 sm:w-9 rounded-full overflow-hidden border border-gray-200 bg-white/60 backdrop-blur-sm flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
                   title={displayName}
                   aria-label="Open profile menu"
                 >
@@ -261,16 +261,16 @@ export default function PatientReportClient({ id }: { id: string }) {
 
         {/* Clip ONLY the garden, not the menu or other header content */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute w-dvw -top-15 left-18">
-            <Garden bloom={0.2} />
+          <div className="absolute w-dvw -top-12 sm:-top-14 md:-top-15 left-6 sm:left-12 md:left-18 opacity-70 sm:opacity-80">
+            <Garden bloom={0.18} />
           </div>
         </div>
       </header>
 
-      <div className="w-dvw -z-1 h-dvh absolute top-20" />
+      <div className="w-dvw -z-1 h-0" />
 
       <div
-        className="mx-auto max-w-[1500px] px-4 pt-6 pb-12"
+        className="mx-auto max-w-[1500px] px-3 sm:px-4 pt-4 sm:pt-6 pb-16"
         aria-hidden={modal ? true : false}
         inert={modal ? "" : (undefined as any)}
       >
