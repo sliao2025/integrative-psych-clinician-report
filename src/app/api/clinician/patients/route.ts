@@ -71,13 +71,25 @@ export async function GET(req: Request) {
       select: {
         userId: true,
         json: true,
-        user: true,
+        user: {
+          select: {
+            id: true,
+            intakeFinished: true,
+          },
+        },
       },
       orderBy: { updatedAt: "desc" },
     });
 
     if (!patient) {
       return NextResponse.json({ error: "Patient not found" }, { status: 404 });
+    }
+
+    if (!patient.user?.intakeFinished) {
+      return NextResponse.json(
+        { error: "Patient intake not completed" },
+        { status: 403 }
+      );
     }
 
     return NextResponse.json({ patient });

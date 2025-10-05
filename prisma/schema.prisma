@@ -16,6 +16,7 @@ model User {
   emailVerified DateTime?
   passwordHash  String?
   guest         Boolean?  @default(false)
+  intakeFinished Boolean @default(false)
   accounts      Account[]
   profile       Profile?
   sessions      Session[]

@@ -117,7 +117,7 @@ export function DemographicsHeader({
       <button
         type="button"
         onClick={onOpen}
-        className="absolute top-3 right-3 inline-flex items-center justify-center h-6 w-8 rounded-lg border border-slate-200 bg-white/70 backdrop-blur-sm text-slate-700 hover:bg-slate-100 active:bg-slate-200"
+        className="absolute top-3 right-3 cursor-pointer inline-flex items-center justify-center h-6 w-8 rounded-lg border border-slate-200 bg-white/70 backdrop-blur-sm text-slate-700 hover:bg-slate-100 active:bg-slate-200"
         aria-label="Expand demographics"
       >
         <FaExpand className="h-3 w-3" />

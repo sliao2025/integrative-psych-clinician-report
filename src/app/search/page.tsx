@@ -7,7 +7,7 @@ import Garden from "@/app/components/Garden/Garden";
 import logo from "@/assets/IP_Logo.png";
 import { intPsychTheme } from "@/app/components/theme";
 import { DM_Serif_Text, Roboto } from "next/font/google";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -22,6 +22,17 @@ export default function ClinicianHome() {
   const [patientFirstname, setPatientFirstname] = useState("");
   const [patientLastname, setPatientLastname] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [showTip, setShowTip] = useState(false);
+
+  // Auto-dismiss error tooltip after 3 seconds
+  useEffect(() => {
+    if (!showTip) return;
+    const t = setTimeout(() => {
+      setShowTip(false);
+    }, 3000);
+    return () => clearTimeout(t);
+  }, [showTip]);
 
   const searchPatient = async () => {
     const full = `${patientFirstname} ${patientLastname}`
@@ -31,22 +42,37 @@ export default function ClinicianHome() {
 
     try {
       setLoading(true);
+      setErrorMsg(null);
+      setShowTip(false);
       const qs = new URLSearchParams({ name: full }).toString();
       const r = await fetch(`/api/clinician/patients?${qs}`, {
         method: "GET",
         cache: "no-store",
       });
       if (!r.ok) {
-        const msg = await r.text();
-        throw new Error(`${r.status} ${msg}`);
+        const text = await r.text();
+        if (r.status === 400) {
+          setErrorMsg("Please enter both first and last name.");
+        } else if (r.status === 401) {
+          setErrorMsg("You are not authorized to search.");
+        } else if (r.status === 403) {
+          setErrorMsg("Patient found, but intake is not completed yet.");
+        } else if (r.status === 404) {
+          setErrorMsg("No matching patient found. Check spelling and spacing.");
+        } else if (r.status >= 500) {
+          setErrorMsg("Server error. Please try again in a moment.");
+        } else {
+          setErrorMsg(`Search failed (${r.status}). ${text || ""}`);
+        }
+        setShowTip(true);
+        return;
       }
       const data = await r.json();
       router.push(`/report/${data.patient.user.id}`);
     } catch (err) {
       console.error("Error searching patient:", err);
-      alert(
-        "Could not find that patient. Please check the name and try again."
-      );
+      setErrorMsg("Network error. Please try again.");
+      setShowTip(true);
     } finally {
       setLoading(false);
     }
@@ -164,11 +190,21 @@ export default function ClinicianHome() {
                 </button>
               </div>
 
-              <p className="text-[11px] sm:text-xs text-slate-600">
-                Tip: Enter the patient’s name exactly as written in the intake
-                (case and spacing).
-              </p>
+              {showTip && errorMsg && (
+                <div
+                  role="alert"
+                  aria-live="polite"
+                  className="mt-3 w-full rounded-xl border border-rose-200 bg-rose-50/90 px-4 py-3 text-rose-700 text-sm shadow-sm"
+                >
+                  {errorMsg}
+                </div>
+              )}
             </div>
+
+            <p className="text-[11px] mt-3 sm:text-xs text-slate-600">
+              Tip: Enter the patient’s name exactly as written in the intake
+              (case and spacing).
+            </p>
           </div>
         </div>
       </motion.div>
