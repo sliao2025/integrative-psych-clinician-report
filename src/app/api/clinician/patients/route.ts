@@ -11,6 +11,11 @@ import { prisma } from "@/app/lib/prisma";
  * Matches the **first** patient whose Profile.json contains
  *   { firstName: <exact>, lastName: <exact> }
  * using JSON-path filters. Comparison is exact & case-sensitive.
+ *
+ * Notes:
+ *  - Supports multi-word first/last names via trying all possible splits of the provided `name`.
+ *  - Matching is still exact (case-sensitive) against Profile.json firstName/lastName.
+ *  - Now supports multi-word last names and multi-word first names.
  */
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
@@ -20,25 +25,45 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Prefer explicit firstName/lastName; otherwise parse from `name`
+  // Supports multi-word first or last names (e.g., "Andre van Heerden" or "Mary Anne Smith")
   const { searchParams } = new URL(req.url);
 
-  // Prefer explicit firstName/lastName; otherwise parse from `name`
-  let firstName = (searchParams.get("firstName") || "").trim();
-  let lastName = (searchParams.get("lastName") || "").trim();
+  const explicitFirst = (searchParams.get("firstName") || "").trim();
+  const explicitLast = (searchParams.get("lastName") || "").trim();
+  const rawName = (searchParams.get("name") || "").trim();
 
-  if ((!firstName || !lastName) && searchParams.get("name")) {
-    const tokens = searchParams
-      .get("name")!
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
-    if (tokens.length >= 2) {
-      firstName = firstName || tokens[0];
-      lastName = lastName || tokens[tokens.length - 1];
-    }
+  type NamePair = { first: string; last: string };
+  const candidates: NamePair[] = [];
+
+  // If explicit params are provided, use them as the first candidate
+  if (explicitFirst && explicitLast) {
+    candidates.push({ first: explicitFirst, last: explicitLast });
   }
 
-  if (!firstName || !lastName) {
+  // If a single `name` string is provided, generate split candidates.
+  if (rawName) {
+    const tokens = rawName.split(/\s+/).filter(Boolean);
+    // Generate all possible splits between 1..n-1 (so both multi-word first AND multi-word last are supported).
+    // Example: "Andre van Heerden" => ["Andre" | "van Heerden"], ["Andre van" | "Heerden"]
+    for (let i = 1; i < tokens.length; i++) {
+      const first = tokens.slice(0, i).join(" ");
+      const last = tokens.slice(i).join(" ");
+      candidates.push({ first, last });
+    }
+  }
+  // De-duplicate candidate pairs while preserving order
+  const seen = new Set<string>();
+  const namePairs = candidates.filter(({ first, last }) => {
+    const key = `${first}:::${last}`;
+    if (first && last && !seen.has(key)) {
+      seen.add(key);
+      return true;
+    }
+    return false;
+  });
+
+  if (namePairs.length === 0) {
     return NextResponse.json(
       {
         error:
@@ -49,37 +74,49 @@ export async function GET(req: Request) {
   }
 
   try {
-    // JSON-path exact matching on related Profile.json
-    // Uses Prisma JSON path filters: { path: [..], equals: value }
-    const patient = await prisma.profile.findFirst({
-      where: {
-        AND: [
-          {
-            json: {
-              path: "$.firstName",
-              equals: firstName,
+    // Try each name split candidate in order until one matches exactly (case-sensitive)
+    let patient: {
+      userId: string;
+      json: any;
+      user: { id: string; intakeFinished: boolean } | null;
+    } | null = null;
+
+    for (const pair of namePairs) {
+      const match = await prisma.profile.findFirst({
+        where: {
+          AND: [
+            {
+              json: {
+                path: "$.firstName",
+                equals: pair.first,
+              },
             },
-          },
-          {
-            json: {
-              path: "$.lastName",
-              equals: lastName,
+            {
+              json: {
+                path: "$.lastName",
+                equals: pair.last,
+              },
             },
-          },
-        ],
-      },
-      select: {
-        userId: true,
-        json: true,
-        user: {
-          select: {
-            id: true,
-            intakeFinished: true,
+          ],
+        },
+        select: {
+          userId: true,
+          json: true,
+          user: {
+            select: {
+              id: true,
+              intakeFinished: true,
+            },
           },
         },
-      },
-      orderBy: { updatedAt: "desc" },
-    });
+        orderBy: { updatedAt: "desc" },
+      });
+
+      if (match) {
+        patient = match;
+        break;
+      }
+    }
 
     if (!patient) {
       return NextResponse.json({ error: "Patient not found" }, { status: 404 });
