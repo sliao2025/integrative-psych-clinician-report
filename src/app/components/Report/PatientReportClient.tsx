@@ -13,7 +13,7 @@ import {
   MenuItems,
   Transition,
 } from "@headlessui/react";
-import logo from "@/assets/IP_Logo_Black.png";
+import logo from "@/assets/IP_Logo.png";
 import { CenterModal, KV } from "./ui";
 import { DemographicsHeader } from "./TopBlocks";
 import {
