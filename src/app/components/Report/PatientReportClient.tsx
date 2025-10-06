@@ -166,7 +166,7 @@ export default function PatientReportClient({ id }: { id: string }) {
   return (
     <>
       {/* --- DROP-IN HEADER (paste inside return) --- */}
-      <header className="relative sticky top-0 z-50 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-slate-200/70">
+      <header className="relative sticky top-0 z-50 bg-white border-b border-slate-200/70">
         <div className="mx-auto max-w-[1500px] px-3 sm:px-4 h-12 sm:h-14 md:h-16 flex items-center justify-between">
           {/* Left: Back + Logo + Title */}
           <div className="flex items-center gap-3">
@@ -256,13 +256,6 @@ export default function PatientReportClient({ id }: { id: string }) {
                 </MenuItems>
               </Transition>
             </Menu>
-          </div>
-        </div>
-
-        {/* Clip ONLY the garden, not the menu or other header content */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute w-dvw -top-12 sm:-top-14 md:-top-15 left-6 sm:left-12 md:left-18 opacity-70 sm:opacity-80">
-            <Garden bloom={0.18} />
           </div>
         </div>
       </header>
@@ -395,11 +388,10 @@ export default function PatientReportClient({ id }: { id: string }) {
           }
         />
 
-        <div className="mt-5 grid grid-cols-12 gap-4 md:gap-5">
-          <div className="col-span-12 md:col-span-6">
+        <div className="mt-5 columns-1 md:columns-2 xl:columns-3 gap-4 md:gap-5 [column-fill:_balance]">
+          <div className="mb-4 break-inside-avoid">
             <GoalsCard
               data={data}
-              className="h-[320px]"
               onOpen={() =>
                 open(
                   "Presenting Goal(s)",
@@ -415,10 +407,9 @@ export default function PatientReportClient({ id }: { id: string }) {
               }
             />
           </div>
-          <div className="col-span-12 md:col-span-6">
+          <div className="mb-4 break-inside-avoid">
             <AssessmentsCard
               data={data}
-              className="h-[320px]"
               onOpen={() =>
                 open(
                   "Assessment Details",
@@ -428,10 +419,23 @@ export default function PatientReportClient({ id }: { id: string }) {
               }
             />
           </div>
-          <div className="col-span-12 md:col-span-6">
+          <div className="mb-4 break-inside-avoid">
+            <PrevTreatmentCard
+              data={data}
+              onOpen={() =>
+                open("Previous Treatment", <PrevTreatmentDetail data={data} />)
+              }
+            />
+          </div>
+          <div className="mb-4 break-inside-avoid">
+            <SafetyCard
+              data={data}
+              onOpen={() => open("Risk & Safety", <SafetyDetail data={data} />)}
+            />
+          </div>
+          <div className="mb-4 break-inside-avoid">
             <StoryCard
               data={data}
-              className="h-[320px]"
               onOpen={() =>
                 open(
                   "Story / History",
@@ -441,55 +445,35 @@ export default function PatientReportClient({ id }: { id: string }) {
               }
             />
           </div>
-
-          <div className="col-span-12 md:col-span-6">
+          <div className="mb-4 break-inside-avoid">
             <GlanceCard
               data={data}
-              className="h-[320px]"
               onOpen={() => open("At a Glance", <GlanceDetail data={data} />)}
             />
           </div>
-          <div className="col-span-12 md:col-span-6">
-            <PrevTreatmentCard
-              data={data}
-              onOpen={() =>
-                open("Previous Treatment", <PrevTreatmentDetail data={data} />)
-              }
-              className="h-[150px]"
-            />
-          </div>
-          <div className="col-span-12 md:col-span-6">
+
+          <div className="mb-4 break-inside-avoid">
             <RelationshipsCard
               data={data}
               onOpen={() =>
                 open("Relationships", <RelationshipsDetail data={data} />)
               }
-              className="h-[150px]"
-            />
-          </div>
-          <div className="col-span-6 md:col-span-3">
-            <SafetyCard
-              data={data}
-              onOpen={() => open("Risk & Safety", <SafetyDetail data={data} />)}
-              className="h-[100px]"
-            />
-          </div>
-          <div className="col-span-6 md:col-span-3">
-            <MedsCard
-              data={data}
-              onOpen={() => open("Medications", <MedsDetail data={data} />)}
-              className="h-[100px]"
-            />
-          </div>
-          <div className="col-span-6 md:col-span-3">
-            <AllergiesCard
-              data={data}
-              onOpen={() => open("Allergies", <AllergiesDetail data={data} />)}
-              className="h-[100px]"
             />
           </div>
 
-          <div className="col-span-6 md:col-span-3">
+          <div className="mb-4 break-inside-avoid">
+            <MedsCard
+              data={data}
+              onOpen={() => open("Medications", <MedsDetail data={data} />)}
+            />
+          </div>
+          <div className="mb-4 break-inside-avoid">
+            <AllergiesCard
+              data={data}
+              onOpen={() => open("Allergies", <AllergiesDetail data={data} />)}
+            />
+          </div>
+          <div className="mb-4 break-inside-avoid">
             <HospitalizationsCard
               data={data}
               onOpen={() =>
@@ -498,7 +482,6 @@ export default function PatientReportClient({ id }: { id: string }) {
                   <HospitalizationsDetail data={data} />
                 )
               }
-              className="h-[100px]"
             />
           </div>
         </div>

@@ -70,19 +70,68 @@ export function StoryCard({
       }
       onExpand={onOpen}
     >
-      <div className="space-y-2 overflow-auto">
-        <p className="whitespace-pre-line line-clamp-10 text-[13px] leading-relaxed text-slate-700">
-          {data.storyNarrative?.text}
-          {data.livingSituation?.text}
-          {data.upbringingEnvironments?.text}
-          {data.upbringingWhoWith?.text}
-          {data.cultureContext?.text}
-        </p>
-        <div className="flex flex-wrap gap-2 pt-1">
-          <Pill tone="info">Story Narrative</Pill>
-          <Pill tone="info">Living Situation</Pill>
-          <Pill tone="info">Upbringing</Pill>
-          <Pill tone="info">Cultural Context</Pill>
+      <div className="relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Narrative spans full width for readability */}
+          <div className="md:col-span-2">
+            <div className="text-[12px] font-medium text-slate-600">
+              Story Narrative
+            </div>
+            <p
+              className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-3"
+              title={data.storyNarrative?.text}
+            >
+              {data.storyNarrative?.text || "—"}
+            </p>
+          </div>
+
+          <div>
+            <div className="text-[12px] font-medium text-slate-600">
+              Living Situation
+            </div>
+            <p
+              className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-2"
+              title={data.livingSituation?.text}
+            >
+              {data.livingSituation?.text || "—"}
+            </p>
+          </div>
+
+          <div>
+            <div className="text-[12px] font-medium text-slate-600">
+              Upbringing Environments
+            </div>
+            <p
+              className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-2"
+              title={data.upbringingEnvironments?.text}
+            >
+              {data.upbringingEnvironments?.text || "—"}
+            </p>
+          </div>
+
+          <div>
+            <div className="text-[12px] font-medium text-slate-600">
+              Upbringing — Who With
+            </div>
+            <p
+              className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-2"
+              title={data.upbringingWhoWith?.text}
+            >
+              {data.upbringingWhoWith?.text || "—"}
+            </p>
+          </div>
+
+          <div>
+            <div className="text-[12px] font-medium text-slate-600">
+              Cultural Context
+            </div>
+            <p
+              className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-2"
+              title={data.cultureContext?.text}
+            >
+              {data.cultureContext?.text || "—"}
+            </p>
+          </div>
         </div>
       </div>
     </Card>

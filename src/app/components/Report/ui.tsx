@@ -74,7 +74,7 @@ export function Card({
   return (
     <div
       className={cx(
-        "group overflow-hidden relative w-full rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm p-3 sm:p-4 text-left shadow-sm transition",
+        "group overflow-hidden relative inline-block w-full break-inside-avoid rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm p-3 sm:p-4 text-left shadow-sm transition align-top",
         "transform will-change-transform duration-150 ease-out hover:scale-[1.005] sm:hover:scale-[1.01]",
         className
       )}
@@ -82,7 +82,7 @@ export function Card({
       {title && (
         <div className="mb-2 flex items-baseline justify-between gap-3">
           <div
-            className={`${dm_serif.className} flex items-center gap-2 text-slate-900 text-sm sm:text-base md:text-lg tracking-tight`}
+            className={`${dm_serif.className} flex items-baseline gap-2 text-slate-900 text-sm sm:text-base md:text-lg tracking-tight leading-snug sm:leading-[1.4]`}
             style={{ color: intPsychTheme.primary }}
           >
             {title}
@@ -106,9 +106,11 @@ export function Card({
 export function Pill({
   children,
   tone = "info",
+  className,
 }: {
   children: React.ReactNode;
   tone?: "success" | "warn" | "danger" | "info";
+  className?: string;
 }) {
   const map: Record<string, string> = {
     success: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -120,7 +122,8 @@ export function Pill({
     <span
       className={cx(
         "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium",
-        map[tone]
+        map[tone],
+        className
       )}
     >
       {children}

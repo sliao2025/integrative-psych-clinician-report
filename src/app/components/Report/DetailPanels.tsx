@@ -95,7 +95,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
     children?: React.ReactNode;
   }) {
     return (
-      <div className="rounded-xl border border-slate-200 p-4">
+      <div className="rounded-xl max-h-80 overflow-auto border border-slate-200 p-4">
         <h4 className="mb-2 text-md font-semibold text-slate-900">{title}</h4>
         <div className="whitespace-pre-wrap text-[13px]">{children ?? "—"}</div>
       </div>
