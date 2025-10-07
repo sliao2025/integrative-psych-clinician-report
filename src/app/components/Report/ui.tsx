@@ -82,7 +82,7 @@ export function Card({
       {title && (
         <div className="mb-2 flex items-baseline justify-between gap-3">
           <div
-            className={`${dm_serif.className} flex items-baseline gap-2 text-slate-900 text-sm sm:text-base md:text-lg tracking-tight leading-snug sm:leading-[1.4]`}
+            className={`${dm_serif.className} flex items-center gap-2 text-slate-900 text-sm sm:text-base md:text-lg tracking-tight leading-snug sm:leading-[1.4]`}
             style={{ color: intPsychTheme.primary }}
           >
             {title}
@@ -202,7 +202,7 @@ export function Gauge({
           style={{
             width: `${100}%`,
             background:
-              "linear-gradient(90deg, #10b94eff 0%, #f5e50bff 50%, #e71313ff 100%)",
+              "linear-gradient(90deg, #b8e7f8ff 0%, #3a9ce2ff 50%, #05539cff 100%)",
           }}
         />
 
