@@ -18,6 +18,7 @@ import {
   degreeOptions,
   CRAFFT_PARTA_QUESTIONS,
   CRAFFT_QUESTIONS,
+  genderOptions,
 } from "../text";
 
 const scoreSum = (obj: Record<string, any> = {}) =>
@@ -25,6 +26,124 @@ const scoreSum = (obj: Record<string, any> = {}) =>
     (a, v) => a + (typeof v === "string" ? Number(v) || 0 : v || 0),
     0
   );
+const labelFor = (
+  options: { value: string; label: string }[],
+  value?: string | null
+) =>
+  value ? options.find((o) => o.value === value)?.label ?? value : undefined;
+// Inside DetailPanels.tsx
+
+export function DemographicsDetail({ data }: { data: ProfileJson }) {
+  return (
+    <div className="grid grid-cols-2 gap-4 text-[13px]">
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV
+          label="Name"
+          value={`${data.firstName} ${data.lastName}`}
+          truncate={false}
+        />
+      </div>
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV
+          label="Pronouns"
+          value={data.pronouns?.[0]?.label}
+          truncate={false}
+        />
+      </div>
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV label="Age" value={data.age} truncate={false} />
+      </div>
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV label="DOB" value={data.dob ? data.dob : "—"} />
+      </div>
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV label="Phone" value={data.contactNumber} />
+      </div>
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV label="Email" value={data.email} />
+      </div>
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV
+          label="Gender Identity"
+          value={labelFor(genderOptions, data.genderIdentity)}
+          truncate={false}
+          alignRight={false}
+        />
+      </div>
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV
+          label="Ethnicity"
+          value={data.ethnicity?.map((e: any) => e.label).join(", ")}
+          truncate={false}
+        />
+      </div>
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV
+          label="Religion"
+          value={data.religion?.map((r: any) => r.label).join(", ")}
+          truncate={false}
+        />
+      </div>
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV
+          label="Marital"
+          value={
+            data.isMarried
+              ? (() => {
+                  function ordinal(n: number) {
+                    const s = ["th", "st", "nd", "rd"],
+                      v = n % 100;
+                    return (
+                      n +
+                      (s[
+                        v % 10 === 1 && v !== 11
+                          ? 1
+                          : v % 10 === 2 && v !== 12
+                          ? 2
+                          : v % 10 === 3 && v !== 13
+                          ? 3
+                          : 0
+                      ] || "th") +
+                      " Marriage"
+                    );
+                  }
+                  if (
+                    typeof data.timesMarried === "number" &&
+                    data.timesMarried > 0
+                  ) {
+                    return `Married | ${ordinal(data.timesMarried)}`;
+                  }
+                  return "Married";
+                })()
+              : "Single"
+          }
+          truncate={false}
+        />
+      </div>
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV
+          label="Employment"
+          value={data.isEmployed ? "Employed" : "Unemployed"}
+          truncate={false}
+        />
+      </div>
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV
+          label="Height"
+          value={`${data.height?.feet || 0}'${data.height?.inches || 0}"`}
+          truncate={false}
+        />
+      </div>
+      <div className="rounded-xl border border-slate-200 p-3">
+        <KV
+          label="Weight"
+          value={data.weightLbs ? `${data.weightLbs} lb` : "—"}
+          truncate={false}
+        />
+      </div>
+    </div>
+  );
+}
 
 export function SafetyDetail({ data }: { data: ProfileJson }) {
   const s = data.assessments?.suicide;
@@ -423,11 +542,6 @@ export function PrevTreatmentDetail({ data }: { data: ProfileJson }) {
 }
 
 export function GlanceDetail({ data }: { data: ProfileJson }) {
-  const labelFor = (
-    options: { value: string; label: string }[],
-    value?: string | null
-  ) =>
-    value ? options.find((o) => o.value === value)?.label ?? value : undefined;
   const mapValsToLabels = (
     vals: string[] | undefined,
     options: { value: string; label: string }[]

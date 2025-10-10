@@ -16,12 +16,18 @@ import {
 } from "lucide-react";
 import { Card, Pill, KV, Gauge, cx } from "./ui";
 import { ProfileJson } from "../types";
+import { alcoholFrequencyOptions, drinksPerOccasionOptions } from "../text";
 
 const scoreSum = (obj: Record<string, any> = {}) =>
   Object.values(obj).reduce(
     (a, v) => a + (typeof v === "string" ? Number(v) || 0 : v || 0),
     0
   );
+const labelFor = (
+  options: { value: string; label: string }[],
+  value?: string | null
+) =>
+  value ? options.find((o) => o.value === value)?.label ?? value : undefined;
 
 export function GoalsCard({
   data,
@@ -385,6 +391,24 @@ export function GlanceCard({
   onOpen: () => void;
   className?: string;
 }) {
+  const alcoholFreqLabel = labelFor(
+    alcoholFrequencyOptions,
+    data.alcoholFrequency
+  );
+  const drinksLabel = labelFor(
+    drinksPerOccasionOptions,
+    data.drinksPerOccasion
+  );
+  let alcoholValue = "—";
+  if (alcoholFreqLabel) {
+    if ((data.alcoholFrequency ?? "") === "none") {
+      alcoholValue = alcoholFreqLabel;
+    } else {
+      alcoholValue = `${alcoholFreqLabel} · ~${
+        drinksLabel ?? "—"
+      } drinks each time`;
+    }
+  }
   return (
     <Card
       title={
@@ -405,12 +429,7 @@ export function GlanceCard({
           label="Occupation"
           value={<span title={data.jobDetails}>{data.jobDetails}</span>}
         />
-        <KV
-          label="Alcohol"
-          value={`Every ${
-            data.alcoholFrequency?.replace("few_", "few ") || "—"
-          } · ~${data.drinksPerOccasion || "—"} drinks`}
-        />
+        <KV label="Alcohol" value={alcoholValue} truncate={false} />
         {!data.isSexuallyActive ? (
           <KV
             label="Sexually active"

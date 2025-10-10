@@ -12,6 +12,7 @@ import React from "react";
 import { DM_Serif_Text } from "next/font/google";
 import { intPsychTheme } from "../theme";
 import { FaExpand } from "react-icons/fa";
+import { genderOptions } from "../text";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 
@@ -24,6 +25,11 @@ export function DemographicsHeader({
   patientDbData: any;
   onOpen: () => void;
 }) {
+  const labelFor = (
+    options: { value: string; label: string }[],
+    value?: string | null
+  ) =>
+    value ? options.find((o) => o.value === value)?.label ?? value : undefined;
   return (
     <div className="relative rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
       <div className="grid grid-cols-12 gap-3 sm:gap-4 md:gap-5 items-start">
@@ -63,8 +69,8 @@ export function DemographicsHeader({
                 style={{ color: intPsychTheme.primary }}
               />
               <KV
-                label="Sex"
-                value="Male"
+                label="Gender Identity"
+                value={labelFor(genderOptions, data.genderIdentity)}
                 truncate={false}
                 alignRight={false}
                 className="flex-1 min-w-0"

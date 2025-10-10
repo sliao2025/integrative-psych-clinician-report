@@ -38,6 +38,7 @@ import {
   AssessmentsDetail,
   PrevTreatmentDetail,
   StoryDetail,
+  DemographicsDetail,
 } from "./DetailPanels";
 import type { ModalState, Patient, ProfileJson } from "../types";
 import { intPsychTheme, theme } from "../theme";
@@ -273,117 +274,8 @@ export default function PatientReportClient({ id }: { id: string }) {
           onOpen={() =>
             open(
               "Demographics",
-              <div className="grid grid-cols-2 gap-4 text-[13px]">
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV
-                    label="Name"
-                    value={`${data.firstName} ${data.lastName}`}
-                    truncate={false}
-                  />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV
-                    label="Pronouns"
-                    value={data.pronouns?.[0]?.label}
-                    truncate={false}
-                  />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV label="Age" value={data.age} truncate={false} />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV label="DOB" value={data.dob ? data.dob : "—"} />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV label="Phone" value={data.contactNumber} />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV label="Email" value={data.email} />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV label="Sex" value="Male" />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV
-                    label="Gender identity"
-                    value="Cis male"
-                    truncate={false}
-                  />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV
-                    label="Ethnicity"
-                    value={data.ethnicity?.map((e: any) => e.label).join(", ")}
-                    truncate={false}
-                  />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV
-                    label="Religion"
-                    value={data.religion?.map((r: any) => r.label).join(", ")}
-                    truncate={false}
-                  />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV
-                    label="Marital"
-                    value={
-                      data.isMarried
-                        ? (() => {
-                            function ordinal(n: number) {
-                              const s = ["th", "st", "nd", "rd"],
-                                v = n % 100;
-                              return (
-                                n +
-                                (s[
-                                  v % 10 === 1 && v !== 11
-                                    ? 1
-                                    : v % 10 === 2 && v !== 12
-                                    ? 2
-                                    : v % 10 === 3 && v !== 13
-                                    ? 3
-                                    : 0
-                                ] || "th") +
-                                " Marriage"
-                              );
-                            }
-                            if (
-                              typeof data.timesMarried === "number" &&
-                              data.timesMarried > 0
-                            ) {
-                              return `Married | ${ordinal(data.timesMarried)}`;
-                            }
-                            return "Married";
-                          })()
-                        : "Single"
-                    }
-                    truncate={false}
-                  />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV
-                    label="Employment"
-                    value={data.isEmployed ? "Employed" : "Unemployed"}
-                    truncate={false}
-                  />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV
-                    label="Height"
-                    value={`${data.height?.feet || 0}'${
-                      data.height?.inches || 0
-                    }"`}
-                    truncate={false}
-                  />
-                </div>
-                <div className="rounded-xl border border-slate-200 p-3">
-                  <KV
-                    label="Weight"
-                    value={data.weightLbs ? `${data.weightLbs} lb` : "—"}
-                    truncate={false}
-                  />
-                </div>
-              </div>
+              <DemographicsDetail data={data} />,
+              "max-w-3xl"
             )
           }
         />
