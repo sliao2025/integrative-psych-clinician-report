@@ -19,8 +19,7 @@ export default function ClinicianHome() {
   const { data: session } = useSession();
   const name = session?.user?.name ?? "Clinician";
 
-  const [patientFirstname, setPatientFirstname] = useState("");
-  const [patientLastname, setPatientLastname] = useState("");
+  const [patientName, setPatientName] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showTip, setShowTip] = useState(false);
@@ -35,9 +34,7 @@ export default function ClinicianHome() {
   }, [showTip]);
 
   const searchPatient = async () => {
-    const full = `${patientFirstname} ${patientLastname}`
-      .replace(/\s+/g, " ")
-      .trim();
+    const full = patientName.trim();
     if (!full) return;
 
     try {
@@ -52,7 +49,7 @@ export default function ClinicianHome() {
       if (!r.ok) {
         const text = await r.text();
         if (r.status === 400) {
-          setErrorMsg("Please enter both first and last name.");
+          setErrorMsg("Please enter a full name.");
         } else if (r.status === 401) {
           setErrorMsg("You are not authorized to search.");
         } else if (r.status === 403) {
@@ -126,32 +123,13 @@ export default function ClinicianHome() {
               <div className="grid grid-cols-1 gap-4 sm:flex sm:flex-row sm:gap-3 min-w-0">
                 <input
                   type="text"
-                  name="firstName"
-                  placeholder="Patient First Name"
-                  aria-label="Patient first name"
-                  autoComplete="given-name"
+                  name="fullName"
+                  placeholder="Patient Full Name (e.g., Mary Anne Smith)"
+                  aria-label="Patient full name"
+                  autoComplete="name"
                   className="w-full flex-1 min-w-0 h-12 rounded-xl border border-gray-300 bg-white/70 backdrop-blur px-3 text-base text-slate-700 placeholder:text-slate-400 focus:outline-none"
-                  value={patientFirstname}
-                  onChange={(e) => setPatientFirstname(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") searchPatient();
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.boxShadow = `0 0 0 1.5px ${intPsychTheme.secondary}`;
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.boxShadow = "";
-                  }}
-                />
-                <input
-                  type="text"
-                  name="lastName"
-                  placeholder="Patient Last Name"
-                  aria-label="Patient last name"
-                  autoComplete="family-name"
-                  className="w-full flex-1 min-w-0 h-12 rounded-xl border border-gray-300 bg-white/70 backdrop-blur px-3 text-base text-slate-700 placeholder:text-slate-400 focus:outline-none"
-                  value={patientLastname}
-                  onChange={(e) => setPatientLastname(e.target.value)}
+                  value={patientName}
+                  onChange={(e) => setPatientName(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") searchPatient();
                   }}
@@ -202,8 +180,8 @@ export default function ClinicianHome() {
             </div>
 
             <p className="text-[11px] mt-3 sm:text-xs text-slate-600">
-              Tip: Enter the patient’s name exactly as written in the intake
-              (case and spacing).
+              Tip: Enter the patient’s full name exactly as written in the
+              intake (case and spacing).
             </p>
           </div>
         </div>
