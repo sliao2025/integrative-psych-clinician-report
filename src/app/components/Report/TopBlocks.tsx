@@ -43,7 +43,10 @@ export function DemographicsHeader({
               referrerPolicy="no-referrer"
             />
           ) : (
-            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-indigo-600 text-white text-base sm:text-lg font-semibold flex-none">
+            <div
+              style={{ background: intPsychTheme.secondary }}
+              className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full text-white sm:text-xl font-medium flex-none"
+            >
               {data.firstName?.[0] || "P"}
             </div>
           )}

@@ -184,6 +184,9 @@ export function Gauge({
   const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
   const v = clamp01(score / max);
   const pct = Math.round(v * 1000) / 10; // one-decimal precision
+  const pctClamped = Math.max(0, Math.min(100, pct));
+  const isMin = pctClamped === 0;
+  const isMax = pctClamped === 100;
 
   return (
     <div className="flex w-full flex-col">
@@ -200,7 +203,7 @@ export function Gauge({
         <div
           className="h-3 rounded-full"
           style={{
-            width: `${100}%`,
+            width: `${pctClamped}%`,
             background:
               "linear-gradient(90deg, #b8e7f8ff 0%, #3a9ce2ff 50%, #05539cff 100%)",
           }}
@@ -209,7 +212,13 @@ export function Gauge({
         {/* Ticker at score position */}
         <div
           className="pointer-events-none rounded-full absolute -top-1 h-5 w-3 bg-white border border-slate-300 shadow-sm"
-          style={{ left: `calc(${pct}% - 1px)` }}
+          style={
+            isMax
+              ? { right: 0 }
+              : isMin
+              ? { left: 0 }
+              : { left: `calc(${pctClamped}% - 6px)` }
+          }
           aria-hidden="true"
         />
       </div>

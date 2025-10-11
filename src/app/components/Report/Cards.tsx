@@ -16,7 +16,11 @@ import {
 } from "lucide-react";
 import { Card, Pill, KV, Gauge, cx } from "./ui";
 import { ProfileJson } from "../types";
-import { alcoholFrequencyOptions, drinksPerOccasionOptions } from "../text";
+import {
+  alcoholFrequencyOptions,
+  degreeOptions,
+  drinksPerOccasionOptions,
+} from "../text";
 
 const scoreSum = (obj: Record<string, any> = {}) =>
   Object.values(obj).reduce(
@@ -391,6 +395,8 @@ export function GlanceCard({
   onOpen: () => void;
   className?: string;
 }) {
+  const educationLabel =
+    (labelFor(degreeOptions, data.highestDegree) as string | undefined) ?? "—";
   const alcoholFreqLabel = labelFor(
     alcoholFrequencyOptions,
     data.alcoholFrequency
@@ -455,7 +461,7 @@ export function GlanceCard({
             data.sexualOrientation?.map((s: any) => s.label).join(", ") || "—"
           }
         />
-        <KV label="Education" value={data.highestDegree || "—"} />
+        <KV label="Education" value={educationLabel} />
         <KV
           label="Hobbies"
           value={<span title={data.hobbies}>{data.hobbies}</span>}
