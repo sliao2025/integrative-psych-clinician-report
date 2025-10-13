@@ -753,13 +753,13 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
 
   const aceTrue5: readonly Opt[] = [
     {
-      key: "0",
+      key: "4",
       label: "Definitely true",
       bg: "bg-emerald-100",
       text: "text-emerald-800",
     },
     {
-      key: "1",
+      key: "3",
       label: "Probably true",
       bg: "bg-lime-100",
       text: "text-lime-800",
@@ -771,13 +771,13 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
       text: "text-yellow-800",
     },
     {
-      key: "3",
+      key: "1",
       label: "Probably not true",
       bg: "bg-orange-100",
       text: "text-orange-800",
     },
     {
-      key: "4",
+      key: "0",
       label: "Definitely not true",
       bg: "bg-rose-100",
       text: "text-rose-800",
@@ -1000,7 +1000,7 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
         label="ACE Resilience"
         score={aceScore}
         max={Object.keys(ACE_RESILIENCE_QUESTIONS).length * 4}
-        caption="higher = more adverse childhood experiences"
+        caption="higher = more resilience"
         questions={ACE_RESILIENCE_QUESTIONS}
         answers={A.aceResilience}
         options={aceTrue5}

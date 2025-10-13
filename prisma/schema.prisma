@@ -66,4 +66,18 @@ model Profile {
   version   Int      @default(1)
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // --- Denormalized scalars for faster querying/analytics ---
+  firstName         String?
+  lastName          String?
+  email             String?
+  contactNumber     String?
+  age               String?
+  race              String?
+  genderIdentity    String?
+  sexualOrientation String?
+  highestDegree     String?
+  isEmployed        Boolean?
+  firstSubmittedAt  DateTime? @default(now())
+  isChild           Boolean?
 }

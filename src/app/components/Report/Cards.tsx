@@ -256,7 +256,7 @@ export function AssessmentsCard({
             label="ACE Resilience"
             score={ace}
             max={52}
-            caption="higher = more adverse childhood experiences"
+            caption="higher = resilience"
           />
         </div>
       </div>
