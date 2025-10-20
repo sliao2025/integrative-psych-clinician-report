@@ -177,7 +177,7 @@ export function SafetyCard({
       title={
         <>
           <ShieldAlert className="h-4 w-4" />
-          Risk & Safety
+          Suicide Risk
         </>
       }
       onExpand={onOpen}

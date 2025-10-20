@@ -82,7 +82,7 @@ export function Card({
       {title && (
         <div className="mb-2 flex items-baseline justify-between gap-3">
           <div
-            className={`${dm_serif.className} flex items-center gap-2 text-slate-900 text-sm sm:text-base md:text-lg tracking-tight leading-snug sm:leading-[1.4]`}
+            className={`${dm_serif.className} flex items-center gap-2 text-slate-900 text-md sm:text-base md:text-lg tracking-tight leading-snug sm:leading-[1.4]`}
             style={{ color: intPsychTheme.primary }}
           >
             {title}
