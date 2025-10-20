@@ -29,17 +29,10 @@ export async function GET(req: Request) {
   // Supports multi-word first or last names (e.g., "Andre van Heerden" or "Mary Anne Smith")
   const { searchParams } = new URL(req.url);
 
-  const explicitFirst = (searchParams.get("firstName") || "").trim();
-  const explicitLast = (searchParams.get("lastName") || "").trim();
   const rawName = (searchParams.get("name") || "").trim();
 
   type NamePair = { first: string; last: string };
   const candidates: NamePair[] = [];
-
-  // If explicit params are provided, use them as the first candidate
-  if (explicitFirst && explicitLast) {
-    candidates.push({ first: explicitFirst, last: explicitLast });
-  }
 
   // If a single `name` string is provided, generate split candidates.
   if (rawName) {

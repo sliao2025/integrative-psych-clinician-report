@@ -35,7 +35,7 @@ const labelFor = (
 
 export function DemographicsDetail({ data }: { data: ProfileJson }) {
   return (
-    <div className="grid grid-cols-2 gap-4 text-[13px]">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[13px]">
       <div className="rounded-xl border border-slate-200 p-3">
         <KV
           label="Name"
