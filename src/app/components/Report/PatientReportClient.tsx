@@ -27,6 +27,7 @@ import {
   GlanceCard,
   PrevTreatmentCard,
   HospitalizationsCard,
+  MedicalHistoryCard,
 } from "./Cards";
 import {
   SafetyDetail,
@@ -39,6 +40,7 @@ import {
   PrevTreatmentDetail,
   StoryDetail,
   DemographicsDetail,
+  MedicalHistoryDetail,
 } from "./DetailPanels";
 import type { ModalState, Patient, ProfileJson } from "../types";
 import { intPsychTheme, theme } from "../theme";
@@ -261,10 +263,8 @@ export default function PatientReportClient({ id }: { id: string }) {
         </div>
       </header>
 
-      <div className="w-dvw -z-1 h-0" />
-
       <div
-        className="mx-auto max-w-[1500px] px-3 sm:px-4 pt-4 sm:pt-6 pb-16"
+        className="mx-auto max-w-[1500px] px-3 sm:px-4 pt-4 sm:pt-6 pb-16 bg-white"
         aria-hidden={modal ? true : false}
         inert={modal ? "" : (undefined as any)}
       >
@@ -312,6 +312,18 @@ export default function PatientReportClient({ id }: { id: string }) {
             />
           </div>
           <div className="mb-4 break-inside-avoid">
+            <StoryCard
+              data={data}
+              onOpen={() =>
+                open(
+                  "Story / History",
+                  <StoryDetail data={data} />,
+                  "max-w-6xl"
+                )
+              }
+            />
+          </div>
+          <div className="mb-4 break-inside-avoid">
             <PrevTreatmentCard
               data={data}
               onOpen={() =>
@@ -325,25 +337,27 @@ export default function PatientReportClient({ id }: { id: string }) {
               onOpen={() => open("Risk & Safety", <SafetyDetail data={data} />)}
             />
           </div>
-          <div className="mb-4 break-inside-avoid">
-            <StoryCard
-              data={data}
-              onOpen={() =>
-                open(
-                  "Story / History",
-                  <StoryDetail data={data} />,
-                  "max-w-6xl"
-                )
-              }
-            />
-          </div>
+
           <div className="mb-4 break-inside-avoid">
             <GlanceCard
               data={data}
               onOpen={() => open("At a Glance", <GlanceDetail data={data} />)}
             />
           </div>
-
+          {data.isChild && (
+            <div className="mb-4 break-inside-avoid">
+              <MedicalHistoryCard
+                data={data}
+                onOpen={() =>
+                  open(
+                    "Medical History",
+                    <MedicalHistoryDetail data={data} />,
+                    "max-w-6xl"
+                  )
+                }
+              />
+            </div>
+          )}
           <div className="mb-4 break-inside-avoid">
             <RelationshipsCard
               data={data}

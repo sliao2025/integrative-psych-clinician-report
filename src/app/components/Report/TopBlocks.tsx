@@ -98,7 +98,7 @@ export function DemographicsHeader({
                 style={{ color: intPsychTheme.primary }}
               />
               <KV
-                label="Phone"
+                label={data.isChild ? "Parent/Guardian Phone" : "Phone"}
                 value={data.contactNumber}
                 truncate={false}
                 alignRight={false}
@@ -111,7 +111,7 @@ export function DemographicsHeader({
                 style={{ color: intPsychTheme.primary }}
               />
               <KV
-                label="Email"
+                label={data.isChild ? "Parent/Guardian Email" : "Email"}
                 value={data.email}
                 truncate={false}
                 alignRight={false}
