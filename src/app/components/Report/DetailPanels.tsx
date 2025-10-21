@@ -250,8 +250,12 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
                 <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
                   Plan
                 </span>
-                <Pill tone={adultSuicide?.plan?.trim() ? "danger" : "success"}>
-                  {adultSuicide?.plan?.trim() || "None"}
+                <Pill
+                  tone={
+                    adultSuicide?.plan?.trim() === "no" ? "success" : "danger"
+                  }
+                >
+                  {adultSuicide?.plan?.trim() === "no" ? "No Plan" : "Has Plan"}
                 </Pill>
               </div>
             </div>
@@ -261,9 +265,15 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
                   Intention
                 </span>
                 <Pill
-                  tone={adultSuicide?.intention?.trim() ? "danger" : "success"}
+                  tone={
+                    adultSuicide?.intention?.trim() === "no"
+                      ? "success"
+                      : "danger"
+                  }
                 >
-                  {adultSuicide?.intention?.trim() || "None"}
+                  {adultSuicide?.intention?.trim() === "no"
+                    ? "No Intent"
+                    : "Has Intent"}
                 </Pill>
               </div>
             </div>
