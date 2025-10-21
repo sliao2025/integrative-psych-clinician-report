@@ -184,7 +184,7 @@ export default function PatientReportClient({ id }: { id: string }) {
           </div>
 
           {/* Right: Profile menu (can overflow) */}
-          <div className="z-10">
+          <div className="z-10 flex items-center">
             <Menu as="div" className="relative inline-block text-left">
               <div>
                 <MenuButton
