@@ -1038,6 +1038,26 @@ export function GlanceCard({
 
   const MAX_PILLS_TO_SHOW = 2;
 
+  // For adults, get two-week screener data (same as children)
+  const adultMoodChangesList = !data.isChild
+    ? mapValsToLabels(
+        data.moodChanges as string[] | undefined,
+        moodChangeOptions
+      )
+    : [];
+  const adultThoughtChangesList = !data.isChild
+    ? mapValsToLabels(
+        data.thoughtChanges as string[] | undefined,
+        thoughtChangeOptions
+      )
+    : [];
+  const adultBehaviorChangesList = !data.isChild
+    ? mapValsToLabels(
+        data.behaviorChanges as string[] | undefined,
+        behaviorChangeOptions
+      )
+    : [];
+
   return (
     <Card
       title={
@@ -1050,53 +1070,103 @@ export function GlanceCard({
       className={className}
     >
       {!data.isChild && (
-        <div className="grid grid-cols-2 gap-3 text-[13px]">
-          <KV
-            label="Diet"
-            value={data.dietType?.map((d: any) => d.label).join(", ") || "—"}
-          />
-          <KV
-            label="Occupation"
-            value={<span title={data.jobDetails}>{data.jobDetails}</span>}
-          />
-          <KV label="Alcohol" value={alcoholValue} truncate={false} />
-          {!data.isSexuallyActive ? (
+        <>
+          <div className="grid grid-cols-2 gap-3 text-[13px]">
             <KV
-              label="Sexually active"
-              value={data.isSexuallyActive ? "Yes" : "No"}
+              label="Diet"
+              value={data.dietType?.map((d: any) => d.label).join(", ") || "—"}
             />
-          ) : (
             <KV
-              label="Substances"
-              value={
-                Array.isArray((data as any).substancesUsed)
-                  ? (data as any).substancesUsed
-                      .map((x: any) => x.label)
-                      .join(", ")
-                  : "—"
-              }
+              label="Occupation"
+              value={<span title={data.jobDetails}>{data.jobDetails}</span>}
             />
-          )}
+          </div>
 
-          <KV label="Sexual Partners" value={data.sexualPartners || "—"} />
+          {/* Two-Week Screener for Adults */}
+          <div className="mt-4 pt-4 border-t border-slate-200">
+            <h4 className="text-[12px] font-medium text-slate-900 mb-1">
+              2-Week Screen
+            </h4>
+            <div className="space-y-3">
+              {/* Mood Changes */}
+              <div>
+                <div className="text-[11px] font-medium text-slate-600 mb-1.5">
+                  Mood
+                </div>
+                {adultMoodChangesList.length ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {adultMoodChangesList
+                      .slice(0, MAX_PILLS_TO_SHOW)
+                      .map((label, i) => (
+                        <Pill key={i} tone="info">
+                          {label}
+                        </Pill>
+                      ))}
+                    {adultMoodChangesList.length > MAX_PILLS_TO_SHOW && (
+                      <Pill tone="warn">
+                        +{adultMoodChangesList.length - MAX_PILLS_TO_SHOW} more
+                      </Pill>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-[12px] text-slate-400">None</p>
+                )}
+              </div>
 
-          <KV label="Education" value={educationLabel} />
-          <KV
-            label="Hobbies"
-            value={<span title={data.hobbies}>{data.hobbies}</span>}
-          />
-          <KV
-            label="Positive childhood"
-            value={data.likedChildhood ? "Yes" : "No"}
-          />
+              {/* Thought Changes */}
+              <div>
+                <div className="text-[11px] font-medium text-slate-600 mb-1.5">
+                  Thoughts
+                </div>
+                {adultThoughtChangesList.length ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {adultThoughtChangesList
+                      .slice(0, MAX_PILLS_TO_SHOW)
+                      .map((label, i) => (
+                        <Pill key={i} tone="info">
+                          {label}
+                        </Pill>
+                      ))}
+                    {adultThoughtChangesList.length > MAX_PILLS_TO_SHOW && (
+                      <Pill tone="warn">
+                        +{adultThoughtChangesList.length - MAX_PILLS_TO_SHOW}{" "}
+                        more
+                      </Pill>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-[12px] text-slate-400">None</p>
+                )}
+              </div>
 
-          <KV
-            label="Sexual Orientation"
-            value={
-              data.sexualOrientation?.map((s: any) => s.label).join(", ") || "—"
-            }
-          />
-        </div>
+              {/* Behavior Changes */}
+              <div>
+                <div className="text-[11px] font-medium text-slate-600 mb-1.5">
+                  Behavior
+                </div>
+                {adultBehaviorChangesList.length ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {adultBehaviorChangesList
+                      .slice(0, MAX_PILLS_TO_SHOW)
+                      .map((label, i) => (
+                        <Pill key={i} tone="info">
+                          {label}
+                        </Pill>
+                      ))}
+                    {adultBehaviorChangesList.length > MAX_PILLS_TO_SHOW && (
+                      <Pill tone="warn">
+                        +{adultBehaviorChangesList.length - MAX_PILLS_TO_SHOW}{" "}
+                        more
+                      </Pill>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-[12px] text-slate-400">None</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Two-Week Screener for Children */}
