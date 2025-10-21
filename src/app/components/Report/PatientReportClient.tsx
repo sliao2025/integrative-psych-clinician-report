@@ -251,7 +251,7 @@ export default function PatientReportClient({ id }: { id: string }) {
       </header>
 
       <div
-        className="mx-auto max-w-[1500px] px-3 sm:px-4 pt-4 sm:pt-6 pb-16"
+        className="mx-auto max-w-[1400px] px-3 sm:px-4 pt-4 sm:pt-6 pb-16"
         aria-hidden={modal ? true : false}
         inert={modal ? "" : (undefined as any)}
       >
@@ -267,7 +267,7 @@ export default function PatientReportClient({ id }: { id: string }) {
           }
         />
 
-        <div className="mt-5 columns-1 md:columns-2 xl:columns-3 gap-4 md:gap-5 [column-fill:_balance]">
+        <div className="mt-5 columns-1 md:columns-2 gap-4  [column-fill:_balance]">
           <div className="mb-4 break-inside-avoid">
             <GoalsCard
               data={data}

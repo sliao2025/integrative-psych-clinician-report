@@ -74,7 +74,7 @@ export function Card({
   return (
     <div
       className={cx(
-        "group overflow-hidden relative inline-block w-full break-inside-avoid rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm p-3 sm:p-4 text-left shadow-sm transition align-top",
+        "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm p-3 sm:p-4 text-left shadow-sm transition",
         "transform will-change-transform duration-150 ease-out hover:scale-[1.005] sm:hover:scale-[1.01]",
         className
       )}

@@ -81,6 +81,21 @@ export function StoryCard({
   onOpen: () => void;
   className?: string;
 }) {
+  // Safely extract data with fallbacks
+  const storyText = data?.storyNarrative?.text || "";
+  const livingText = data?.livingSituation?.text || "";
+  const cultureText = data?.cultureContext?.text || "";
+  const isChild = data?.isChild || false;
+
+  // Child-specific data
+  const academicGrades = data?.schoolInfo?.academicGrades || "";
+  const activities =
+    data?.relationshipsAbilities?.activitiesInterestsStrengths || "";
+
+  // Adult-specific data
+  const upbringingEnv = data?.upbringingEnvironments?.text || "";
+  const upbringingWho = data?.upbringingWhoWith?.text || "";
+
   return (
     <Card
       className={className}
@@ -101,9 +116,9 @@ export function StoryCard({
             </div>
             <p
               className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-3"
-              title={data.storyNarrative?.text}
+              title={storyText}
             >
-              {data.storyNarrative?.text || "—"}
+              {storyText || "—"}
             </p>
           </div>
 
@@ -113,33 +128,29 @@ export function StoryCard({
             </div>
             <p
               className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-2"
-              title={data.livingSituation?.text}
+              title={livingText}
             >
-              {data.livingSituation?.text || "—"}
+              {livingText || "—"}
             </p>
           </div>
 
           <div>
             <div className="text-[12px] font-medium text-slate-600">
-              {data.isChild ? "Academic Grades" : "Upbringing Environments"}
+              {isChild ? "Academic Grades" : "Upbringing Environments"}
             </div>
             <p className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-2">
-              {data.isChild
-                ? data.schoolInfo.academicGrades
-                : data.upbringingEnvironments?.text || "—"}
+              {isChild ? academicGrades || "—" : upbringingEnv || "—"}
             </p>
           </div>
 
           <div>
             <div className="text-[12px] font-medium text-slate-600">
-              {data.isChild
+              {isChild
                 ? "Activities/Interests/Strengths"
                 : "Upbringing — Who With"}
             </div>
             <p className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-2">
-              {data.isChild
-                ? data.relationshipsAbilities?.activitiesInterestsStrengths
-                : data.upbringingWhoWith?.text || "—"}
+              {isChild ? activities || "—" : upbringingWho || "—"}
             </p>
           </div>
 
@@ -149,9 +160,9 @@ export function StoryCard({
             </div>
             <p
               className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-2"
-              title={data.cultureContext?.text}
+              title={cultureText}
             >
-              {data.cultureContext?.text || "—"}
+              {cultureText || "—"}
             </p>
           </div>
         </div>
@@ -240,18 +251,30 @@ export function AssessmentsCard({
     const { x, y, payload } = props || {};
     const xx = typeof x === "number" ? x : 0;
     const yy = typeof y === "number" ? y : 0;
-    const W = 30;
+    const W = 28;
     const H = 16;
     return (
-      <g transform={`translate(${xx - W / 2}, ${yy - H / 2})`}>
-        <foreignObject width={W} height={H}>
-          <div
-            className="rounded-full bg-white border border-slate-200 py-0.5 text-[10px] leading-none text-slate-600 flex items-center justify-center"
-            style={{ transform: "translateZ(0)" }}
-          >
-            {payload?.value}
-          </div>
-        </foreignObject>
+      <g transform={`translate(${xx}, ${yy})`}>
+        <rect
+          x={-W / 2}
+          y={-H / 2}
+          width={W}
+          height={H}
+          rx="8"
+          fill="white"
+          stroke="#e2e8f0"
+          strokeWidth="1"
+        />
+        <text
+          x="0"
+          y="0"
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontSize="10"
+          fill="#64748b"
+        >
+          {payload?.value}
+        </text>
       </g>
     );
   };
