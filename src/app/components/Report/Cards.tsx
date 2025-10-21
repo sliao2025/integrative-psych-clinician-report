@@ -169,12 +169,40 @@ export function SafetyCard({
   onOpen: () => void;
   className?: string;
 }) {
-  const s = data.assessments?.suicide;
-  const acute =
-    (s?.thoughts && s.thoughts !== "no") ||
-    (s?.wishDead && s.wishDead !== "no") ||
-    s?.plan?.trim() ||
-    s?.intention?.trim();
+  const assessments = data.assessments;
+  const isNewSchema =
+    assessments?.kind === "adult" || assessments?.kind === "child";
+  const isChild = data.isChild || assessments?.kind === "child";
+
+  let acute = false;
+
+  if (isChild) {
+    // Child CSSRS logic
+    const cssrs = isNewSchema
+      ? (assessments as any)?.data?.cssrs
+      : assessments?.cssrs;
+
+    acute =
+      (cssrs?.wishDead && cssrs.wishDead === "yes") ||
+      (cssrs?.thoughts && cssrs.thoughts === "yes") ||
+      (cssrs?.methodHow && cssrs.methodHow === "yes") ||
+      (cssrs?.intention && cssrs.intention === "yes") ||
+      (cssrs?.plan && cssrs.plan === "yes") ||
+      (cssrs?.behavior && cssrs.behavior === "yes") ||
+      (cssrs?.behavior3mo && cssrs.behavior3mo === "yes");
+  } else {
+    // Adult suicide logic (legacy or new schema)
+    const s = isNewSchema
+      ? (assessments as any)?.data?.suicide
+      : assessments?.suicide;
+
+    acute =
+      (s?.thoughts && s.thoughts !== "no") ||
+      (s?.wishDead && s.wishDead !== "no") ||
+      s?.plan?.trim() ||
+      s?.intention?.trim();
+  }
+
   return (
     <Card
       title={
@@ -909,7 +937,7 @@ export function RelationshipsCard({
             className={cx(
               "rounded-full border px-3 py-1 text-[12px]",
               r.strength === "really_good" &&
-                "border-emerald-200 bg-emerald-50 text-emerald-700",
+                "border-emerald-200 bg-emerald-100/50 text-emerald-700",
               r.strength === "pretty_good" &&
                 "border-green-200 bg-green-50 text-green-700",
               r.strength === "not_great" &&
@@ -1305,7 +1333,7 @@ export function MedicalHistoryCard({
           )}
           {data.childMedicalHistory?.selfHarmEver && (
             <div className="flex items-start justify-between py-1">
-              <span className="text-slate-600">Self-Harm</span>
+              <span className="text-slate-600">Self-Harm History</span>
               <Pill
                 tone={
                   data.childMedicalHistory?.selfHarmStill ? "danger" : "warn"
@@ -1317,7 +1345,7 @@ export function MedicalHistoryCard({
           )}
           {hasPrenatalHistory && (
             <div className="flex items-start justify-between py-1">
-              <span className="text-slate-600">Birth History</span>
+              <span className="text-slate-600">Pregnancy Type</span>
               <span className="text-slate-900">
                 {data.childPrenatalHistory?.fullTerm ? "Full term" : "Preterm"}
               </span>

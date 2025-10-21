@@ -65,15 +65,6 @@ export default function PatientReportClient({ id }: { id: string }) {
   // Lock background scroll when a CenterModal is open (desktop + iOS-safe)
   useEffect(() => {
     if (!modal) {
-      const top = (document.body.style.top || "0").replace("px", "");
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
-      document.body.style.overflow = "";
-      if (top) {
-        const y = -parseInt(top, 10) || 0;
-        window.scrollTo(0, y);
-      }
       return;
     }
 
@@ -84,15 +75,11 @@ export default function PatientReportClient({ id }: { id: string }) {
     document.body.style.overflow = "hidden";
 
     return () => {
-      const top = (document.body.style.top || "0").replace("px", "");
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.width = "";
       document.body.style.overflow = "";
-      if (top) {
-        const y = -parseInt(top, 10) || 0;
-        window.scrollTo(0, y);
-      }
+      window.scrollTo(0, scrollY);
     };
   }, [modal]);
 
@@ -264,7 +251,7 @@ export default function PatientReportClient({ id }: { id: string }) {
       </header>
 
       <div
-        className="mx-auto max-w-[1500px] px-3 sm:px-4 pt-4 sm:pt-6 pb-16 bg-white"
+        className="mx-auto max-w-[1500px] px-3 sm:px-4 pt-4 sm:pt-6 pb-16"
         aria-hidden={modal ? true : false}
         inert={modal ? "" : (undefined as any)}
       >
@@ -323,14 +310,22 @@ export default function PatientReportClient({ id }: { id: string }) {
               }
             />
           </div>
-          <div className="mb-4 break-inside-avoid">
-            <PrevTreatmentCard
-              data={data}
-              onOpen={() =>
-                open("Previous Treatment", <PrevTreatmentDetail data={data} />)
-              }
-            />
-          </div>
+          {!data.isChild && (
+            <>
+              <div className="mb-4 break-inside-avoid">
+                <PrevTreatmentCard
+                  data={data}
+                  onOpen={() =>
+                    open(
+                      "Previous Treatment",
+                      <PrevTreatmentDetail data={data} />
+                    )
+                  }
+                />
+              </div>
+            </>
+          )}
+
           <div className="mb-4 break-inside-avoid">
             <SafetyCard
               data={data}

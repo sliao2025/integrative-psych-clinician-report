@@ -184,41 +184,283 @@ export function DemographicsDetail({ data }: { data: ProfileJson }) {
 }
 
 export function SafetyDetail({ data }: { data: ProfileJson }) {
-  const s = data.assessments?.suicide;
-  const selfHarm = data.assessments?.selfHarm;
+  const assessments = data.assessments;
+  const isNewSchema =
+    assessments?.kind === "adult" || assessments?.kind === "child";
+  const isChild = data.isChild || assessments?.kind === "child";
+
+  // Adult suicide data
+  const adultSuicide = !isChild
+    ? isNewSchema
+      ? (assessments as any)?.data?.suicide
+      : assessments?.suicide
+    : null;
+
+  const selfHarm = !isChild
+    ? isNewSchema
+      ? (assessments as any)?.data?.selfHarm
+      : assessments?.selfHarm
+    : null;
+
+  // Child CSSRS data
+  const cssrs = isChild
+    ? isNewSchema
+      ? (assessments as any)?.data?.cssrs
+      : assessments?.cssrs
+    : null;
+
+  const showMethodHow = cssrs?.thoughts === "yes";
+  const showIntention = cssrs?.thoughts === "yes";
+  const showPlan = cssrs?.thoughts === "yes";
+  const showBehavior3mo = cssrs?.behavior === "yes";
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4 text-[13px]">
-        <div className="rounded-xl border border-slate-200 p-3">
-          <KV
-            label="Suicidal thoughts"
-            value={s?.thoughts === "no" ? "Denied" : "Reported"}
-          />
-        </div>
-        <div className="rounded-xl border border-slate-200 p-3">
-          <KV
-            label="Wish to be dead"
-            value={s?.wishDead === "no" ? "Denied" : "Reported"}
-          />
-        </div>
-        <div className="rounded-xl border border-slate-200 p-3">
-          <KV label="Plan" value={s?.plan?.trim() || "None"} />
-        </div>
-        <div className="rounded-xl border border-slate-200 p-3">
-          <KV label="Intention" value={s?.intention?.trim() || "None"} />
-        </div>
-        <div className="rounded-xl border border-slate-200 p-3">
-          <KV
-            label="Recent self-harm"
-            value={selfHarm?.pastMonth === "no" ? "No" : "Yes"}
-          />
-        </div>
-        <div className="rounded-xl border border-slate-200 p-3">
-          <KV
-            label="Lifetime self-harm"
-            value={selfHarm?.lifetime === "no" ? "No" : "Yes"}
-          />
-        </div>
+        {!isChild ? (
+          <>
+            {/* Adult Suicide Assessment */}
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="flex items-baseline justify-between gap-10 py-1.5">
+                <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                  Suicidal thoughts
+                </span>
+                <Pill
+                  tone={adultSuicide?.thoughts === "no" ? "success" : "danger"}
+                >
+                  {adultSuicide?.thoughts === "no" ? "Denied" : "Reported"}
+                </Pill>
+              </div>
+            </div>
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="flex items-baseline justify-between gap-10 py-1.5">
+                <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                  Wish to be dead
+                </span>
+                <Pill
+                  tone={adultSuicide?.wishDead === "no" ? "success" : "danger"}
+                >
+                  {adultSuicide?.wishDead === "no" ? "Denied" : "Reported"}
+                </Pill>
+              </div>
+            </div>
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="flex items-baseline justify-between gap-10 py-1.5">
+                <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                  Plan
+                </span>
+                <Pill tone={adultSuicide?.plan?.trim() ? "danger" : "success"}>
+                  {adultSuicide?.plan?.trim() || "None"}
+                </Pill>
+              </div>
+            </div>
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="flex items-baseline justify-between gap-10 py-1.5">
+                <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                  Intention
+                </span>
+                <Pill
+                  tone={adultSuicide?.intention?.trim() ? "danger" : "success"}
+                >
+                  {adultSuicide?.intention?.trim() || "None"}
+                </Pill>
+              </div>
+            </div>
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="flex items-baseline justify-between gap-10 py-1.5">
+                <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                  Recent self-harm
+                </span>
+                <Pill
+                  tone={selfHarm?.pastMonth === "no" ? "success" : "danger"}
+                >
+                  {selfHarm?.pastMonth === "no" ? "No" : "Yes"}
+                </Pill>
+              </div>
+            </div>
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="flex items-baseline justify-between gap-10 py-1.5">
+                <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                  Lifetime self-harm
+                </span>
+                <Pill tone={selfHarm?.lifetime === "no" ? "success" : "danger"}>
+                  {selfHarm?.lifetime === "no" ? "No" : "Yes"}
+                </Pill>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Child CSSRS Assessment */}
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="flex items-baseline justify-between gap-10 py-1.5">
+                <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                  Wished dead or not wake up
+                </span>
+                <Pill
+                  tone={
+                    cssrs?.wishDead === "yes"
+                      ? "danger"
+                      : cssrs?.wishDead === "no"
+                      ? "success"
+                      : "info"
+                  }
+                >
+                  {cssrs?.wishDead === "yes"
+                    ? "Yes"
+                    : cssrs?.wishDead === "no"
+                    ? "No"
+                    : "—"}
+                </Pill>
+              </div>
+            </div>
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="flex items-baseline justify-between gap-10 py-1.5">
+                <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                  Thoughts of killing self (past month)
+                </span>
+                <Pill
+                  tone={
+                    cssrs?.thoughts === "yes"
+                      ? "danger"
+                      : cssrs?.thoughts === "no"
+                      ? "success"
+                      : "info"
+                  }
+                >
+                  {cssrs?.thoughts === "yes"
+                    ? "Yes"
+                    : cssrs?.thoughts === "no"
+                    ? "No"
+                    : "—"}
+                </Pill>
+              </div>
+            </div>
+
+            {showMethodHow && (
+              <div className="rounded-xl border border-slate-200 p-3">
+                <div className="flex items-baseline justify-between gap-10 py-1.5">
+                  <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                    Thinking about method
+                  </span>
+                  <Pill
+                    tone={
+                      cssrs?.methodHow === "yes"
+                        ? "danger"
+                        : cssrs?.methodHow === "no"
+                        ? "success"
+                        : "info"
+                    }
+                  >
+                    {cssrs?.methodHow === "yes"
+                      ? "Yes"
+                      : cssrs?.methodHow === "no"
+                      ? "No"
+                      : "—"}
+                  </Pill>
+                </div>
+              </div>
+            )}
+
+            {showIntention && (
+              <div className="rounded-xl border border-slate-200 p-3">
+                <div className="flex items-baseline justify-between gap-10 py-1.5">
+                  <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                    Intention to act
+                  </span>
+                  <Pill
+                    tone={
+                      cssrs?.intention === "yes"
+                        ? "danger"
+                        : cssrs?.intention === "no"
+                        ? "success"
+                        : "info"
+                    }
+                  >
+                    {cssrs?.intention === "yes"
+                      ? "Yes"
+                      : cssrs?.intention === "no"
+                      ? "No"
+                      : "—"}
+                  </Pill>
+                </div>
+              </div>
+            )}
+
+            {showPlan && (
+              <div className="rounded-xl border border-slate-200 p-3">
+                <div className="flex items-baseline justify-between gap-10 py-1.5">
+                  <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                    Worked out plan details
+                  </span>
+                  <Pill
+                    tone={
+                      cssrs?.plan === "yes"
+                        ? "danger"
+                        : cssrs?.plan === "no"
+                        ? "success"
+                        : "info"
+                    }
+                  >
+                    {cssrs?.plan === "yes"
+                      ? "Yes"
+                      : cssrs?.plan === "no"
+                      ? "No"
+                      : "—"}
+                  </Pill>
+                </div>
+              </div>
+            )}
+
+            <div className="rounded-xl border border-slate-200 p-3">
+              <div className="flex items-baseline justify-between gap-10 py-1.5">
+                <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                  Ever done/prepared anything to end life
+                </span>
+                <Pill
+                  tone={
+                    cssrs?.behavior === "yes"
+                      ? "danger"
+                      : cssrs?.behavior === "no"
+                      ? "success"
+                      : "info"
+                  }
+                >
+                  {cssrs?.behavior === "yes"
+                    ? "Yes"
+                    : cssrs?.behavior === "no"
+                    ? "No"
+                    : "—"}
+                </Pill>
+              </div>
+            </div>
+
+            {showBehavior3mo && (
+              <div className="rounded-xl border border-slate-200 p-3">
+                <div className="flex items-baseline justify-between gap-10 py-1.5">
+                  <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+                    Within past 3 months
+                  </span>
+                  <Pill
+                    tone={
+                      cssrs?.behavior3mo === "yes"
+                        ? "danger"
+                        : cssrs?.behavior3mo === "no"
+                        ? "success"
+                        : "info"
+                    }
+                  >
+                    {cssrs?.behavior3mo === "yes"
+                      ? "Yes"
+                      : cssrs?.behavior3mo === "no"
+                      ? "No"
+                      : "—"}
+                  </Pill>
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
@@ -378,7 +620,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
               </div>
               <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                  <span className="text-[12px] text-slate-700">
+                  <span className="text-[12px] text-slate-600">
                     Repeated a grade
                   </span>
                   <Pill
@@ -390,7 +632,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
                   </Pill>
                 </div>
                 <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                  <span className="text-[12px] text-slate-700">
+                  <span className="text-[12px] text-slate-600">
                     Special classes
                   </span>
                   <Pill
@@ -400,7 +642,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
                   </Pill>
                 </div>
                 <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                  <span className="text-[12px] text-slate-700">
+                  <span className="text-[12px] text-slate-600">
                     Special services
                   </span>
                   <Pill
@@ -416,7 +658,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   {data.schoolInfo?.repeatedGradeDetail ? (
                     <div className="rounded-xl border border-slate-200 p-2">
-                      <h5 className="mb-1 text-[12px] font-semibold text-slate-900">
+                      <h5 className="mb-1 text-[12px] font-medium text-slate-600">
                         Repeated grade · Reason
                       </h5>
                       <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
@@ -426,7 +668,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
                   ) : null}
                   {data.schoolInfo?.specialClassesDetail ? (
                     <div className="rounded-xl border border-slate-200 p-2">
-                      <h5 className="mb-1 text-[12px] font-semibold text-slate-900">
+                      <h5 className="mb-1 text-[12px] font-medium text-slate-600">
                         Special classes · Info
                       </h5>
                       <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
@@ -436,7 +678,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
                   ) : null}
                   {data.schoolInfo?.specialServicesDetail ? (
                     <div className="rounded-xl border border-slate-200 p-2 sm:col-span-2">
-                      <h5 className="mb-1 text-[12px] font-semibold text-slate-900">
+                      <h5 className="mb-1 text-[12px] font-medium text-slate-600">
                         Special services · Info
                       </h5>
                       <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
@@ -455,7 +697,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
               </h4>
               <div className="space-y-3">
                 <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                  <span className="text-[12px] text-slate-700">
+                  <span className="text-[12px] text-slate-600">
                     Works independently
                   </span>
                   <Pill
@@ -469,7 +711,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
                   </Pill>
                 </div>
                 <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                  <span className="text-[12px] text-slate-700">
+                  <span className="text-[12px] text-slate-600">
                     Organizes self
                   </span>
                   <Pill
@@ -483,7 +725,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
                   </Pill>
                 </div>
                 <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                  <span className="text-[12px] text-slate-700">Attendance</span>
+                  <span className="text-[12px] text-slate-600">Attendance</span>
                   <Pill
                     tone={triTone(data.relationshipsAbilities?.childAttendance)}
                   >
@@ -493,7 +735,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                   <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                    <span className="text-[12px] text-slate-700">
+                    <span className="text-[12px] text-slate-600">
                       Truancy proceedings
                     </span>
                     <Pill
@@ -507,7 +749,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
                     </Pill>
                   </div>
                   <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                    <span className="text-[12px] text-slate-700">
+                    <span className="text-[12px] text-slate-600">
                       School counseling
                     </span>
                     <Pill
@@ -524,7 +766,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
                   </div>
                 </div>
                 <div className="rounded-xl border border-slate-200 p-2">
-                  <h5 className="mb-1 text-[12px] font-semibold text-slate-900">
+                  <h5 className="mb-1 text-[12px] font-medium text-slate-600">
                     Teacher/Peer Relationships
                   </h5>
                   <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
@@ -534,7 +776,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
                 </div>
                 {data.relationshipsAbilities?.truancyProceedingsDetail ? (
                   <div className="rounded-xl border border-slate-200 p-2">
-                    <h5 className="mb-1 text-[12px] font-semibold text-slate-900">
+                    <h5 className="mb-1 text-[12px] font-medium text-slate-600">
                       Truancy proceedings · detail
                     </h5>
                     <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
@@ -544,7 +786,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
                 ) : null}
                 {data.relationshipsAbilities?.schoolCounselingDetail ? (
                   <div className="rounded-xl border border-slate-200 p-2">
-                    <h5 className="mb-1 text-[12px] font-semibold text-slate-900">
+                    <h5 className="mb-1 text-[12px] font-medium text-slate-600">
                       School counseling · detail
                     </h5>
                     <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
@@ -772,7 +1014,7 @@ export function RelationshipsDetail({ data }: { data: ProfileJson }) {
   const strengthStyles = (s: Strength) => {
     switch (s) {
       case "really_good":
-        return "border-emerald-200 bg-emerald-50";
+        return "border-emerald-200 bg-emerald-100/50";
       case "pretty_good":
         return "border-green-200 bg-green-50";
       case "not_great":
