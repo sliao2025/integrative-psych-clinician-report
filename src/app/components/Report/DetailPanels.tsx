@@ -26,6 +26,7 @@ import {
   SNAP_QUESTIONS,
 } from "../text";
 import { profile } from "console";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const scoreSum = (obj: Record<string, any> = {}) =>
   Object.values(obj).reduce(
@@ -1473,16 +1474,71 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
     options: readonly Opt[];
     headerNote?: string;
   }) {
+    const scrollRef = React.useRef<HTMLDivElement>(null);
+    const [showTopArrow, setShowTopArrow] = React.useState(false);
+    const [showBottomArrow, setShowBottomArrow] = React.useState(false);
+
+    const checkScroll = () => {
+      const el = scrollRef.current;
+      if (!el) return;
+
+      const hasScroll = el.scrollHeight > el.clientHeight;
+      if (!hasScroll) {
+        setShowTopArrow(false);
+        setShowBottomArrow(false);
+        return;
+      }
+
+      const atTop = el.scrollTop < 10;
+      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 10;
+
+      setShowTopArrow(!atTop);
+      setShowBottomArrow(!atBottom);
+    };
+
+    React.useEffect(() => {
+      checkScroll();
+      const el = scrollRef.current;
+      if (el) {
+        el.addEventListener("scroll", checkScroll);
+        window.addEventListener("resize", checkScroll);
+        return () => {
+          el.removeEventListener("scroll", checkScroll);
+          window.removeEventListener("resize", checkScroll);
+        };
+      }
+    }, [questions]);
+
     return (
-      <section className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 min-w-0">
-        <div className="mb-3 grid items-center gap-3 md:grid-cols-[200px,1fr] lg:grid-cols-[220px,1fr] min-w-0">
-          <Gauge label={label} score={score} max={max} caption={caption} />
-          <div className="min-w-0 overflow-hidden">
-            {headerNote ? (
-              <h4 className="mb-1 text-[13px] font-semibold text-slate-900">
+      <section className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 min-w-0 flex flex-col max-h-[600px]">
+        {/* Sticky header with gauge */}
+        <div className="flex-shrink-0 mb-3 pb-3 border-b border-slate-200 bg-white">
+          <div className="grid items-center gap-3 md:grid-cols-[200px,1fr] lg:grid-cols-[220px,1fr] min-w-0">
+            <Gauge label={label} score={score} max={max} caption={caption} />
+            {headerNote && (
+              <h4 className="text-[13px] font-semibold text-slate-900">
                 {headerNote}
               </h4>
-            ) : null}
+            )}
+          </div>
+        </div>
+
+        {/* Scrollable questions with arrow indicators */}
+        <div className="relative flex-1 min-h-0">
+          {/* Top scroll indicator */}
+          {showTopArrow && (
+            <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent z-10 flex items-start justify-center pointer-events-none">
+              <div className="animate-bounce bg-white p-[2px] rounded-full shadow-md">
+                <ChevronUp />
+              </div>
+            </div>
+          )}
+
+          <div
+            ref={scrollRef}
+            className="h-full overflow-y-auto scrollbar-hide"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
             <ul className="text-[12px] sm:text-[13px] text-slate-800 divide-y divide-slate-200 break-words">
               {Object.entries(questions).map(([k, q]) => {
                 const ans = (answers as any)?.[k];
@@ -1510,6 +1566,15 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
               })}
             </ul>
           </div>
+
+          {/* Bottom scroll indicator */}
+          {showBottomArrow && (
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent z-10 flex items-end justify-center pointer-events-none">
+              <div className="animate-bounce bg-white p-[2px] rounded-full shadow-md">
+                <ChevronDown />
+              </div>
+            </div>
+          )}
         </div>
       </section>
     );
@@ -1966,140 +2031,50 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
 
         {/* SNAP-IV: Three separate subscale boxes */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Inattention Subscale */}
-          <section className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 min-w-0">
-            <div className="mb-3">
-              <Gauge
-                label="SNAP ADHD: Inattention"
-                score={snapInattention}
-                max={27}
-                caption="<13 not significant · 13-17 mild · 18-22 moderate · 23-27 severe"
-              />
-            </div>
-            <div className="min-w-0 overflow-hidden">
-              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                Items 1-9 (0=Not at all, 3=Very much)
-              </h4>
-              <ul className="text-[12px] sm:text-[13px] text-slate-800 divide-y divide-slate-200 break-words">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => {
-                  const k = `snap${String(i).padStart(2, "0")}`;
-                  const q = SNAP_QUESTIONS[k as keyof typeof SNAP_QUESTIONS];
-                  const ans = snapResponses[k as keyof typeof snapResponses];
-                  const opt = optFor(snap0to3, ans);
-                  return (
-                    <li
-                      key={k}
-                      className="flex items-start justify-between gap-2 sm:gap-3 py-2 first:pt-0 last:pb-0"
-                    >
-                      <div className="flex gap-2 flex-1 min-w-0">
-                        <span className="shrink-0 text-slate-500">{i}.</span>
-                        <span className="flex-1 min-w-0 break-words">{q}</span>
-                      </div>
-                      <div className="shrink-0">
-                        <span
-                          className={`ml-2 rounded-full px-2 py-0.5 text-[11px] sm:text-[12px] ${
-                            opt?.bg ?? "bg-slate-100"
-                          } ${opt?.text ?? "text-slate-700"}`}
-                        >
-                          {opt?.label ?? "—"}
-                        </span>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </section>
+          <Block
+            label="SNAP ADHD: Inattention"
+            score={snapInattention}
+            max={27}
+            caption="<13 not significant · 13-17 mild · 18-22 moderate · 23-27 severe"
+            questions={Object.fromEntries(
+              [1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => {
+                const k = `snap${String(i).padStart(2, "0")}`;
+                return [k, SNAP_QUESTIONS[k as keyof typeof SNAP_QUESTIONS]];
+              })
+            )}
+            answers={snapResponses}
+            options={snap0to3}
+          />
 
-          {/* Hyperactivity Subscale */}
-          <section className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 min-w-0">
-            <div className="mb-3">
-              <Gauge
-                label="SNAP ADHD: Hyperactivity"
-                score={snapHyperactivity}
-                max={27}
-                caption="<13 not significant · 13-17 mild · 18-22 moderate · 23-27 severe"
-              />
-            </div>
-            <div className="min-w-0 overflow-hidden">
-              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                Items 10-18 (0=Not at all, 3=Very much)
-              </h4>
-              <ul className="text-[12px] sm:text-[13px] text-slate-800 divide-y divide-slate-200 break-words">
-                {[10, 11, 12, 13, 14, 15, 16, 17, 18].map((i) => {
-                  const k = `snap${String(i).padStart(2, "0")}`;
-                  const q = SNAP_QUESTIONS[k as keyof typeof SNAP_QUESTIONS];
-                  const ans = snapResponses[k as keyof typeof snapResponses];
-                  const opt = optFor(snap0to3, ans);
-                  return (
-                    <li
-                      key={k}
-                      className="flex items-start justify-between gap-2 sm:gap-3 py-2 first:pt-0 last:pb-0"
-                    >
-                      <div className="flex gap-2 flex-1 min-w-0">
-                        <span className="shrink-0 text-slate-500">{i}.</span>
-                        <span className="flex-1 min-w-0 break-words">{q}</span>
-                      </div>
-                      <div className="shrink-0">
-                        <span
-                          className={`ml-2 rounded-full px-2 py-0.5 text-[11px] sm:text-[12px] ${
-                            opt?.bg ?? "bg-slate-100"
-                          } ${opt?.text ?? "text-slate-700"}`}
-                        >
-                          {opt?.label ?? "—"}
-                        </span>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </section>
+          <Block
+            label="SNAP ADHD: Hyperactivity"
+            score={snapHyperactivity}
+            max={27}
+            caption="<13 not significant · 13-17 mild · 18-22 moderate · 23-27 severe"
+            questions={Object.fromEntries(
+              [10, 11, 12, 13, 14, 15, 16, 17, 18].map((i) => {
+                const k = `snap${String(i).padStart(2, "0")}`;
+                return [k, SNAP_QUESTIONS[k as keyof typeof SNAP_QUESTIONS]];
+              })
+            )}
+            answers={snapResponses}
+            options={snap0to3}
+          />
 
-          {/* Opposition Subscale */}
-          <section className="rounded-xl border border-slate-200 bg-white p-3 sm:p-4 min-w-0">
-            <div className="mb-3">
-              <Gauge
-                label="SNAP ADHD: Opposition"
-                score={snapOpposition}
-                max={24}
-                caption="<8 not significant · 8-13 mild · 14-18 moderate · 19-24 severe"
-              />
-            </div>
-            <div className="min-w-0 overflow-hidden">
-              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                Items 19-26 (0=Not at all, 3=Very much)
-              </h4>
-              <ul className="text-[12px] sm:text-[13px] text-slate-800 divide-y divide-slate-200 break-words">
-                {[19, 20, 21, 22, 23, 24, 25, 26].map((i) => {
-                  const k = `snap${String(i).padStart(2, "0")}`;
-                  const q = SNAP_QUESTIONS[k as keyof typeof SNAP_QUESTIONS];
-                  const ans = snapResponses[k as keyof typeof snapResponses];
-                  const opt = optFor(snap0to3, ans);
-                  return (
-                    <li
-                      key={k}
-                      className="flex items-start justify-between gap-2 sm:gap-3 py-2 first:pt-0 last:pb-0"
-                    >
-                      <div className="flex gap-2 flex-1 min-w-0">
-                        <span className="shrink-0 text-slate-500">{i}.</span>
-                        <span className="flex-1 min-w-0 break-words">{q}</span>
-                      </div>
-                      <div className="shrink-0">
-                        <span
-                          className={`ml-2 rounded-full px-2 py-0.5 text-[11px] sm:text-[12px] ${
-                            opt?.bg ?? "bg-slate-100"
-                          } ${opt?.text ?? "text-slate-700"}`}
-                        >
-                          {opt?.label ?? "—"}
-                        </span>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </section>
+          <Block
+            label="SNAP ADHD: Opposition"
+            score={snapOpposition}
+            max={24}
+            caption="<8 not significant · 8-13 mild · 14-18 moderate · 19-24 severe"
+            questions={Object.fromEntries(
+              [19, 20, 21, 22, 23, 24, 25, 26].map((i) => {
+                const k = `snap${String(i).padStart(2, "0")}`;
+                return [k, SNAP_QUESTIONS[k as keyof typeof SNAP_QUESTIONS]];
+              })
+            )}
+            answers={snapResponses}
+            options={snap0to3}
+          />
         </div>
       </div>
     );
