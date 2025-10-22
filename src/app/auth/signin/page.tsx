@@ -7,11 +7,17 @@ import Garden from "@/app/components/Garden/Garden";
 import logo from "@/assets/IP_Logo.png";
 import { intPsychTheme } from "@/app/components/theme";
 import { Roboto, DM_Serif_Text } from "next/font/google";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"] });
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/search";
+  console.log(callbackUrl);
+  console.log("hi");
   return (
     <main className="relative min-h-dvh grid justify-center overflow-hidden">
       {/* Background visuals */}
@@ -48,7 +54,7 @@ export default function LoginPage() {
             </div>
 
             <button
-              onClick={() => signIn("google", { callbackUrl: "/search" })}
+              onClick={() => signIn("google", { callbackUrl: callbackUrl })}
               className="w-full cursor-pointer inline-flex items-center justify-center gap-3 rounded-full px-5 py-3 font-medium text-white transition-all duration-200"
               style={{
                 background: `linear-gradient(0deg, ${intPsychTheme.primary}, ${intPsychTheme.accent})`,

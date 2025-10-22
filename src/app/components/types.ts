@@ -10,7 +10,7 @@ export type Patient = {
 export type ProfileJson = Record<string, any>; // keep loose to match evolving intake JSON
 
 export type ModalState = {
-  title: string;
+  title: React.ReactNode;
   content: React.ReactNode;
   maxWidth?: string;
 } | null;

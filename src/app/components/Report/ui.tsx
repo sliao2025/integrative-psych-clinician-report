@@ -27,7 +27,7 @@ export function CenterModal({
   children,
   maxWidth = "max-w-4xl",
 }: {
-  title: string;
+  title: React.ReactNode;
   onClose: () => void;
   children: React.ReactNode;
   maxWidth?: string;

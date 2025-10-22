@@ -227,9 +227,9 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
                   Suicidal thoughts
                 </span>
                 <Pill
-                  tone={adultSuicide?.thoughts === "no" ? "success" : "danger"}
+                  tone={adultSuicide?.thoughts !== "yes" ? "success" : "danger"}
                 >
-                  {adultSuicide?.thoughts === "no" ? "Denied" : "Reported"}
+                  {adultSuicide?.thoughts !== "yes" ? "Denied" : "Reported"}
                 </Pill>
               </div>
             </div>
@@ -239,9 +239,9 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
                   Wish to be dead
                 </span>
                 <Pill
-                  tone={adultSuicide?.wishDead === "no" ? "success" : "danger"}
+                  tone={adultSuicide?.wishDead !== "yes" ? "success" : "danger"}
                 >
-                  {adultSuicide?.wishDead === "no" ? "Denied" : "Reported"}
+                  {adultSuicide?.wishDead !== "yes" ? "Denied" : "Reported"}
                 </Pill>
               </div>
             </div>
@@ -252,10 +252,12 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
                 </span>
                 <Pill
                   tone={
-                    adultSuicide?.plan?.trim() === "no" ? "success" : "danger"
+                    adultSuicide?.plan?.trim() !== "yes" ? "success" : "danger"
                   }
                 >
-                  {adultSuicide?.plan?.trim() === "no" ? "No Plan" : "Has Plan"}
+                  {adultSuicide?.plan?.trim() !== "yes"
+                    ? "No Plan"
+                    : "Has Plan"}
                 </Pill>
               </div>
             </div>
@@ -266,12 +268,12 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
                 </span>
                 <Pill
                   tone={
-                    adultSuicide?.intention?.trim() === "no"
+                    adultSuicide?.intention?.trim() !== "yes"
                       ? "success"
                       : "danger"
                   }
                 >
-                  {adultSuicide?.intention?.trim() === "no"
+                  {adultSuicide?.intention?.trim() !== "yes"
                     ? "No Intent"
                     : "Has Intent"}
                 </Pill>
@@ -283,9 +285,9 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
                   Recent self-harm
                 </span>
                 <Pill
-                  tone={selfHarm?.pastMonth === "no" ? "success" : "danger"}
+                  tone={selfHarm?.pastMonth !== "yes" ? "success" : "danger"}
                 >
-                  {selfHarm?.pastMonth === "no" ? "No" : "Yes"}
+                  {selfHarm?.pastMonth !== "yes" ? "No" : "Yes"}
                 </Pill>
               </div>
             </div>
@@ -294,8 +296,10 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
                 <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
                   Lifetime self-harm
                 </span>
-                <Pill tone={selfHarm?.lifetime === "no" ? "success" : "danger"}>
-                  {selfHarm?.lifetime === "no" ? "No" : "Yes"}
+                <Pill
+                  tone={selfHarm?.lifetime !== "yes" ? "success" : "danger"}
+                >
+                  {selfHarm?.lifetime !== "yes" ? "No" : "Yes"}
                 </Pill>
               </div>
             </div>

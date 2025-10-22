@@ -3,7 +3,21 @@
 import React, { useEffect, useState, Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  ClipboardList,
+  Activity,
+  BookOpen,
+  ShieldAlert,
+  Info,
+  Users as UsersIcon,
+  Pill as PillIcon,
+  Syringe,
+  Stethoscope,
+  FileText,
+  HeartPulse,
+  User,
+} from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { DM_Serif_Text } from "next/font/google";
 import {
@@ -58,8 +72,11 @@ export default function PatientReportClient({ id }: { id: string }) {
   const displayName = session?.user?.name ?? "Clinician";
   const clinicianProfilePic = session?.user?.image ?? "";
 
-  const open = (title: string, content: React.ReactNode, maxWidth?: string) =>
-    setModal({ title, content, maxWidth });
+  const open = (
+    title: React.ReactNode,
+    content: React.ReactNode,
+    maxWidth?: string
+  ) => setModal({ title, content, maxWidth });
   const close = () => setModal(null);
 
   // Lock background scroll when a CenterModal is open (desktop + iOS-safe)
@@ -162,10 +179,11 @@ export default function PatientReportClient({ id }: { id: string }) {
           <div className="flex items-center gap-3">
             <Link href="/search" className="group z-10 shrink-0">
               <span
-                className="inline-flex border bg-white border-slate-200 items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm shadow-sm transition-all hover:shadow-md"
-                style={{ color: intPsychTheme.secondary }}
+                className="inline-flex border bg-white border-slate-200 items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm shadow-sm transition-all hover:shadow-md"
+                style={{ color: intPsychTheme.primary }}
               >
                 <ArrowLeft className="h-4 w-4 transition-transform" />
+                Search
               </span>
             </Link>
             <Image
@@ -260,7 +278,10 @@ export default function PatientReportClient({ id }: { id: string }) {
           patientDbData={patient}
           onOpen={() =>
             open(
-              "Demographics",
+              <>
+                <User className="h-4 w-4 inline-block mr-2" />
+                Demographics
+              </>,
               <DemographicsDetail data={data} />,
               "max-w-3xl"
             )
@@ -273,7 +294,10 @@ export default function PatientReportClient({ id }: { id: string }) {
               data={data}
               onOpen={() =>
                 open(
-                  "Presenting Goal(s)",
+                  <>
+                    <ClipboardList className="h-4 w-4 inline-block mr-2" />
+                    Presenting Goal(s)
+                  </>,
                   <div className="space-y-3">
                     <div className="rounded-xl border border-slate-200 p-4">
                       <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
@@ -291,7 +315,10 @@ export default function PatientReportClient({ id }: { id: string }) {
               data={data}
               onOpen={() =>
                 open(
-                  "Assessment Details",
+                  <>
+                    <Activity className="h-4 w-4 inline-block mr-2" />
+                    Assessment Details
+                  </>,
                   <AssessmentsDetail data={data} />,
                   "max-w-7xl"
                 )
@@ -303,7 +330,10 @@ export default function PatientReportClient({ id }: { id: string }) {
               data={data}
               onOpen={() =>
                 open(
-                  "Story / History",
+                  <>
+                    <BookOpen className="h-4 w-4 inline-block mr-2" />
+                    Story / History
+                  </>,
                   <StoryDetail data={data} />,
                   "max-w-6xl"
                 )
@@ -317,7 +347,10 @@ export default function PatientReportClient({ id }: { id: string }) {
                   data={data}
                   onOpen={() =>
                     open(
-                      "Previous Treatment",
+                      <>
+                        <FileText className="h-4 w-4 inline-block mr-2" />
+                        Previous Treatment
+                      </>,
                       <PrevTreatmentDetail data={data} />
                     )
                   }
@@ -329,14 +362,30 @@ export default function PatientReportClient({ id }: { id: string }) {
           <div className="mb-4 break-inside-avoid">
             <SafetyCard
               data={data}
-              onOpen={() => open("Risk & Safety", <SafetyDetail data={data} />)}
+              onOpen={() =>
+                open(
+                  <>
+                    <ShieldAlert className="h-4 w-4 inline-block mr-2" />
+                    Suicide Risk
+                  </>,
+                  <SafetyDetail data={data} />
+                )
+              }
             />
           </div>
 
           <div className="mb-4 break-inside-avoid">
             <GlanceCard
               data={data}
-              onOpen={() => open("At a Glance", <GlanceDetail data={data} />)}
+              onOpen={() =>
+                open(
+                  <>
+                    <Info className="h-4 w-4 inline-block mr-2" />
+                    At a Glance
+                  </>,
+                  <GlanceDetail data={data} />
+                )
+              }
             />
           </div>
           {data.isChild && (
@@ -345,7 +394,10 @@ export default function PatientReportClient({ id }: { id: string }) {
                 data={data}
                 onOpen={() =>
                   open(
-                    "Medical History",
+                    <>
+                      <HeartPulse className="h-4 w-4 inline-block mr-2" />
+                      Medical History
+                    </>,
                     <MedicalHistoryDetail data={data} />,
                     "max-w-6xl"
                   )
@@ -357,7 +409,13 @@ export default function PatientReportClient({ id }: { id: string }) {
             <RelationshipsCard
               data={data}
               onOpen={() =>
-                open("Relationships", <RelationshipsDetail data={data} />)
+                open(
+                  <>
+                    <UsersIcon className="h-4 w-4 inline-block mr-2" />
+                    Relationships
+                  </>,
+                  <RelationshipsDetail data={data} />
+                )
               }
             />
           </div>
@@ -365,13 +423,29 @@ export default function PatientReportClient({ id }: { id: string }) {
           <div className="mb-4 break-inside-avoid">
             <MedsCard
               data={data}
-              onOpen={() => open("Medications", <MedsDetail data={data} />)}
+              onOpen={() =>
+                open(
+                  <>
+                    <PillIcon className="h-4 w-4 inline-block mr-2" />
+                    Medications
+                  </>,
+                  <MedsDetail data={data} />
+                )
+              }
             />
           </div>
           <div className="mb-4 break-inside-avoid">
             <AllergiesCard
               data={data}
-              onOpen={() => open("Allergies", <AllergiesDetail data={data} />)}
+              onOpen={() =>
+                open(
+                  <>
+                    <Syringe className="h-4 w-4 inline-block mr-2" />
+                    Allergies
+                  </>,
+                  <AllergiesDetail data={data} />
+                )
+              }
             />
           </div>
           <div className="mb-4 break-inside-avoid">
@@ -379,7 +453,10 @@ export default function PatientReportClient({ id }: { id: string }) {
               data={data}
               onOpen={() =>
                 open(
-                  "Hospitalizations & Injuries",
+                  <>
+                    <Stethoscope className="h-4 w-4 inline-block mr-2" />
+                    Hospitalizations & Injuries
+                  </>,
                   <HospitalizationsDetail data={data} />
                 )
               }
