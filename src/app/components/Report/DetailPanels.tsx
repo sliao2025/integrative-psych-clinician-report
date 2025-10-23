@@ -1,7 +1,7 @@
 // app/report/components/DetailPanels.tsx
 "use client";
 import React from "react";
-import { KV, Gauge, Pill } from "./ui";
+import { KV, Gauge, Pill, AudioPlayer } from "./ui";
 import { ProfileJson } from "../types";
 import {
   ACE_RESILIENCE_QUESTIONS,
@@ -484,6 +484,7 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
 export function StoryDetail({ data }: { data: ProfileJson }) {
   // Gather fields
   const story = data.storyNarrative?.text?.trim();
+  const storyAudioPath = data.storyNarrative?.audio?.fileName;
   const living = data.livingSituation?.text?.trim();
   const culture = data.cultureContext?.text?.trim();
   const hasCulture = Boolean(culture);
@@ -543,7 +544,17 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
           hasCulture ? "lg:grid-cols-3" : "lg:grid-cols-2"
         }`}
       >
-        <Box title="Story">{story || "—"}</Box>
+        <Box title="Story">
+          <div className="space-y-3">
+            <div>{story || "—"}</div>
+            {storyAudioPath && (
+              <AudioPlayer
+                fileName={storyAudioPath}
+                label="Story Narrative Recording"
+              />
+            )}
+          </div>
+        </Box>
         <Box title="Living Situation">{living || "—"}</Box>
         {hasCulture && <Box title="Cultural / Context">{culture}</Box>}
       </section>
@@ -1153,7 +1164,7 @@ export function GlanceDetail({ data }: { data: ProfileJson }) {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-4 text-[13px]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[13px]">
         {!data.isChild && (
           <>
             <div className="rounded-xl border border-slate-200 p-3">
