@@ -3,6 +3,7 @@ import React from "react";
 import { intPsychTheme, theme } from "../theme";
 import { FaExpand, FaExpandAlt } from "react-icons/fa";
 import { DM_Serif_Text } from "next/font/google";
+import { Pause, Play, MessageSquareText, Languages } from "lucide-react";
 
 const dm_serif = DM_Serif_Text({
   subsets: ["latin"],
@@ -82,7 +83,7 @@ export function Card({
       {title && (
         <div className="mb-2 flex items-baseline justify-between gap-3">
           <div
-            className={`${dm_serif.className} flex items-center gap-2 text-slate-900 text-md sm:text-base md:text-lg tracking-tight leading-snug sm:leading-[1.4]`}
+            className={`${dm_serif.className} flex items-center gap-2 text-slate-900 text-md sm:text-base md:text-lg font-semibold tracking-tight leading-snug sm:leading-[1.4]`}
             style={{ color: intPsychTheme.primary }}
           >
             {title}
@@ -229,10 +230,12 @@ export function Gauge({
 }
 
 export function AudioPlayer({
-  fileName,
+  data,
+  fieldName,
   label,
 }: {
-  fileName?: string | null;
+  data: any;
+  fieldName: string;
   label?: string;
 }) {
   const [isPlaying, setIsPlaying] = React.useState(false);
@@ -241,6 +244,14 @@ export function AudioPlayer({
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const audioRef = React.useRef<HTMLAudioElement>(null);
+  const animationFrameRef = React.useRef<number | null>(null);
+  const isSeekingRef = React.useRef(false);
+
+  // Extract data from the fieldName
+  const audioData = data[fieldName]?.audio;
+  const fileName = audioData?.fileName;
+  const transcription = audioData?.transcription;
+  const translation = audioData?.translation;
 
   // Don't render if no file
   if (!fileName) return null;
@@ -255,6 +266,34 @@ export function AudioPlayer({
     audio.src = url;
     audio.load();
   }, [fileName]);
+
+  // Smooth progress updates using requestAnimationFrame
+  React.useEffect(() => {
+    if (!isPlaying) {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+      return;
+    }
+
+    const updateProgress = () => {
+      const audio = audioRef.current;
+      if (audio && !audio.paused && !audio.ended) {
+        setCurrentTime(audio.currentTime);
+        animationFrameRef.current = requestAnimationFrame(updateProgress);
+      }
+    };
+
+    animationFrameRef.current = requestAnimationFrame(updateProgress);
+
+    return () => {
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+    };
+  }, [isPlaying]);
   const formatTime = (seconds: number) => {
     if (!isFinite(seconds)) return "0:00";
     const mins = Math.floor(seconds / 60);
@@ -284,7 +323,8 @@ export function AudioPlayer({
 
   const handleTimeUpdate = () => {
     const audio = audioRef.current;
-    if (audio) {
+    // Only update from timeupdate when not playing and not seeking
+    if (audio && !isPlaying && !isSeekingRef.current) {
       setCurrentTime(audio.currentTime);
     }
   };
@@ -305,9 +345,15 @@ export function AudioPlayer({
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const audio = audioRef.current;
     if (audio) {
+      isSeekingRef.current = true;
       const newTime = parseFloat(e.target.value);
       audio.currentTime = newTime;
       setCurrentTime(newTime);
+
+      // Reset seeking flag after a short delay
+      setTimeout(() => {
+        isSeekingRef.current = false;
+      }, 100);
     }
   };
 
@@ -318,6 +364,10 @@ export function AudioPlayer({
   };
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  // Check if transcription is being processed
+  const isProcessing = !transcription || transcription.trim() === "";
+  const hasTranslation = translation && translation.trim() !== "";
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4">
@@ -366,24 +416,10 @@ export function AudioPlayer({
             </svg>
           ) : isPlaying ? (
             // Pause Icon
-            <svg
-              className="h-5 w-5"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-            </svg>
+            <Pause className="h-4 w-4" />
           ) : (
             // Play Icon
-            <svg
-              className="h-5 w-5"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M8 5v14l11-7z" />
-            </svg>
+            <Play className="h-4 w-4" />
           )}
         </button>
 
@@ -399,9 +435,9 @@ export function AudioPlayer({
               {formatTime(currentTime)}
             </span>
             <div className="flex-1 relative">
-              <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full transition-all duration-100"
+                  className="h-full rounded-full"
                   style={{
                     width: `${progress}%`,
                     background:
@@ -409,14 +445,25 @@ export function AudioPlayer({
                   }}
                 />
               </div>
+              {/* Draggable thumb */}
+              <div
+                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow-lg pointer-events-none transition-opacity"
+                style={{
+                  left: `calc(${progress}% - 6px)`,
+                  opacity: duration ? 1 : 0,
+                  background: intPsychTheme.secondary,
+                }}
+              />
               <input
                 type="range"
                 min="0"
                 max={duration || 0}
+                step="0.0001"
                 value={currentTime}
                 onChange={handleSeek}
                 disabled={!duration}
                 className="absolute inset-0 w-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                style={{ cursor: duration ? "pointer" : "not-allowed" }}
               />
             </div>
             <span className="text-[11px] text-slate-500 font-mono tabular-nums">
@@ -427,6 +474,48 @@ export function AudioPlayer({
       </div>
 
       {error && <p className="mt-2 text-[11px] text-rose-600">{error}</p>}
+
+      {/* Transcript Display */}
+      {isProcessing ? (
+        <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+          <div className="flex items-start gap-2">
+            <MessageSquareText className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+            <p className="text-xs text-amber-700">
+              Transcription processing...
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-4 space-y-3">
+          {/* Transcription */}
+          <div className="p-3 bg-slate-50 border border-slate-200 rounded-md">
+            <div className="flex items-start gap-2 mb-2">
+              <MessageSquareText className="w-4 h-4 text-slate-600 mt-0.5 flex-shrink-0" />
+              <h4 className="text-xs font-semibold text-slate-700">
+                {hasTranslation ? "Original Language" : "Transcript"}
+              </h4>
+            </div>
+            <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+              <p className="break-words">{transcription}</p>
+            </div>
+          </div>
+
+          {/* Translation (if exists) */}
+          {hasTranslation && (
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+              <div className="flex items-start gap-2 mb-2">
+                <Languages className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                <h4 className="text-xs font-semibold text-blue-700">
+                  English Translation
+                </h4>
+              </div>
+              <div className="text-sm text-blue-900 leading-relaxed whitespace-pre-wrap">
+                <p className="break-words">{translation}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

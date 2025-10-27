@@ -25,7 +25,6 @@ import {
   SCARED_CHILD_QUESTIONS,
   SNAP_QUESTIONS,
 } from "../text";
-import { profile } from "console";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 const scoreSum = (obj: Record<string, any> = {}) =>
@@ -483,10 +482,13 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
 
 export function StoryDetail({ data }: { data: ProfileJson }) {
   // Gather fields
+  console.log(data);
   const story = data.storyNarrative?.text?.trim();
   const storyAudioPath = data.storyNarrative?.audio?.fileName;
   const living = data.livingSituation?.text?.trim();
+  const livingAudioPath = data.livingSituation?.audio?.fileName;
   const culture = data.cultureContext?.text?.trim();
+  const cultureAudioPath = data.cultureContext?.audio?.fileName;
   const hasCulture = Boolean(culture);
 
   const grewWith = data.upbringingWhoWith?.text?.trim();
@@ -546,17 +548,42 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
       >
         <Box title="Story">
           <div className="space-y-3">
-            <div>{story || "—"}</div>
             {storyAudioPath && (
               <AudioPlayer
-                fileName={storyAudioPath}
+                data={data}
+                fieldName="storyNarrative"
                 label="Story Narrative Recording"
               />
             )}
+            <div>{story || "—"}</div>
           </div>
         </Box>
-        <Box title="Living Situation">{living || "—"}</Box>
-        {hasCulture && <Box title="Cultural / Context">{culture}</Box>}
+        <Box title="Living Situation">
+          <div className="space-y-3">
+            {livingAudioPath && (
+              <AudioPlayer
+                data={data}
+                fieldName="livingSituation"
+                label="Living Situation Recording"
+              />
+            )}
+            <div>{living || "—"}</div>
+          </div>
+        </Box>
+        {hasCulture && (
+          <Box title="Cultural / Context">
+            <div className="space-y-3">
+              {cultureAudioPath && (
+                <AudioPlayer
+                  data={data}
+                  fieldName="cultureContext"
+                  label="Cultural Context Recording"
+                />
+              )}
+              <div>{culture}</div>
+            </div>
+          </Box>
+        )}
       </section>
 
       <h3 className="mb-3 text-sm font-semibold tracking-wide text-slate-900">

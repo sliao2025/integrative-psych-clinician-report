@@ -28,7 +28,7 @@ import {
   Transition,
 } from "@headlessui/react";
 import logo from "@/assets/IP_Logo.png";
-import { CenterModal, KV } from "./ui";
+import { CenterModal, KV, AudioPlayer } from "./ui";
 import { DemographicsHeader } from "./TopBlocks";
 import {
   GoalsCard,
@@ -130,7 +130,7 @@ export default function PatientReportClient({ id }: { id: string }) {
   }, [id]);
 
   const data: ProfileJson = (patient?.profile as any)?.json ?? {};
-
+  console.log(data);
   if (loading) {
     return (
       <div
@@ -305,6 +305,18 @@ export default function PatientReportClient({ id }: { id: string }) {
                       </h4>
                       <p className="whitespace-pre-wrap">{data.goals?.text}</p>
                     </div>
+                    {data.goals?.audio?.fileName && (
+                      <div className="rounded-xl border border-slate-200 p-4">
+                        <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+                          Audio Recording
+                        </h4>
+                        <AudioPlayer
+                          data={data}
+                          fieldName="goals"
+                          label="Presenting Goals Recording"
+                        />
+                      </div>
+                    )}
                   </div>
                 )
               }
