@@ -3,7 +3,14 @@ import React from "react";
 import { intPsychTheme, theme } from "../theme";
 import { FaExpand, FaExpandAlt } from "react-icons/fa";
 import { DM_Serif_Text } from "next/font/google";
-import { Pause, Play, MessageSquareText, Languages } from "lucide-react";
+import {
+  Pause,
+  Play,
+  MessageSquareText,
+  Languages,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 
 const dm_serif = DM_Serif_Text({
   subsets: ["latin"],
@@ -516,6 +523,95 @@ export function AudioPlayer({
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+export function ScrollableBox({
+  title,
+  children,
+  className,
+}: {
+  title: string;
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [showTopArrow, setShowTopArrow] = React.useState(false);
+  const [showBottomArrow, setShowBottomArrow] = React.useState(false);
+
+  const checkScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const hasScroll = el.scrollHeight > el.clientHeight;
+    if (!hasScroll) {
+      setShowTopArrow(false);
+      setShowBottomArrow(false);
+      return;
+    }
+
+    const atTop = el.scrollTop < 10;
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 10;
+
+    setShowTopArrow(!atTop);
+    setShowBottomArrow(!atBottom);
+  };
+
+  React.useEffect(() => {
+    checkScroll();
+    const el = scrollRef.current;
+    if (el) {
+      el.addEventListener("scroll", checkScroll);
+      window.addEventListener("resize", checkScroll);
+      return () => {
+        el.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
+      };
+    }
+  }, [children]);
+
+  return (
+    <div
+      className={cx(
+        "rounded-xl border border-slate-200 p-4 flex flex-col",
+        className
+      )}
+    >
+      <h4 className="mb-2 text-md font-semibold text-slate-900 flex-shrink-0">
+        {title}
+      </h4>
+
+      <div className="relative flex-1 min-h-0">
+        {/* Top scroll indicator */}
+        {showTopArrow && (
+          <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-white to-transparent z-10 flex items-start justify-center pointer-events-none">
+            <div className="animate-bounce bg-white p-[2px] rounded-full shadow-md">
+              <ChevronUp className="h-4 w-4 text-slate-600" />
+            </div>
+          </div>
+        )}
+
+        <div
+          ref={scrollRef}
+          className="h-full overflow-y-auto scrollbar-hide"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          onScroll={checkScroll}
+        >
+          <div className="whitespace-pre-wrap text-[13px]">
+            {children ?? "—"}
+          </div>
+        </div>
+
+        {/* Bottom scroll indicator */}
+        {showBottomArrow && (
+          <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white to-transparent z-10 flex items-end justify-center pointer-events-none">
+            <div className="animate-bounce bg-white p-[2px] rounded-full shadow-md">
+              <ChevronDown className="h-4 w-4 text-slate-600" />
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

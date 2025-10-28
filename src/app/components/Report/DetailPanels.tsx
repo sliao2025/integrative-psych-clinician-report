@@ -1,7 +1,7 @@
 // app/report/components/DetailPanels.tsx
 "use client";
 import React from "react";
-import { KV, Gauge, Pill, AudioPlayer } from "./ui";
+import { KV, Gauge, Pill, AudioPlayer, ScrollableBox } from "./ui";
 import { ProfileJson } from "../types";
 import {
   ACE_RESILIENCE_QUESTIONS,
@@ -489,7 +489,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
   const livingAudioPath = data.livingSituation?.audio?.fileName;
   const culture = data.cultureContext?.text?.trim();
   const cultureAudioPath = data.cultureContext?.audio?.fileName;
-  const hasCulture = Boolean(culture);
+  const hasCulture = Boolean(culture || cultureAudioPath);
 
   const grewWith = data.upbringingWhoWith?.text?.trim();
   const env = data.upbringingEnvironments?.text?.trim();
@@ -503,21 +503,6 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
     !data.likedChildhood && data.childhoodNegativeReason?.text
       ? data.childhoodNegativeReason.text.trim()
       : "";
-
-  function Box({
-    title,
-    children,
-  }: {
-    title: string;
-    children?: React.ReactNode;
-  }) {
-    return (
-      <div className="rounded-xl max-h-80 overflow-auto border border-slate-200 p-4">
-        <h4 className="mb-2 text-md font-semibold text-slate-900">{title}</h4>
-        <div className="whitespace-pre-wrap text-[13px]">{children ?? "—"}</div>
-      </div>
-    );
-  }
 
   // Schooling/abilities helpers
   const triLabel = (v?: string) =>
@@ -546,7 +531,7 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
           hasCulture ? "lg:grid-cols-3" : "lg:grid-cols-2"
         }`}
       >
-        <Box title="Story">
+        <ScrollableBox title="Story" className="max-h-80">
           <div className="space-y-3">
             {storyAudioPath && (
               <AudioPlayer
@@ -557,8 +542,8 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
             )}
             <div>{story || "—"}</div>
           </div>
-        </Box>
-        <Box title="Living Situation">
+        </ScrollableBox>
+        <ScrollableBox title="Living Situation" className="max-h-80">
           <div className="space-y-3">
             {livingAudioPath && (
               <AudioPlayer
@@ -569,9 +554,9 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
             )}
             <div>{living || "—"}</div>
           </div>
-        </Box>
+        </ScrollableBox>
         {hasCulture && (
-          <Box title="Cultural / Context">
+          <ScrollableBox title="Cultural / Context" className="max-h-80">
             <div className="space-y-3">
               {cultureAudioPath && (
                 <AudioPlayer
@@ -580,16 +565,16 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
                   label="Cultural Context Recording"
                 />
               )}
-              <div>{culture}</div>
+              <div>{culture || "—"}</div>
             </div>
-          </Box>
+          </ScrollableBox>
         )}
       </section>
 
       <h3 className="mb-3 text-sm font-semibold tracking-wide text-slate-900">
         {!data.isChild ? "Upbringing" : "Family History"}
       </h3>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-1">
         <div className="rounded-xl border border-slate-200  p-4">
           <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
             {data.isChild

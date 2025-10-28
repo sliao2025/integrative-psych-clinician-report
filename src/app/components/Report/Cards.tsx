@@ -83,8 +83,11 @@ export function StoryCard({
 }) {
   // Safely extract data with fallbacks
   const storyText = data?.storyNarrative?.text || "";
+  const storyAudio = data?.storyNarrative?.audio?.fileName;
   const livingText = data?.livingSituation?.text || "";
+  const livingAudio = data?.livingSituation?.audio?.fileName;
   const cultureText = data?.cultureContext?.text || "";
+  const cultureAudio = data?.cultureContext?.audio?.fileName;
   const isChild = data?.isChild || false;
 
   // Child-specific data
@@ -95,6 +98,13 @@ export function StoryCard({
   // Adult-specific data
   const upbringingEnv = data?.upbringingEnvironments?.text || "";
   const upbringingWho = data?.upbringingWhoWith?.text || "";
+
+  // Helper to show text or "Recording available"
+  const displayText = (text: string, hasAudio: string | undefined) => {
+    if (text) return text;
+    if (hasAudio) return "🎙️ Recording available";
+    return "—";
+  };
 
   return (
     <Card
@@ -118,7 +128,7 @@ export function StoryCard({
               className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-3"
               title={storyText}
             >
-              {storyText || "—"}
+              {displayText(storyText, storyAudio)}
             </p>
           </div>
 
@@ -130,7 +140,7 @@ export function StoryCard({
               className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-2"
               title={livingText}
             >
-              {livingText || "—"}
+              {displayText(livingText, livingAudio)}
             </p>
           </div>
 
@@ -162,7 +172,7 @@ export function StoryCard({
               className="mt-1 text-[13px] leading-relaxed text-slate-800 whitespace-pre-line break-words line-clamp-2"
               title={cultureText}
             >
-              {cultureText || "—"}
+              {displayText(cultureText, cultureAudio)}
             </p>
           </div>
         </div>
