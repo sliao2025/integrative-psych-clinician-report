@@ -12,7 +12,10 @@ export async function GET() {
   const clinicianEmail = session?.user?.email ?? "";
 
   // Only allow sliao@psych-nyc.com
-  if (clinicianEmail !== "sliao@psych-nyc.com") {
+  if (
+    clinicianEmail !== "sliao@psych-nyc.com" &&
+    clinicianEmail !== "rsultan@psych-nyc.com"
+  ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
