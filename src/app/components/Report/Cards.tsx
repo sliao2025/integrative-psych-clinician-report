@@ -952,6 +952,10 @@ export function RelationshipsCard({
   onOpen: () => void;
   className?: string;
 }) {
+  const MAX_RELATIONSHIPS_TO_SHOW = 6;
+  const allRelationships = data.relationships ?? [];
+  const totalRelationships = allRelationships.length;
+
   return (
     <Card
       title={
@@ -964,7 +968,7 @@ export function RelationshipsCard({
       className={className}
     >
       <div className="flex flex-wrap gap-2">
-        {(data.relationships ?? []).slice(0, 6).map((r: any) => (
+        {allRelationships.slice(0, MAX_RELATIONSHIPS_TO_SHOW).map((r: any) => (
           <span
             key={r.id}
             className={cx(
@@ -982,6 +986,11 @@ export function RelationshipsCard({
             {r.name} • {r.role}
           </span>
         ))}
+        {totalRelationships > MAX_RELATIONSHIPS_TO_SHOW && (
+          <Pill tone="warn">
+            +{totalRelationships - MAX_RELATIONSHIPS_TO_SHOW} more
+          </Pill>
+        )}
       </div>
     </Card>
   );

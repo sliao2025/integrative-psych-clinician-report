@@ -868,6 +868,108 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
         </section>
       )}
 
+      {/* Follow-up Questions Section */}
+      {data.followupQuestions && (
+        <section className="mt-4 space-y-4">
+          <h3 className="text-sm font-semibold tracking-wide text-slate-900">
+            Follow-up Questions
+          </h3>
+
+          {data.followupQuestions.question1 && (
+            <div className="rounded-xl border border-slate-200 p-4">
+              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+                Question 1
+              </h4>
+              <p className="mb-3 text-[13px] text-slate-600 italic">
+                {data.followupQuestions.question1.question}
+              </p>
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <h5 className="mb-2 text-[12px] font-medium text-slate-700">
+                  Answer:
+                </h5>
+                {data.followupQuestions.question1.answer?.audio?.fileName && (
+                  <div className="mb-3">
+                    <AudioPlayer
+                      data={{
+                        question1Answer:
+                          data.followupQuestions.question1.answer,
+                      }}
+                      fieldName="question1Answer"
+                      label="Answer Recording"
+                    />
+                  </div>
+                )}
+                <p className="whitespace-pre-wrap text-[13px] text-slate-800">
+                  {data.followupQuestions.question1.answer?.text?.trim() || "—"}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {data.followupQuestions.question2 && (
+            <div className="rounded-xl border border-slate-200 p-4">
+              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+                Question 2
+              </h4>
+              <p className="mb-3 text-[13px] text-slate-600 italic">
+                {data.followupQuestions.question2.question}
+              </p>
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <h5 className="mb-2 text-[12px] font-medium text-slate-700">
+                  Answer:
+                </h5>
+                {data.followupQuestions.question2.answer?.audio?.fileName && (
+                  <div className="mb-3">
+                    <AudioPlayer
+                      data={{
+                        question2Answer:
+                          data.followupQuestions.question2.answer,
+                      }}
+                      fieldName="question2Answer"
+                      label="Answer Recording"
+                    />
+                  </div>
+                )}
+                <p className="whitespace-pre-wrap text-[13px] text-slate-800">
+                  {data.followupQuestions.question2.answer?.text?.trim() || "—"}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {data.followupQuestions.question3 && (
+            <div className="rounded-xl border border-slate-200 p-4">
+              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+                Question 3
+              </h4>
+              <p className="mb-3 text-[13px] text-slate-600 italic">
+                {data.followupQuestions.question3.question}
+              </p>
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <h5 className="mb-2 text-[12px] font-medium text-slate-700">
+                  Answer:
+                </h5>
+                {data.followupQuestions.question3.answer?.audio?.fileName && (
+                  <div className="mb-3">
+                    <AudioPlayer
+                      data={{
+                        question3Answer:
+                          data.followupQuestions.question3.answer,
+                      }}
+                      fieldName="question3Answer"
+                      label="Answer Recording"
+                    />
+                  </div>
+                )}
+                <p className="whitespace-pre-wrap text-[13px] text-slate-800">
+                  {data.followupQuestions.question3.answer?.text?.trim() || "—"}
+                </p>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
       {childhoodComment && (
         <div className="mt-4 rounded-xl border border-slate-200 p-4">
           <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
