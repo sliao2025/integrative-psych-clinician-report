@@ -5,13 +5,13 @@ import {
   Mail as MailIcon,
   Phone as PhoneIcon,
   User,
+  Eye,
 } from "lucide-react";
 import { KV } from "./ui";
 import { ProfileJson } from "../types";
 import React from "react";
 import { DM_Serif_Text } from "next/font/google";
 import { intPsychTheme } from "../theme";
-import { FaExpand } from "react-icons/fa";
 import { genderOptions } from "../text";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
@@ -31,7 +31,7 @@ export function DemographicsHeader({
   ) =>
     value ? options.find((o) => o.value === value)?.label ?? value : undefined;
   return (
-    <div className="relative rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
+    <div className="relative rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 ">
       <div className="grid grid-cols-12 gap-3 sm:gap-4 md:gap-5 items-start">
         {/* Left: Avatar + Name */}
         <div className="col-span-12 md:col-span-4 lg:col-span-7 flex items-center gap-3 min-w-0">
@@ -126,10 +126,10 @@ export function DemographicsHeader({
       <button
         type="button"
         onClick={onOpen}
-        className="absolute top-3 right-3 cursor-pointer inline-flex items-center justify-center h-6 w-8 rounded-lg border border-slate-200 bg-white/70 backdrop-blur-sm text-slate-700 hover:bg-slate-100 active:bg-slate-200"
+        className="absolute top-3 right-3 cursor-pointer flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] sm:text-[12px] font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 active:bg-slate-200 transition-all hover:shadow"
         aria-label="Expand demographics"
       >
-        <FaExpand className="h-3 w-3" />
+        <Eye className="h-4 w-4" />
       </button>
     </div>
   );

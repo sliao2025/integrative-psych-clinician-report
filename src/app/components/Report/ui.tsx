@@ -10,6 +10,8 @@ import {
   Languages,
   ChevronUp,
   ChevronDown,
+  Maximize2,
+  Eye,
 } from "lucide-react";
 
 const dm_serif = DM_Serif_Text({
@@ -82,8 +84,8 @@ export function Card({
   return (
     <div
       className={cx(
-        "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm p-3 sm:p-4 text-left shadow-sm transition",
-        "transform will-change-transform duration-150 ease-out hover:scale-[1.005] sm:hover:scale-[1.01]",
+        "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm p-3 sm:p-4 text-left transition",
+        "transform will-change-transform",
         className
       )}
     >
@@ -99,9 +101,11 @@ export function Card({
             <button
               type="button"
               onClick={onExpand}
-              className="cursor-pointer rounded-lg border border-slate-200 px-2 py-1 text-[12px] font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200"
+              className="cursor-pointer flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] sm:text-[12px] font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 active:bg-slate-200 transition-all hover:shadow"
             >
-              <FaExpand className="h-3 w-3" />
+              <span className="hidden sm:inline">View Details</span>
+              <span className="sm:hidden">Details</span>
+              <Eye className="h-4 w-4" />
             </button>
           )}
         </div>
