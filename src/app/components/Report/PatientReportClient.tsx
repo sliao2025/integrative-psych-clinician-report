@@ -179,7 +179,7 @@ export default function PatientReportClient({ id }: { id: string }) {
           <div className="flex items-center gap-3">
             <Link href="/search" className="group z-10 shrink-0">
               <span
-                className="inline-flex border bg-white border-slate-200 items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm shadow-sm transition-all hover:shadow-md"
+                className="inline-flex border bg-white border-slate-200 items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm transition-all hover:shadow-sm"
                 style={{ color: intPsychTheme.primary }}
               >
                 <ArrowLeft className="h-4 w-4 transition-transform" />
