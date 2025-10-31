@@ -19,7 +19,14 @@ export default function LoginPage() {
   console.log(callbackUrl);
   console.log("hi");
   return (
-    <main className="relative min-h-dvh grid justify-center overflow-hidden">
+    <main
+      className="relative min-h-dvh grid justify-center overflow-hidden"
+      style={{
+        WebkitTapHighlightColor: "transparent",
+        background:
+          "linear-gradient(to top, rgba(188, 255, 196, 1), rgba(241, 255, 245, 1), rgba(255, 255, 255, 1))",
+      }}
+    >
       {/* Background visuals */}
       <Garden bloom={0.6} />
 

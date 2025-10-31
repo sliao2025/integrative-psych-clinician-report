@@ -57,14 +57,7 @@ export default async function RootLayout({
           content="white-translucent"
         />
         <div id="app-root" className="relative min-h-dvh">
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 -z-10"
-            style={{
-              background:
-                "linear-gradient(to top, rgba(188, 255, 196, 1), rgba(244, 253, 247, 1), rgba(255, 255, 255, 1))",
-            }}
-          />
+          <div aria-hidden="true" className="absolute inset-0 -z-10" />
           <Providers session={session}>{children}</Providers>
         </div>
       </body>

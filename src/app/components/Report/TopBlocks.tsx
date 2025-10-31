@@ -31,7 +31,7 @@ export function DemographicsHeader({
   ) =>
     value ? options.find((o) => o.value === value)?.label ?? value : undefined;
   return (
-    <div className="relative rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 ">
+    <div className="relative rounded-2xl border border-slate-200 bg-slate-50/50 p-4 sm:p-5 ">
       <div className="grid grid-cols-12 gap-3 sm:gap-4 md:gap-5 items-start">
         {/* Left: Avatar + Name */}
         <div className="col-span-12 md:col-span-4 lg:col-span-7 flex items-center gap-3 min-w-0">

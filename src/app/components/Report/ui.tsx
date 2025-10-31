@@ -84,7 +84,7 @@ export function Card({
   return (
     <div
       className={cx(
-        "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm p-3 sm:p-4 text-left transition",
+        "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl border border-slate-200 bg-slate-50/50 backdrop-blur-sm p-3 sm:p-4 text-left transition",
         "transform will-change-transform",
         className
       )}

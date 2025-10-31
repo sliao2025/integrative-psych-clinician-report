@@ -125,7 +125,11 @@ export default function ClinicianHome() {
   return (
     <main
       className="relative min-h-[100svh] grid place-items-center overflow-hidden px-3 pb-[env(safe-area-inset-bottom)] pt-[calc(env(safe-area-inset-top)+16px)]"
-      style={{ WebkitTapHighlightColor: "transparent" }}
+      style={{
+        WebkitTapHighlightColor: "transparent",
+        background:
+          "linear-gradient(to top,rgba(188, 255, 196, 1), rgba(241, 255, 245, 1), rgba(255, 255, 255, 1))",
+      }}
     >
       {/* Background visuals */}
       <Garden bloom={0.6} />
