@@ -54,6 +54,16 @@ export function GoalsCard({
   onOpen: () => void;
   className?: string;
 }) {
+  const goalsText = data?.goals?.text || "";
+  const goalsAudio = data?.goals?.audio?.fileName;
+
+  // Helper to show text or "Recording available"
+  const displayText = (text: string, hasAudio: string | undefined) => {
+    if (text) return text;
+    if (hasAudio) return "🎙️ Recording available";
+    return "—";
+  };
+
   return (
     <Card
       className={className}
@@ -66,7 +76,7 @@ export function GoalsCard({
       onExpand={onOpen}
     >
       <p className="whitespace-pre-line line-clamp-12 text-[13px] leading-relaxed text-slate-700">
-        {data.goals?.text}
+        {displayText(goalsText, goalsAudio)}
       </p>
     </Card>
   );

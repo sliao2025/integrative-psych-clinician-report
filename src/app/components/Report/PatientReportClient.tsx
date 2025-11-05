@@ -29,7 +29,7 @@ import {
 } from "@headlessui/react";
 import logo from "@/assets/IP_Logo.png";
 import { CenterModal, KV, AudioPlayer } from "./ui";
-import { DemographicsHeader } from "./TopBlocks";
+import { DemographicsHeader, InsightsBlock } from "./TopBlocks";
 import {
   GoalsCard,
   StoryCard,
@@ -67,6 +67,8 @@ export default function PatientReportClient({ id }: { id: string }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [modal, setModal] = useState<ModalState>(null);
+  const [highlightField, setHighlightField] = useState<string | null>(null);
+  const [highlightText, setHighlightText] = useState<string | null>(null);
   const { data: session } = useSession();
 
   const displayName = session?.user?.name ?? "Clinician";
@@ -75,9 +77,19 @@ export default function PatientReportClient({ id }: { id: string }) {
   const open = (
     title: React.ReactNode,
     content: React.ReactNode,
-    maxWidth?: string
-  ) => setModal({ title, content, maxWidth });
-  const close = () => setModal(null);
+    maxWidth?: string,
+    fieldToHighlight?: string,
+    textToHighlight?: string
+  ) => {
+    setHighlightField(fieldToHighlight || null);
+    setHighlightText(textToHighlight || null);
+    setModal({ title, content, maxWidth });
+  };
+  const close = () => {
+    setModal(null);
+    setHighlightField(null);
+    setHighlightText(null);
+  };
 
   // Lock background scroll when a CenterModal is open (desktop + iOS-safe)
   useEffect(() => {
@@ -269,7 +281,7 @@ export default function PatientReportClient({ id }: { id: string }) {
       </header>
 
       <div
-        className="mx-auto max-w-[1400px] px-3 sm:px-4 pt-4 sm:pt-6 pb-16"
+        className="mx-auto max-w-[1400px] bg-white px-3 sm:px-4 pt-4 sm:pt-6 pb-16"
         aria-hidden={modal ? true : false}
         inert={modal ? "" : (undefined as any)}
       >
@@ -287,6 +299,157 @@ export default function PatientReportClient({ id }: { id: string }) {
             )
           }
         />
+
+        {/* <div className="mt-5">
+          <InsightsBlock
+            userId={id}
+            data={data}
+            onNavigate={(field) => {
+              // Map field to appropriate modal/card
+              const fieldModalMap: Record<string, () => void> = {
+                goals: () =>
+                  open(
+                    <>
+                      <ClipboardList className="h-4 w-4 inline-block mr-2" />
+                      Presenting Goal(s)
+                    </>,
+                    <div className="space-y-3">
+                      <div
+                        className="rounded-xl border border-slate-200 p-4"
+                        data-field="goals"
+                      >
+                        <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+                          Summary
+                        </h4>
+                        <p className="whitespace-pre-wrap">
+                          {data.goals?.text}
+                        </p>
+                      </div>
+                      {data.goals?.audio?.fileName && (
+                        <div className="rounded-xl border border-slate-200 p-4">
+                          <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
+                            Audio Recording
+                          </h4>
+                          <AudioPlayer
+                            data={data}
+                            fieldName="goals"
+                            label="Presenting Goals Recording"
+                          />
+                        </div>
+                      )}
+                    </div>,
+                    undefined,
+                    "goals"
+                  ),
+                livingSituation: () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
+                storyNarrative: () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
+                cultureContext: () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
+                upbringingEnvironments: () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
+                upbringingWhoWith: () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
+                childhoodNegativeReason: () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
+                familyHistoryElaboration: () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
+                followupQuestion1: () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
+                followupQuestion2: () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
+                followupQuestion3: () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
+              };
+
+              const handler = fieldModalMap[field];
+              if (handler) {
+                handler();
+              }
+            }}
+          />
+        </div> */}
 
         <div className="mt-5 columns-1 md:columns-2 gap-4  [column-fill:_balance]">
           <div className="mb-4 break-inside-avoid">

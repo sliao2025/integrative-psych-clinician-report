@@ -84,7 +84,7 @@ export function Card({
   return (
     <div
       className={cx(
-        "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl border border-slate-200 bg-slate-50/50 backdrop-blur-sm p-3 sm:p-4 text-left transition",
+        "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl border-1 border-slate-300 bg-white backdrop-blur-sm p-3 sm:p-4 text-left transition",
         "transform will-change-transform",
         className
       )}
@@ -187,11 +187,15 @@ export function Gauge({
   score,
   max,
   caption,
+  backgroundColor,
+  showTicker = true,
 }: {
   label: string;
   score: number;
   max: number;
   caption?: string;
+  backgroundColor?: string;
+  showTicker?: boolean;
 }) {
   const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
   const v = clamp01(score / max);
@@ -200,11 +204,15 @@ export function Gauge({
   const isMin = pctClamped === 0;
   const isMax = pctClamped === 100;
 
+  // Default gradient if no backgroundColor provided
+  const defaultGradient =
+    "linear-gradient(90deg, #b8e7f8ff 0%, #3a9ce2ff 50%, #05539cff 100%)";
+
   return (
     <div className="flex w-full flex-col">
       <div className="mb-1 flex items-center justify-between">
-        <p className="text-[16px] font-bold text-slate-700">{label}</p>
-        <span className="text-[16px] font-bold text-slate-700">
+        <p className="text-lg sm:text-xl font-bold text-slate-700">{label}</p>
+        <span className="text-lg sm:text-xl font-bold text-slate-900">
           {score}/{max}
         </span>
       </div>
@@ -216,23 +224,24 @@ export function Gauge({
           className="h-3 rounded-full"
           style={{
             width: `${pctClamped}%`,
-            background:
-              "linear-gradient(90deg, #b8e7f8ff 0%, #3a9ce2ff 50%, #05539cff 100%)",
+            background: backgroundColor || defaultGradient,
           }}
         />
 
         {/* Ticker at score position */}
-        <div
-          className="pointer-events-none rounded-full absolute -top-1 h-5 w-3 bg-white border border-slate-300 shadow-sm"
-          style={
-            isMax
-              ? { right: 0 }
-              : isMin
-              ? { left: 0 }
-              : { left: `calc(${pctClamped}% - 6px)` }
-          }
-          aria-hidden="true"
-        />
+        {showTicker && (
+          <div
+            className="pointer-events-none rounded-full absolute -top-1 h-5 w-3 bg-white border border-slate-300 shadow-sm"
+            style={
+              isMax
+                ? { right: 0 }
+                : isMin
+                ? { left: 0 }
+                : { left: `calc(${pctClamped}% - 6px)` }
+            }
+            aria-hidden="true"
+          />
+        )}
       </div>
 
       {caption && <p className="mt-1 text-[12px] text-slate-500">{caption}</p>}

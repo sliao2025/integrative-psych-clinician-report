@@ -480,7 +480,13 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
   );
 }
 
-export function StoryDetail({ data }: { data: ProfileJson }) {
+export function StoryDetail({
+  data,
+  highlightField,
+}: {
+  data: ProfileJson;
+  highlightField?: string;
+}) {
   // Gather fields
   console.log(data);
   const story = data.storyNarrative?.text?.trim();
@@ -531,8 +537,15 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
           hasCulture ? "lg:grid-cols-3" : "lg:grid-cols-2"
         }`}
       >
-        <ScrollableBox title="Story" className="max-h-80">
-          <div className="space-y-3">
+        <ScrollableBox
+          title="Story"
+          className={`max-h-80 ${
+            highlightField === "storyNarrative"
+              ? "ring-2 ring-blue-400 ring-offset-2"
+              : ""
+          }`}
+        >
+          <div className="space-y-3" data-field="storyNarrative">
             {storyAudioPath && (
               <AudioPlayer
                 data={data}
@@ -543,8 +556,15 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
             <div>{story || "—"}</div>
           </div>
         </ScrollableBox>
-        <ScrollableBox title="Living Situation" className="max-h-80">
-          <div className="space-y-3">
+        <ScrollableBox
+          title="Living Situation"
+          className={`max-h-80 ${
+            highlightField === "livingSituation"
+              ? "ring-2 ring-blue-400 ring-offset-2"
+              : ""
+          }`}
+        >
+          <div className="space-y-3" data-field="livingSituation">
             {livingAudioPath && (
               <AudioPlayer
                 data={data}
@@ -556,8 +576,15 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
           </div>
         </ScrollableBox>
         {hasCulture && (
-          <ScrollableBox title="Cultural / Context" className="max-h-80">
-            <div className="space-y-3">
+          <ScrollableBox
+            title="Cultural / Context"
+            className={`max-h-80 ${
+              highlightField === "cultureContext"
+                ? "ring-2 ring-blue-400 ring-offset-2"
+                : ""
+            }`}
+          >
+            <div className="space-y-3" data-field="cultureContext">
               {cultureAudioPath && (
                 <AudioPlayer
                   data={data}
@@ -575,7 +602,14 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
         {!data.isChild ? "Upbringing" : "Family History"}
       </h3>
       <div className="grid gap-4 md:grid-cols-1">
-        <div className="rounded-xl border border-slate-200  p-4">
+        <div
+          className={`rounded-xl border border-slate-200 p-4 ${
+            highlightField === "upbringingWhoWith"
+              ? "ring-2 ring-blue-400 ring-offset-2"
+              : ""
+          }`}
+          data-field="upbringingWhoWith"
+        >
           <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
             {data.isChild
               ? "Medical Issues (Father Side)"
@@ -585,7 +619,14 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
             {data.isChild ? data.fatherSideMedicalIssues : grewWith || "—"}
           </p>
         </div>
-        <div className="rounded-xl border border-slate-200 p-4">
+        <div
+          className={`rounded-xl border border-slate-200 p-4 ${
+            highlightField === "upbringingEnvironments"
+              ? "ring-2 ring-blue-400 ring-offset-2"
+              : ""
+          }`}
+          data-field="upbringingEnvironments"
+        >
           <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
             {data.isChild
               ? "Medical Issues (Mother Side)"
@@ -597,7 +638,14 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
         </div>
       </div>
 
-      <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
+      <section
+        className={`mt-4 rounded-xl border border-slate-200 bg-white p-4 ${
+          highlightField === "familyHistoryElaboration"
+            ? "ring-2 ring-blue-400 ring-offset-2"
+            : ""
+        }`}
+        data-field="familyHistoryElaboration"
+      >
         <h4 className="mb-3 text-[13px] font-semibold text-slate-900">
           Family Mental Health History
         </h4>
@@ -876,7 +924,14 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
           </h3>
 
           {data.followupQuestions.question1 && (
-            <div className="rounded-xl border border-slate-200 p-4">
+            <div
+              className={`rounded-xl border border-slate-200 p-4 ${
+                highlightField === "followupQuestion1"
+                  ? "ring-2 ring-blue-400 ring-offset-2"
+                  : ""
+              }`}
+              data-field="followupQuestion1"
+            >
               <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
                 Question 1
               </h4>
@@ -907,7 +962,14 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
           )}
 
           {data.followupQuestions.question2 && (
-            <div className="rounded-xl border border-slate-200 p-4">
+            <div
+              className={`rounded-xl border border-slate-200 p-4 ${
+                highlightField === "followupQuestion2"
+                  ? "ring-2 ring-blue-400 ring-offset-2"
+                  : ""
+              }`}
+              data-field="followupQuestion2"
+            >
               <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
                 Question 2
               </h4>
@@ -938,7 +1000,14 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
           )}
 
           {data.followupQuestions.question3 && (
-            <div className="rounded-xl border border-slate-200 p-4">
+            <div
+              className={`rounded-xl border border-slate-200 p-4 ${
+                highlightField === "followupQuestion3"
+                  ? "ring-2 ring-blue-400 ring-offset-2"
+                  : ""
+              }`}
+              data-field="followupQuestion3"
+            >
               <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
                 Question 3
               </h4>
@@ -971,7 +1040,14 @@ export function StoryDetail({ data }: { data: ProfileJson }) {
       )}
 
       {childhoodComment && (
-        <div className="mt-4 rounded-xl border border-slate-200 p-4">
+        <div
+          className={`mt-4 rounded-xl border border-slate-200 p-4 ${
+            highlightField === "childhoodNegativeReason"
+              ? "ring-2 ring-blue-400 ring-offset-2"
+              : ""
+          }`}
+          data-field="childhoodNegativeReason"
+        >
           <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
             Childhood Comments
           </h4>

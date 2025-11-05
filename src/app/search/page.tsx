@@ -184,6 +184,7 @@ export default function ClinicianHome() {
                   </div>
                 ) : (
                   <div className="max-h-[60vh] overflow-y-auto space-y-2 pr-2">
+                    <p className="text-slate-700">{`# of Patients: ${allPatients.length}`}</p>
                     {allPatients.map((patient) => {
                       const profileData = patient.profile?.json || {};
                       const firstName = patient.profile?.firstName || "";

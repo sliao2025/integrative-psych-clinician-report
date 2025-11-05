@@ -42,7 +42,7 @@ export default async function RootLayout({
       data-auth={isAuthed ? "true" : "false"}
       data-user-email={email}
     >
-      <body className="min-h-dvh text-[color:var(--foreground)] antialiased">
+      <body className="min-h-dvh bg-white text-[color:var(--foreground)] antialiased">
         {/* 
           If you want a global background layer or safe-area spacer, add it here.
           Keep children wrapped so pages can control their own scroll/overflow.
@@ -56,8 +56,8 @@ export default async function RootLayout({
           name="apple-mobile-web-app-status-bar-style"
           content="white-translucent"
         />
-        <div id="app-root" className="relative min-h-dvh">
-          <div aria-hidden="true" className="absolute inset-0 -z-10" />
+        <div id="app-root" className="relative min-h-dvh bg-white">
+          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-white" />
           <Providers session={session}>{children}</Providers>
         </div>
       </body>
