@@ -565,22 +565,21 @@ export function StoryDetail({
     <div className="space-y-5">
       <section
         className={`grid gap-4 ${
-          hasCulture ? "lg:grid-cols-1" : "lg:grid-cols-2"
+          hasCulture ? "lg:grid-cols-2" : "lg:grid-cols-2"
         }`}
       >
         {/* Story */}
         <div
-          className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
+          className={`rounded-xl ${
+            hasCulture && "col-span-2"
+          } border border-slate-200 bg-white overflow-hidden ${
             highlightField === "storyNarrative"
               ? "ring-2 ring-blue-400 ring-offset-2"
               : ""
           }`}
           data-field="storyNarrative"
         >
-          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-            <h3 className="text-sm font-semibold text-slate-900">Story</h3>
-          </div>
-          <div className="p-4 max-h-80 overflow-y-auto">
+          <ScrollableBox title="Story" className="border-0 h-80">
             {story && (
               <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
                 {story}
@@ -592,7 +591,7 @@ export function StoryDetail({
             {!story && !storyAudioPath && (
               <p className="text-[13px] text-slate-400">—</p>
             )}
-          </div>
+          </ScrollableBox>
         </div>
 
         {/* Living Situation */}
@@ -604,12 +603,7 @@ export function StoryDetail({
           }`}
           data-field="livingSituation"
         >
-          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-            <h3 className="text-sm font-semibold text-slate-900">
-              Living Situation
-            </h3>
-          </div>
-          <div className="p-4 max-h-80 overflow-y-auto">
+          <ScrollableBox title="Living Situation" className="border-0 h-80">
             {living && (
               <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
                 {living}
@@ -621,7 +615,7 @@ export function StoryDetail({
             {!living && !livingAudioPath && (
               <p className="text-[13px] text-slate-400">—</p>
             )}
-          </div>
+          </ScrollableBox>
         </div>
 
         {/* Cultural Context */}
@@ -634,12 +628,7 @@ export function StoryDetail({
             }`}
             data-field="cultureContext"
           >
-            <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-              <h3 className="text-sm font-semibold text-slate-900">
-                Cultural / Context
-              </h3>
-            </div>
-            <div className="p-4 max-h-80 overflow-y-auto">
+            <ScrollableBox title="Cultural / Context" className="border-0 h-80">
               {culture && (
                 <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
                   {culture}
@@ -648,7 +637,7 @@ export function StoryDetail({
               {cultureAudioPath && (
                 <AudioPlayer data={data} fieldName="cultureContext" label="" />
               )}
-            </div>
+            </ScrollableBox>
           </div>
         )}
       </section>

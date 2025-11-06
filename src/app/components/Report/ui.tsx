@@ -582,15 +582,17 @@ export function ScrollableBox({
   return (
     <div
       className={cx(
-        "rounded-xl border border-slate-200 p-4 flex flex-col",
+        "rounded-xl border border-slate-200 flex flex-col overflow-hidden",
         className
       )}
     >
-      <h4 className="mb-2 text-md font-semibold text-slate-900 flex-shrink-0">
-        {title}
-      </h4>
+      {/* Header with dark background */}
+      <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex-shrink-0">
+        <h4 className="text-sm font-semibold text-slate-900">{title}</h4>
+      </div>
 
-      <div className="relative flex-1 min-h-0">
+      {/* Scrollable content area */}
+      <div className="relative flex-1 min-h-0 p-4">
         {/* Top scroll indicator */}
         {showTopArrow && (
           <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-white to-transparent z-10 flex items-start justify-center pointer-events-none">
