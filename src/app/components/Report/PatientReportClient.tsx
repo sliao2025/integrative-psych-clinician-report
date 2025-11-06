@@ -313,30 +313,28 @@ export default function PatientReportClient({ id }: { id: string }) {
                       <ClipboardList className="h-4 w-4 inline-block mr-2" />
                       Presenting Goal(s)
                     </>,
-                    <div className="space-y-3">
-                      <div
-                        className="rounded-xl border border-slate-200 p-4"
-                        data-field="goals"
-                      >
-                        <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                          Summary
-                        </h4>
-                        <p className="whitespace-pre-wrap">
-                          {data.goals?.text}
-                        </p>
+                    <div
+                      className="rounded-xl border border-slate-200 bg-white overflow-hidden"
+                      data-field="goals"
+                    >
+                      <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                        <h3 className="text-sm font-semibold text-slate-900">
+                          Presenting Goals
+                        </h3>
                       </div>
-                      {data.goals?.audio?.fileName && (
-                        <div className="rounded-xl border border-slate-200 p-4">
-                          <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                            Audio Recording
-                          </h4>
-                          <AudioPlayer
-                            data={data}
-                            fieldName="goals"
-                            label="Presenting Goals Recording"
-                          />
-                        </div>
-                      )}
+                      <div className="p-4">
+                        {data.goals?.text && (
+                          <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
+                            {data.goals.text}
+                          </p>
+                        )}
+                        {data.goals?.audio?.fileName && (
+                          <AudioPlayer data={data} fieldName="goals" label="" />
+                        )}
+                        {!data.goals?.text && !data.goals?.audio?.fileName && (
+                          <p className="text-[13px] text-slate-400">—</p>
+                        )}
+                      </div>
                     </div>,
                     undefined,
                     "goals"
@@ -411,6 +409,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                     "max-w-6xl",
                     field
                   ),
+                // Support both old and new field name formats for followup questions
                 followupQuestion1: () =>
                   open(
                     <>
@@ -441,6 +440,36 @@ export default function PatientReportClient({ id }: { id: string }) {
                     "max-w-6xl",
                     field
                   ),
+                "followupQuestions.question1": () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
+                "followupQuestions.question2": () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
+                "followupQuestions.question3": () =>
+                  open(
+                    <>
+                      <BookOpen className="h-4 w-4 inline-block mr-2" />
+                      Story / History
+                    </>,
+                    <StoryDetail data={data} highlightField={field} />,
+                    "max-w-6xl",
+                    field
+                  ),
               };
 
               const handler = fieldModalMap[field];
@@ -461,25 +490,28 @@ export default function PatientReportClient({ id }: { id: string }) {
                     <ClipboardList className="h-4 w-4 inline-block mr-2" />
                     Presenting Goal(s)
                   </>,
-                  <div className="space-y-3">
-                    <div className="rounded-xl border border-slate-200 p-4">
-                      <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                        Summary
-                      </h4>
-                      <p className="whitespace-pre-wrap">{data.goals?.text}</p>
+                  <div
+                    className="rounded-xl border border-slate-200 bg-white overflow-hidden"
+                    data-field="goals"
+                  >
+                    <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                      <h3 className="text-sm font-semibold text-slate-900">
+                        Presenting Goals
+                      </h3>
                     </div>
-                    {data.goals?.audio?.fileName && (
-                      <div className="rounded-xl border border-slate-200 p-4">
-                        <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                          Audio Recording
-                        </h4>
-                        <AudioPlayer
-                          data={data}
-                          fieldName="goals"
-                          label="Presenting Goals Recording"
-                        />
-                      </div>
-                    )}
+                    <div className="p-4">
+                      {data.goals?.text && (
+                        <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
+                          {data.goals.text}
+                        </p>
+                      )}
+                      {data.goals?.audio?.fileName && (
+                        <AudioPlayer data={data} fieldName="goals" label="" />
+                      )}
+                      {!data.goals?.text && !data.goals?.audio?.fileName && (
+                        <p className="text-[13px] text-slate-400">—</p>
+                      )}
+                    </div>
                   </div>
                 )
               }

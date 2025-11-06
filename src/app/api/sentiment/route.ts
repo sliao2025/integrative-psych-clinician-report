@@ -20,18 +20,19 @@ export async function POST(request: NextRequest) {
       select: { json: true },
     });
 
-    if (existingProfile) {
-      const profileJson = existingProfile.json as any;
+    // TEMPORARILY DISABLED: Always fetch fresh data
+    // if (existingProfile) {
+    //   const profileJson = existingProfile.json as any;
 
-      // If sentimentAnalysis already exists, return it
-      if (profileJson.sentimentAnalysis) {
-        return NextResponse.json({
-          success: true,
-          result: profileJson.sentimentAnalysis,
-          cached: true,
-        });
-      }
-    }
+    //   // If sentimentAnalysis already exists, return it
+    //   if (profileJson.sentimentAnalysis) {
+    //     return NextResponse.json({
+    //       success: true,
+    //       result: profileJson.sentimentAnalysis,
+    //       cached: true,
+    //     });
+    //   }
+    // }
 
     // Forward the request to the sentiment analysis service
     const response = await fetch(

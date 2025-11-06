@@ -159,9 +159,9 @@ const fieldLabels: Record<string, string> = {
   upbringingWhoWith: "Upbringing",
   childhoodNegativeReason: "Childhood",
   familyHistoryElaboration: "Family History",
-  followupQuestion1: "Follow-up Question 1",
-  followupQuestion2: "Follow-up Question 2",
-  followupQuestion3: "Follow-up Question 3",
+  "followupQuestions.question1": "Follow-up Question 1",
+  "followupQuestions.question2": "Follow-up Question 2",
+  "followupQuestions.question3": "Follow-up Question 3",
 };
 
 interface SentimentSentence {
@@ -216,57 +216,36 @@ export function InsightsBlock({
       try {
         setLoading(true);
 
-        // Check if we already have both in cache
-        const hasSentiment = data?.sentimentAnalysis;
-        const hasSummary = data?.summary;
-
-        if (hasSentiment) {
-          setSentimentData(data.sentimentAnalysis);
-        }
-        if (hasSummary) {
-          setSummaryData(data.summary);
-        }
-
-        // If we have both, no need to fetch
-        if (hasSentiment && hasSummary) {
-          setLoading(false);
-          return;
-        }
-
-        // Fetch missing data in parallel
+        // Always fetch both sentiment and summary (for now, no caching check)
         const promises = [];
 
-        if (!hasSentiment) {
-          promises.push(
-            fetch("/api/sentiment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ userId }),
+        promises.push(
+          fetch("/api/sentiment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId }),
+          })
+            .then((res) => res.json())
+            .then((responseData) => {
+              if (responseData.success && responseData.result) {
+                setSentimentData(responseData.result);
+              }
             })
-              .then((res) => res.json())
-              .then((responseData) => {
-                if (responseData.success && responseData.result) {
-                  setSentimentData(responseData.result);
-                }
-              })
-          );
-        }
+        );
 
-        if (!hasSummary) {
-          promises.push(
-            fetch("/api/summarize", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ userId }),
+        promises.push(
+          fetch("/api/summarize", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId }),
+          })
+            .then((res) => res.json())
+            .then((responseData) => {
+              if (responseData.success && responseData.summary) {
+                setSummaryData(responseData.summary);
+              }
             })
-              .then((res) => res.json())
-              .then((responseData) => {
-                if (responseData.success && responseData.summary) {
-                  setSummaryData(responseData.summary);
-                }
-              })
-          );
-        }
+        );
 
         await Promise.all(promises);
       } catch (err: any) {
@@ -479,17 +458,6 @@ export function InsightsBlock({
       {/* Patient Summary Section */}
       {summaryData && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-          {/* Chief Complaint */}
-          <div className="rounded-xl border border-blue-200/60 bg-gradient-to-br from-blue-50/50 to-white p-4">
-            <h3 className="text-sm sm:text-base font-bold text-blue-900 mb-2 flex items-center gap-2">
-              <MessageCircleMore className="h-5 w-5 text-blue-600" />
-              Chief Complaint
-            </h3>
-            <p className="text-[13px] sm:text-sm text-slate-700 leading-relaxed">
-              {summaryData.chief_complaint}
-            </p>
-          </div>
-
           {/* Patient Bio */}
           <div className="rounded-xl border border-blue-200/60 bg-gradient-to-br from-blue-50/50 to-white p-4">
             <h3 className="text-sm sm:text-base font-bold text-blue-900 mb-2 flex items-center gap-2">
@@ -498,6 +466,17 @@ export function InsightsBlock({
             </h3>
             <p className="text-[13px] sm:text-sm text-slate-700 leading-relaxed">
               {summaryData.identification}
+            </p>
+          </div>
+
+          {/* Chief Complaint */}
+          <div className="rounded-xl border border-blue-200/60 bg-gradient-to-br from-blue-50/50 to-white p-4">
+            <h3 className="text-sm sm:text-base font-bold text-blue-900 mb-2 flex items-center gap-2">
+              <MessageCircleMore className="h-5 w-5 text-blue-600" />
+              Chief Complaint
+            </h3>
+            <p className="text-[13px] sm:text-sm text-slate-700 leading-relaxed">
+              {summaryData.chief_complaint}
             </p>
           </div>
         </div>

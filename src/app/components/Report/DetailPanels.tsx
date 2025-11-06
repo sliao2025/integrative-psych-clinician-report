@@ -487,6 +487,37 @@ export function StoryDetail({
   data: ProfileJson;
   highlightField?: string;
 }) {
+  // Auto-scroll to highlighted field when modal opens
+  React.useEffect(() => {
+    if (highlightField) {
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        // Try to find element by data-field attribute first
+        let element = document.querySelector(
+          `[data-field="${highlightField}"]`
+        );
+
+        // If not found, try the dotted notation variants
+        if (!element) {
+          // Map dotted notation to non-dotted for data-field lookup
+          const fieldMap: Record<string, string> = {
+            "followupQuestions.question1": "followupQuestion1",
+            "followupQuestions.question2": "followupQuestion2",
+            "followupQuestions.question3": "followupQuestion3",
+          };
+          const mappedField = fieldMap[highlightField];
+          if (mappedField) {
+            element = document.querySelector(`[data-field="${mappedField}"]`);
+          }
+        }
+
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 100);
+    }
+  }, [highlightField]);
+
   // Gather fields
   console.log(data);
   const story = data.storyNarrative?.text?.trim();
@@ -534,139 +565,175 @@ export function StoryDetail({
     <div className="space-y-5">
       <section
         className={`grid gap-4 ${
-          hasCulture ? "lg:grid-cols-3" : "lg:grid-cols-2"
+          hasCulture ? "lg:grid-cols-1" : "lg:grid-cols-2"
         }`}
       >
-        <ScrollableBox
-          title="Story"
-          className={`max-h-80 ${
+        {/* Story */}
+        <div
+          className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
             highlightField === "storyNarrative"
               ? "ring-2 ring-blue-400 ring-offset-2"
               : ""
           }`}
+          data-field="storyNarrative"
         >
-          <div className="space-y-3" data-field="storyNarrative">
-            {storyAudioPath && (
-              <AudioPlayer
-                data={data}
-                fieldName="storyNarrative"
-                label="Story Narrative Recording"
-              />
-            )}
-            <div>{story || "—"}</div>
+          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+            <h3 className="text-sm font-semibold text-slate-900">Story</h3>
           </div>
-        </ScrollableBox>
-        <ScrollableBox
-          title="Living Situation"
-          className={`max-h-80 ${
+          <div className="p-4 max-h-80 overflow-y-auto">
+            {story && (
+              <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
+                {story}
+              </p>
+            )}
+            {storyAudioPath && (
+              <AudioPlayer data={data} fieldName="storyNarrative" label="" />
+            )}
+            {!story && !storyAudioPath && (
+              <p className="text-[13px] text-slate-400">—</p>
+            )}
+          </div>
+        </div>
+
+        {/* Living Situation */}
+        <div
+          className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
             highlightField === "livingSituation"
               ? "ring-2 ring-blue-400 ring-offset-2"
               : ""
           }`}
+          data-field="livingSituation"
         >
-          <div className="space-y-3" data-field="livingSituation">
-            {livingAudioPath && (
-              <AudioPlayer
-                data={data}
-                fieldName="livingSituation"
-                label="Living Situation Recording"
-              />
-            )}
-            <div>{living || "—"}</div>
+          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+            <h3 className="text-sm font-semibold text-slate-900">
+              Living Situation
+            </h3>
           </div>
-        </ScrollableBox>
+          <div className="p-4 max-h-80 overflow-y-auto">
+            {living && (
+              <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
+                {living}
+              </p>
+            )}
+            {livingAudioPath && (
+              <AudioPlayer data={data} fieldName="livingSituation" label="" />
+            )}
+            {!living && !livingAudioPath && (
+              <p className="text-[13px] text-slate-400">—</p>
+            )}
+          </div>
+        </div>
+
+        {/* Cultural Context */}
         {hasCulture && (
-          <ScrollableBox
-            title="Cultural / Context"
-            className={`max-h-80 ${
+          <div
+            className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
               highlightField === "cultureContext"
                 ? "ring-2 ring-blue-400 ring-offset-2"
                 : ""
             }`}
+            data-field="cultureContext"
           >
-            <div className="space-y-3" data-field="cultureContext">
-              {cultureAudioPath && (
-                <AudioPlayer
-                  data={data}
-                  fieldName="cultureContext"
-                  label="Cultural Context Recording"
-                />
-              )}
-              <div>{culture || "—"}</div>
+            <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+              <h3 className="text-sm font-semibold text-slate-900">
+                Cultural / Context
+              </h3>
             </div>
-          </ScrollableBox>
+            <div className="p-4 max-h-80 overflow-y-auto">
+              {culture && (
+                <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
+                  {culture}
+                </p>
+              )}
+              {cultureAudioPath && (
+                <AudioPlayer data={data} fieldName="cultureContext" label="" />
+              )}
+            </div>
+          </div>
         )}
       </section>
 
       <h3 className="mb-3 text-sm font-semibold tracking-wide text-slate-900">
         {!data.isChild ? "Upbringing" : "Family History"}
       </h3>
-      <div className="grid gap-4 md:grid-cols-1">
+      <div className="grid gap-4 grid-cols-2">
         <div
-          className={`rounded-xl border border-slate-200 p-4 ${
+          className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
             highlightField === "upbringingWhoWith"
               ? "ring-2 ring-blue-400 ring-offset-2"
               : ""
           }`}
           data-field="upbringingWhoWith"
         >
-          <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-            {data.isChild
-              ? "Medical Issues (Father Side)"
-              : "Who the patient grew up with"}
-          </h4>
-          <p className="whitespace-pre-wrap text-[13px]">
-            {data.isChild ? data.fatherSideMedicalIssues : grewWith || "—"}
-          </p>
+          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+            <h4 className="text-sm font-semibold text-slate-900">
+              {data.isChild
+                ? "Medical Issues (Father Side)"
+                : "Who the patient grew up with"}
+            </h4>
+          </div>
+          <div className="p-4">
+            <p className="whitespace-pre-wrap text-[13px] text-slate-700 leading-relaxed">
+              {data.isChild ? data.fatherSideMedicalIssues : grewWith || "—"}
+            </p>
+          </div>
         </div>
         <div
-          className={`rounded-xl border border-slate-200 p-4 ${
+          className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
             highlightField === "upbringingEnvironments"
               ? "ring-2 ring-blue-400 ring-offset-2"
               : ""
           }`}
           data-field="upbringingEnvironments"
         >
-          <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-            {data.isChild
-              ? "Medical Issues (Mother Side)"
-              : "Upbringing Environments"}
-          </h4>
-          <p className="whitespace-pre-wrap text-[13px]">
-            {data.isChild ? data.motherSideMedicalIssues : env || "—"}
-          </p>
+          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+            <h4 className="text-sm font-semibold text-slate-900">
+              {data.isChild
+                ? "Medical Issues (Mother Side)"
+                : "Upbringing Environments"}
+            </h4>
+          </div>
+          <div className="p-4">
+            <p className="whitespace-pre-wrap text-[13px] text-slate-700 leading-relaxed">
+              {data.isChild ? data.motherSideMedicalIssues : env || "—"}
+            </p>
+          </div>
         </div>
       </div>
 
       <section
-        className={`mt-4 rounded-xl border border-slate-200 bg-white p-4 ${
+        className={`mt-4 rounded-xl border border-slate-200 bg-white overflow-hidden ${
           highlightField === "familyHistoryElaboration"
             ? "ring-2 ring-blue-400 ring-offset-2"
             : ""
         }`}
         data-field="familyHistoryElaboration"
       >
-        <h4 className="mb-3 text-[13px] font-semibold text-slate-900">
-          Family Mental Health History
-        </h4>
-        <div className="grid gap-4 md:grid-cols-[1fr_3fr]">
-          <div>
-            {famHistoryList.length ? (
-              <div className="flex flex-wrap gap-2">
-                {famHistoryList.map((d, i) => (
-                  <Pill key={i} tone="info">
-                    {d}
-                  </Pill>
-                ))}
-              </div>
-            ) : (
-              <p className="text-[13px] text-slate-500">None reported</p>
-            )}
-          </div>
-          <div className="md:border-l md:border-slate-200 md:pl-4">
-            <p className="whitespace-pre-wrap text-[13px]">
-              {famElaboration || "—"}
-            </p>
+        <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+          <h4 className="text-sm font-semibold text-slate-900">
+            Family Mental Health History
+          </h4>
+        </div>
+        <div className="p-4">
+          <div className="grid gap-4 md:grid-cols-[1fr_3fr]">
+            <div>
+              {famHistoryList.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {famHistoryList.map((d, i) => (
+                    <Pill key={i} tone="info">
+                      {d}
+                    </Pill>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[13px] text-slate-500">None reported</p>
+              )}
+            </div>
+            <div className="md:border-l md:border-slate-200 md:pl-4">
+              <p className="whitespace-pre-wrap text-[13px] text-slate-700 leading-relaxed">
+                {famElaboration || "—"}
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -680,237 +747,267 @@ export function StoryDetail({
 
           <div className="grid gap-4 md:grid-cols-2">
             {/* School Info */}
-            <div className="rounded-xl border border-slate-200 p-4">
-              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                School Info
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <KV
-                  label="School name"
-                  value={data.schoolInfo?.schoolName || "—"}
-                  truncate={false}
-                />
-                <KV
-                  label="Phone"
-                  value={data.schoolInfo?.schoolPhoneNumber || "—"}
-                />
-                <KV
-                  label="Years at school"
-                  value={
-                    typeof data.schoolInfo?.yearsAtSchool === "number"
-                      ? `${data.schoolInfo!.yearsAtSchool} years`
-                      : "—"
-                  }
-                />
-                <KV label="Grade" value={data.schoolInfo?.grade || "—"} />
+            <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+              <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                <h4 className="text-sm font-semibold text-slate-900">
+                  School Info
+                </h4>
               </div>
-              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                  <span className="text-[12px] text-slate-600">
-                    Repeated a grade
-                  </span>
-                  <Pill
-                    tone={triTone(
-                      data.schoolInfo?.hasRepeatedGrade ? "poor" : undefined
-                    )}
-                  >
-                    {yn(data.schoolInfo?.hasRepeatedGrade)}
-                  </Pill>
+              <div className="p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <KV
+                    label="School name"
+                    value={data.schoolInfo?.schoolName || "—"}
+                    truncate={false}
+                  />
+                  <KV
+                    label="Phone"
+                    value={data.schoolInfo?.schoolPhoneNumber || "—"}
+                  />
+                  <KV
+                    label="Years at school"
+                    value={
+                      typeof data.schoolInfo?.yearsAtSchool === "number"
+                        ? `${data.schoolInfo!.yearsAtSchool} years`
+                        : "—"
+                    }
+                  />
+                  <KV label="Grade" value={data.schoolInfo?.grade || "—"} />
                 </div>
-                <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                  <span className="text-[12px] text-slate-600">
-                    Special classes
-                  </span>
-                  <Pill
-                    tone={data.schoolInfo?.hasSpecialClasses ? "warn" : "info"}
-                  >
-                    {yn(data.schoolInfo?.hasSpecialClasses)}
-                  </Pill>
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
+                    <span className="text-[12px] text-slate-600">
+                      Repeated a grade
+                    </span>
+                    <Pill
+                      tone={triTone(
+                        data.schoolInfo?.hasRepeatedGrade ? "poor" : undefined
+                      )}
+                    >
+                      {yn(data.schoolInfo?.hasRepeatedGrade)}
+                    </Pill>
+                  </div>
+                  <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
+                    <span className="text-[12px] text-slate-600">
+                      Special classes
+                    </span>
+                    <Pill
+                      tone={
+                        data.schoolInfo?.hasSpecialClasses ? "warn" : "info"
+                      }
+                    >
+                      {yn(data.schoolInfo?.hasSpecialClasses)}
+                    </Pill>
+                  </div>
+                  <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
+                    <span className="text-[12px] text-slate-600">
+                      Special services
+                    </span>
+                    <Pill
+                      tone={
+                        data.schoolInfo?.hasSpecialServices ? "warn" : "info"
+                      }
+                    >
+                      {yn(data.schoolInfo?.hasSpecialServices)}
+                    </Pill>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                  <span className="text-[12px] text-slate-600">
-                    Special services
-                  </span>
-                  <Pill
-                    tone={data.schoolInfo?.hasSpecialServices ? "warn" : "info"}
-                  >
-                    {yn(data.schoolInfo?.hasSpecialServices)}
-                  </Pill>
-                </div>
+                {(data.schoolInfo?.repeatedGradeDetail ||
+                  data.schoolInfo?.specialClassesDetail ||
+                  data.schoolInfo?.specialServicesDetail) && (
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    {data.schoolInfo?.repeatedGradeDetail ? (
+                      <div className="rounded-xl border border-slate-200 p-2">
+                        <h5 className="mb-1 text-[12px] font-medium text-slate-600">
+                          Repeated grade · Reason
+                        </h5>
+                        <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
+                          {data.schoolInfo.repeatedGradeDetail}
+                        </p>
+                      </div>
+                    ) : null}
+                    {data.schoolInfo?.specialClassesDetail ? (
+                      <div className="rounded-xl border border-slate-200 p-2">
+                        <h5 className="mb-1 text-[12px] font-medium text-slate-600">
+                          Special classes · Info
+                        </h5>
+                        <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
+                          {data.schoolInfo.specialClassesDetail}
+                        </p>
+                      </div>
+                    ) : null}
+                    {data.schoolInfo?.specialServicesDetail ? (
+                      <div className="rounded-xl border border-slate-200 p-2 sm:col-span-2">
+                        <h5 className="mb-1 text-[12px] font-medium text-slate-600">
+                          Special services · Info
+                        </h5>
+                        <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
+                          {data.schoolInfo.specialServicesDetail}
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
               </div>
-              {(data.schoolInfo?.repeatedGradeDetail ||
-                data.schoolInfo?.specialClassesDetail ||
-                data.schoolInfo?.specialServicesDetail) && (
-                <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                  {data.schoolInfo?.repeatedGradeDetail ? (
-                    <div className="rounded-xl border border-slate-200 p-2">
-                      <h5 className="mb-1 text-[12px] font-medium text-slate-600">
-                        Repeated grade · Reason
-                      </h5>
-                      <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
-                        {data.schoolInfo.repeatedGradeDetail}
-                      </p>
-                    </div>
-                  ) : null}
-                  {data.schoolInfo?.specialClassesDetail ? (
-                    <div className="rounded-xl border border-slate-200 p-2">
-                      <h5 className="mb-1 text-[12px] font-medium text-slate-600">
-                        Special classes · Info
-                      </h5>
-                      <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
-                        {data.schoolInfo.specialClassesDetail}
-                      </p>
-                    </div>
-                  ) : null}
-                  {data.schoolInfo?.specialServicesDetail ? (
-                    <div className="rounded-xl border border-slate-200 p-2 sm:col-span-2">
-                      <h5 className="mb-1 text-[12px] font-medium text-slate-600">
-                        Special services · Info
-                      </h5>
-                      <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
-                        {data.schoolInfo.specialServicesDetail}
-                      </p>
-                    </div>
-                  ) : null}
-                </div>
-              )}
             </div>
 
             {/* Relationships & Abilities */}
-            <div className="rounded-xl border border-slate-200 p-4">
-              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                Relationships & Abilities
-              </h4>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                  <span className="text-[12px] text-slate-600">
-                    Works independently
-                  </span>
-                  <Pill
-                    tone={triTone(
-                      data.relationshipsAbilities?.childAbilityWorkIndependently
-                    )}
-                  >
-                    {triLabel(
-                      data.relationshipsAbilities?.childAbilityWorkIndependently
-                    )}
-                  </Pill>
-                </div>
-                <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                  <span className="text-[12px] text-slate-600">
-                    Organizes self
-                  </span>
-                  <Pill
-                    tone={triTone(
-                      data.relationshipsAbilities?.childAbilityOrganizeSelf
-                    )}
-                  >
-                    {triLabel(
-                      data.relationshipsAbilities?.childAbilityOrganizeSelf
-                    )}
-                  </Pill>
-                </div>
-                <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                  <span className="text-[12px] text-slate-600">Attendance</span>
-                  <Pill
-                    tone={triTone(data.relationshipsAbilities?.childAttendance)}
-                  >
-                    {triLabel(data.relationshipsAbilities?.childAttendance)}
-                  </Pill>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+            <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+              <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                <h4 className="text-sm font-semibold text-slate-900">
+                  Relationships & Abilities
+                </h4>
+              </div>
+              <div className="p-4">
+                <div className="space-y-3">
                   <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
                     <span className="text-[12px] text-slate-600">
-                      Truancy proceedings
+                      Works independently
                     </span>
                     <Pill
-                      tone={
-                        data.relationshipsAbilities?.hadTruancyProceedings
-                          ? "danger"
-                          : "info"
-                      }
+                      tone={triTone(
+                        data.relationshipsAbilities
+                          ?.childAbilityWorkIndependently
+                      )}
                     >
-                      {yn(data.relationshipsAbilities?.hadTruancyProceedings)}
-                    </Pill>
-                  </div>
-                  <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
-                    <span className="text-[12px] text-slate-600">
-                      School counseling
-                    </span>
-                    <Pill
-                      tone={
-                        data.relationshipsAbilities?.receivedSchoolCounseling
-                          ? "warn"
-                          : "info"
-                      }
-                    >
-                      {yn(
-                        data.relationshipsAbilities?.receivedSchoolCounseling
+                      {triLabel(
+                        data.relationshipsAbilities
+                          ?.childAbilityWorkIndependently
                       )}
                     </Pill>
                   </div>
-                </div>
-                <div className="rounded-xl border border-slate-200 p-2">
-                  <h5 className="mb-1 text-[12px] font-medium text-slate-600">
-                    Teacher/Peer Relationships
-                  </h5>
-                  <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
-                    {data.relationshipsAbilities?.teachersPeersRelationship ||
-                      "—"}
-                  </p>
-                </div>
-                {data.relationshipsAbilities?.truancyProceedingsDetail ? (
+                  <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
+                    <span className="text-[12px] text-slate-600">
+                      Organizes self
+                    </span>
+                    <Pill
+                      tone={triTone(
+                        data.relationshipsAbilities?.childAbilityOrganizeSelf
+                      )}
+                    >
+                      {triLabel(
+                        data.relationshipsAbilities?.childAbilityOrganizeSelf
+                      )}
+                    </Pill>
+                  </div>
+                  <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
+                    <span className="text-[12px] text-slate-600">
+                      Attendance
+                    </span>
+                    <Pill
+                      tone={triTone(
+                        data.relationshipsAbilities?.childAttendance
+                      )}
+                    >
+                      {triLabel(data.relationshipsAbilities?.childAttendance)}
+                    </Pill>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                    <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
+                      <span className="text-[12px] text-slate-600">
+                        Truancy proceedings
+                      </span>
+                      <Pill
+                        tone={
+                          data.relationshipsAbilities?.hadTruancyProceedings
+                            ? "danger"
+                            : "info"
+                        }
+                      >
+                        {yn(data.relationshipsAbilities?.hadTruancyProceedings)}
+                      </Pill>
+                    </div>
+                    <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2">
+                      <span className="text-[12px] text-slate-600">
+                        School counseling
+                      </span>
+                      <Pill
+                        tone={
+                          data.relationshipsAbilities?.receivedSchoolCounseling
+                            ? "warn"
+                            : "info"
+                        }
+                      >
+                        {yn(
+                          data.relationshipsAbilities?.receivedSchoolCounseling
+                        )}
+                      </Pill>
+                    </div>
+                  </div>
                   <div className="rounded-xl border border-slate-200 p-2">
                     <h5 className="mb-1 text-[12px] font-medium text-slate-600">
-                      Truancy proceedings · detail
+                      Teacher/Peer Relationships
                     </h5>
                     <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
-                      {data.relationshipsAbilities.truancyProceedingsDetail}
+                      {data.relationshipsAbilities?.teachersPeersRelationship ||
+                        "—"}
                     </p>
                   </div>
-                ) : null}
-                {data.relationshipsAbilities?.schoolCounselingDetail ? (
-                  <div className="rounded-xl border border-slate-200 p-2">
-                    <h5 className="mb-1 text-[12px] font-medium text-slate-600">
-                      School counseling · detail
-                    </h5>
-                    <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
-                      {data.relationshipsAbilities.schoolCounselingDetail}
-                    </p>
-                  </div>
-                ) : null}
+                  {data.relationshipsAbilities?.truancyProceedingsDetail ? (
+                    <div className="rounded-xl border border-slate-200 p-2">
+                      <h5 className="mb-1 text-[12px] font-medium text-slate-600">
+                        Truancy proceedings · detail
+                      </h5>
+                      <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
+                        {data.relationshipsAbilities.truancyProceedingsDetail}
+                      </p>
+                    </div>
+                  ) : null}
+                  {data.relationshipsAbilities?.schoolCounselingDetail ? (
+                    <div className="rounded-xl border border-slate-200 p-2">
+                      <h5 className="mb-1 text-[12px] font-medium text-slate-600">
+                        School counseling · detail
+                      </h5>
+                      <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
+                        {data.relationshipsAbilities.schoolCounselingDetail}
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Narrative fields */}
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-xl border border-slate-200 p-4">
-              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                Academic grades
-              </h4>
-              <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
-                {data.schoolInfo?.academicGrades || "—"}
-              </p>
-            </div>
-            <div className="rounded-xl border border-slate-200 p-4">
-              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                Activities / interests / strengths
-              </h4>
-              <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
-                {data.relationshipsAbilities?.activitiesInterestsStrengths ||
-                  "—"}
-              </p>
-            </div>
-            <div className="rounded-xl border border-slate-200 p-4 md:col-span-2">
-              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                Other concerns
-              </h4>
-              <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
-                {data.relationshipsAbilities?.otherConcerns ||
-                  "No other concerns reported."}
-              </p>
+            {/* Narrative fields */}
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+                <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                  <h4 className="text-sm font-semibold text-slate-900">
+                    Academic grades
+                  </h4>
+                </div>
+                <div className="p-4">
+                  <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap">
+                    {data.schoolInfo?.academicGrades || "—"}
+                  </p>
+                </div>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+                <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                  <h4 className="text-sm font-semibold text-slate-900">
+                    Activities / interests / strengths
+                  </h4>
+                </div>
+                <div className="p-4">
+                  <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap">
+                    {data.relationshipsAbilities
+                      ?.activitiesInterestsStrengths || "—"}
+                  </p>
+                </div>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white overflow-hidden md:col-span-2">
+                <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                  <h4 className="text-sm font-semibold text-slate-900">
+                    Other concerns
+                  </h4>
+                </div>
+                <div className="p-4">
+                  <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap">
+                    {data.relationshipsAbilities?.otherConcerns ||
+                      "No other concerns reported."}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -925,114 +1022,123 @@ export function StoryDetail({
 
           {data.followupQuestions.question1 && (
             <div
-              className={`rounded-xl border border-slate-200 p-4 ${
-                highlightField === "followupQuestion1"
+              className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
+                highlightField === "followupQuestion1" ||
+                highlightField === "followupQuestions.question1"
                   ? "ring-2 ring-blue-400 ring-offset-2"
                   : ""
               }`}
               data-field="followupQuestion1"
             >
-              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                Question 1
-              </h4>
-              <p className="mb-3 text-[13px] text-slate-600 italic">
-                {data.followupQuestions.question1.question}
-              </p>
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <h5 className="mb-2 text-[12px] font-medium text-slate-700">
-                  Answer:
-                </h5>
-                {data.followupQuestions.question1.answer?.audio?.fileName && (
-                  <div className="mb-3">
-                    <AudioPlayer
-                      data={{
-                        question1Answer:
-                          data.followupQuestions.question1.answer,
-                      }}
-                      fieldName="question1Answer"
-                      label="Answer Recording"
-                    />
-                  </div>
-                )}
-                <p className="whitespace-pre-wrap text-[13px] text-slate-800">
-                  {data.followupQuestions.question1.answer?.text?.trim() || "—"}
+              <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                <h4 className="text-sm font-semibold text-slate-900">
+                  Question 1
+                </h4>
+                <p className="mt-1 text-[12px] text-slate-600 italic">
+                  {data.followupQuestions.question1.question}
                 </p>
+              </div>
+              <div className="p-4">
+                {data.followupQuestions.question1.answer?.text?.trim() && (
+                  <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
+                    {data.followupQuestions.question1.answer.text.trim()}
+                  </p>
+                )}
+                {data.followupQuestions.question1.answer?.audio?.fileName && (
+                  <AudioPlayer
+                    data={{
+                      question1Answer: data.followupQuestions.question1.answer,
+                    }}
+                    fieldName="question1Answer"
+                    label=""
+                  />
+                )}
+                {!data.followupQuestions.question1.answer?.text?.trim() &&
+                  !data.followupQuestions.question1.answer?.audio?.fileName && (
+                    <p className="text-[13px] text-slate-400">—</p>
+                  )}
               </div>
             </div>
           )}
 
           {data.followupQuestions.question2 && (
             <div
-              className={`rounded-xl border border-slate-200 p-4 ${
-                highlightField === "followupQuestion2"
+              className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
+                highlightField === "followupQuestion2" ||
+                highlightField === "followupQuestions.question2"
                   ? "ring-2 ring-blue-400 ring-offset-2"
                   : ""
               }`}
               data-field="followupQuestion2"
             >
-              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                Question 2
-              </h4>
-              <p className="mb-3 text-[13px] text-slate-600 italic">
-                {data.followupQuestions.question2.question}
-              </p>
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <h5 className="mb-2 text-[12px] font-medium text-slate-700">
-                  Answer:
-                </h5>
-                {data.followupQuestions.question2.answer?.audio?.fileName && (
-                  <div className="mb-3">
-                    <AudioPlayer
-                      data={{
-                        question2Answer:
-                          data.followupQuestions.question2.answer,
-                      }}
-                      fieldName="question2Answer"
-                      label="Answer Recording"
-                    />
-                  </div>
-                )}
-                <p className="whitespace-pre-wrap text-[13px] text-slate-800">
-                  {data.followupQuestions.question2.answer?.text?.trim() || "—"}
+              <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                <h4 className="text-sm font-semibold text-slate-900">
+                  Question 2
+                </h4>
+                <p className="mt-1 text-[12px] text-slate-600 italic">
+                  {data.followupQuestions.question2.question}
                 </p>
+              </div>
+              <div className="p-4">
+                {data.followupQuestions.question2.answer?.text?.trim() && (
+                  <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
+                    {data.followupQuestions.question2.answer.text.trim()}
+                  </p>
+                )}
+                {data.followupQuestions.question2.answer?.audio?.fileName && (
+                  <AudioPlayer
+                    data={{
+                      question2Answer: data.followupQuestions.question2.answer,
+                    }}
+                    fieldName="question2Answer"
+                    label=""
+                  />
+                )}
+                {!data.followupQuestions.question2.answer?.text?.trim() &&
+                  !data.followupQuestions.question2.answer?.audio?.fileName && (
+                    <p className="text-[13px] text-slate-400">—</p>
+                  )}
               </div>
             </div>
           )}
 
           {data.followupQuestions.question3 && (
             <div
-              className={`rounded-xl border border-slate-200 p-4 ${
-                highlightField === "followupQuestion3"
+              className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
+                highlightField === "followupQuestion3" ||
+                highlightField === "followupQuestions.question3"
                   ? "ring-2 ring-blue-400 ring-offset-2"
                   : ""
               }`}
               data-field="followupQuestion3"
             >
-              <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-                Question 3
-              </h4>
-              <p className="mb-3 text-[13px] text-slate-600 italic">
-                {data.followupQuestions.question3.question}
-              </p>
-              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                <h5 className="mb-2 text-[12px] font-medium text-slate-700">
-                  Answer:
-                </h5>
-                {data.followupQuestions.question3.answer?.audio?.fileName && (
-                  <div className="mb-3">
-                    <AudioPlayer
-                      data={{
-                        question3Answer:
-                          data.followupQuestions.question3.answer,
-                      }}
-                      fieldName="question3Answer"
-                      label="Answer Recording"
-                    />
-                  </div>
-                )}
-                <p className="whitespace-pre-wrap text-[13px] text-slate-800">
-                  {data.followupQuestions.question3.answer?.text?.trim() || "—"}
+              <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                <h4 className="text-sm font-semibold text-slate-900">
+                  Question 3
+                </h4>
+                <p className="mt-1 text-[12px] text-slate-600 italic">
+                  {data.followupQuestions.question3.question}
                 </p>
+              </div>
+              <div className="p-4">
+                {data.followupQuestions.question3.answer?.text?.trim() && (
+                  <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
+                    {data.followupQuestions.question3.answer.text.trim()}
+                  </p>
+                )}
+                {data.followupQuestions.question3.answer?.audio?.fileName && (
+                  <AudioPlayer
+                    data={{
+                      question3Answer: data.followupQuestions.question3.answer,
+                    }}
+                    fieldName="question3Answer"
+                    label=""
+                  />
+                )}
+                {!data.followupQuestions.question3.answer?.text?.trim() &&
+                  !data.followupQuestions.question3.answer?.audio?.fileName && (
+                    <p className="text-[13px] text-slate-400">—</p>
+                  )}
               </div>
             </div>
           )}
@@ -1041,17 +1147,23 @@ export function StoryDetail({
 
       {childhoodComment && (
         <div
-          className={`mt-4 rounded-xl border border-slate-200 p-4 ${
+          className={`mt-4 rounded-xl border border-slate-200 bg-white overflow-hidden ${
             highlightField === "childhoodNegativeReason"
               ? "ring-2 ring-blue-400 ring-offset-2"
               : ""
           }`}
           data-field="childhoodNegativeReason"
         >
-          <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-            Childhood Comments
-          </h4>
-          <p className="whitespace-pre-wrap text-[13px]">{childhoodComment}</p>
+          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+            <h4 className="text-sm font-semibold text-slate-900">
+              Childhood Comments
+            </h4>
+          </div>
+          <div className="p-4">
+            <p className="whitespace-pre-wrap text-[13px] text-slate-700 leading-relaxed">
+              {childhoodComment}
+            </p>
+          </div>
         </div>
       )}
     </div>

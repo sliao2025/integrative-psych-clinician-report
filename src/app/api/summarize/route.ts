@@ -20,18 +20,19 @@ export async function POST(request: NextRequest) {
       select: { json: true },
     });
 
-    if (existingProfile) {
-      const profileJson = existingProfile.json as any;
+    // TEMPORARILY DISABLED: Always fetch fresh data
+    // if (existingProfile) {
+    //   const profileJson = existingProfile.json as any;
 
-      // If summary already exists, return it
-      if (profileJson.summary) {
-        return NextResponse.json({
-          success: true,
-          summary: profileJson.summary,
-          cached: true,
-        });
-      }
-    }
+    //   // If summary already exists, return it
+    //   if (profileJson.summary) {
+    //     return NextResponse.json({
+    //       success: true,
+    //       summary: profileJson.summary,
+    //       cached: true,
+    //     });
+    //   }
+    // }
 
     // Forward the request to the summarization service
     const response = await fetch(

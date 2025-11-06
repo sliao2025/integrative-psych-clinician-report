@@ -263,6 +263,7 @@ export function AudioPlayer({
   const [duration, setDuration] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [seekPreview, setSeekPreview] = React.useState<number | null>(null);
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const animationFrameRef = React.useRef<number | null>(null);
   const isSeekingRef = React.useRef(false);
@@ -343,8 +344,8 @@ export function AudioPlayer({
 
   const handleTimeUpdate = () => {
     const audio = audioRef.current;
-    // Only update from timeupdate when not playing and not seeking
-    if (audio && !isPlaying && !isSeekingRef.current) {
+    // Only update from timeupdate when not seeking
+    if (audio && !isSeekingRef.current) {
       setCurrentTime(audio.currentTime);
     }
   };
@@ -367,12 +368,14 @@ export function AudioPlayer({
     if (audio) {
       isSeekingRef.current = true;
       const newTime = parseFloat(e.target.value);
+      setSeekPreview(newTime); // Update preview immediately
       audio.currentTime = newTime;
       setCurrentTime(newTime);
 
       // Reset seeking flag after a short delay
       setTimeout(() => {
         isSeekingRef.current = false;
+        setSeekPreview(null); // Clear preview
       }, 100);
     }
   };
@@ -383,14 +386,16 @@ export function AudioPlayer({
     setIsPlaying(false);
   };
 
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+  // Use seekPreview for immediate visual feedback during scrubbing
+  const displayTime = seekPreview !== null ? seekPreview : currentTime;
+  const progress = duration > 0 ? (displayTime / duration) * 100 : 0;
 
   // Check if transcription is being processed
   const isProcessing = !transcription || transcription.trim() === "";
   const hasTranslation = translation && translation.trim() !== "";
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
+    <div className="space-y-3">
       <audio
         ref={audioRef}
         onTimeUpdate={handleTimeUpdate}
@@ -399,14 +404,15 @@ export function AudioPlayer({
         onError={handleError}
       />
 
-      <div className="flex items-center gap-3">
+      {/* Compact Audio Controls */}
+      <div className="flex items-center gap-3 py-2 px-3 rounded-lg bg-slate-50 border border-slate-200">
         {/* Play/Pause Button */}
         <button
           onClick={handlePlayPause}
           disabled={isLoading}
           className={cx(
-            "flex-shrink-0 rounded-full p-2.5 transition-all",
-            "border border-slate-200 bg-white shadow-sm",
+            "flex-shrink-0 rounded-full p-2 transition-all",
+            "border border-slate-300 bg-white shadow-sm",
             "hover:bg-slate-50 hover:shadow-md active:scale-95",
             "disabled:opacity-50 disabled:cursor-not-allowed"
           )}
@@ -415,7 +421,7 @@ export function AudioPlayer({
         >
           {isLoading ? (
             <svg
-              className="animate-spin h-5 w-5"
+              className="animate-spin h-4 w-4"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -435,106 +441,95 @@ export function AudioPlayer({
               />
             </svg>
           ) : isPlaying ? (
-            // Pause Icon
             <Pause className="h-4 w-4" />
           ) : (
-            // Play Icon
             <Play className="h-4 w-4" />
           )}
         </button>
 
         {/* Progress and Time */}
-        <div className="flex-1 min-w-0">
-          {label && (
-            <p className="text-[12px] font-medium text-slate-600 mb-1 truncate">
-              {label}
-            </p>
-          )}
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] text-slate-500 font-mono tabular-nums">
-              {formatTime(currentTime)}
-            </span>
-            <div className="flex-1 relative">
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${progress}%`,
-                    background:
-                      "linear-gradient(90deg, #b8e7f8ff 0%, #3a9ce2ff 50%, #05539cff 100%)",
-                  }}
-                />
-              </div>
-              {/* Draggable thumb */}
+        <div className="flex-1 min-w-0 flex items-center gap-2">
+          <span className="text-[10px] text-slate-500 font-mono tabular-nums">
+            {formatTime(displayTime)}
+          </span>
+          <div className="flex-1 relative">
+            <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow-lg pointer-events-none transition-opacity"
+                className="h-full rounded-full transition-all"
                 style={{
-                  left: `calc(${progress}% - 6px)`,
-                  opacity: duration ? 1 : 0,
-                  background: intPsychTheme.secondary,
+                  width: `${progress}%`,
+                  background:
+                    "linear-gradient(90deg, #b8e7f8ff 0%, #3a9ce2ff 50%, #05539cff 100%)",
                 }}
               />
-              <input
-                type="range"
-                min="0"
-                max={duration || 0}
-                step="0.0001"
-                value={currentTime}
-                onChange={handleSeek}
-                disabled={!duration}
-                className="absolute inset-0 w-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                style={{ cursor: duration ? "pointer" : "not-allowed" }}
-              />
             </div>
-            <span className="text-[11px] text-slate-500 font-mono tabular-nums">
-              {formatTime(duration)}
-            </span>
+            {/* Draggable thumb */}
+            <div
+              className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white shadow-md pointer-events-none transition-opacity border border-slate-300"
+              style={{
+                left: `calc(${progress}% - 5px)`,
+                opacity: duration ? 1 : 0,
+                background: intPsychTheme.secondary,
+              }}
+            />
+            <input
+              type="range"
+              min="0"
+              max={duration || 0}
+              step="0.0001"
+              value={displayTime}
+              onChange={handleSeek}
+              disabled={!duration}
+              className="absolute inset-0 w-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+              style={{ cursor: duration ? "pointer" : "not-allowed" }}
+            />
           </div>
+          <span className="text-[10px] text-slate-500 font-mono tabular-nums">
+            {formatTime(duration)}
+          </span>
         </div>
       </div>
 
-      {error && <p className="mt-2 text-[11px] text-rose-600">{error}</p>}
+      {error && <p className="text-[11px] text-rose-600 px-1">{error}</p>}
 
-      {/* Transcript Display */}
+      {/* Transcript Display - Simplified */}
       {isProcessing ? (
-        <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
-          <div className="flex items-start gap-2">
-            <MessageSquareText className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-            <p className="text-xs text-amber-700">
-              Transcription processing...
-            </p>
-          </div>
+        <div className="flex items-start gap-2 py-2 px-3 bg-amber-50/50 border border-amber-200/60 rounded-lg">
+          <MessageSquareText className="w-3.5 h-3.5 text-amber-600 mt-0.5 flex-shrink-0" />
+          <p className="text-[11px] text-amber-700">
+            Transcription processing...
+          </p>
         </div>
       ) : (
-        <div className="mt-4 space-y-3">
+        <>
           {/* Transcription */}
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded-md">
-            <div className="flex items-start gap-2 mb-2">
-              <MessageSquareText className="w-4 h-4 text-slate-600 mt-0.5 flex-shrink-0" />
-              <h4 className="text-xs font-semibold text-slate-700">
-                {hasTranslation ? "Original Language" : "Transcript"}
+          <div className="py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <MessageSquareText className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+              <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                {hasTranslation ? "Original" : "Transcript"}
               </h4>
             </div>
-            <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
-              <p className="break-words">{transcription}</p>
-            </div>
+            <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+              {transcription}
+            </p>
           </div>
 
           {/* Translation (if exists) */}
           {hasTranslation && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-              <div className="flex items-start gap-2 mb-2">
-                <Languages className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                <h4 className="text-xs font-semibold text-blue-700">
+            <div className="py-2 px-3 bg-blue-50/50 border border-blue-200/60 rounded-lg">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Languages className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
+                <h4 className="text-[10px] font-semibold text-blue-600 uppercase tracking-wide">
                   English Translation
                 </h4>
               </div>
-              <div className="text-sm text-blue-900 leading-relaxed whitespace-pre-wrap">
-                <p className="break-words">{translation}</p>
-              </div>
+              <p className="text-[13px] text-blue-900 leading-relaxed whitespace-pre-wrap break-words">
+                {translation}
+              </p>
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );
