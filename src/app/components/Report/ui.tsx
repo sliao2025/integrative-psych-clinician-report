@@ -263,10 +263,7 @@ export function AudioPlayer({
   const [duration, setDuration] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const [seekPreview, setSeekPreview] = React.useState<number | null>(null);
   const audioRef = React.useRef<HTMLAudioElement>(null);
-  const animationFrameRef = React.useRef<number | null>(null);
-  const isSeekingRef = React.useRef(false);
 
   // Extract data from the fieldName
   const audioData = data[fieldName]?.audio;
@@ -288,33 +285,56 @@ export function AudioPlayer({
     audio.load();
   }, [fileName]);
 
-  // Smooth progress updates using requestAnimationFrame
+  // Handle play/pause state changes
   React.useEffect(() => {
-    if (!isPlaying) {
-      if (animationFrameRef.current !== null) {
-        cancelAnimationFrame(animationFrameRef.current);
-        animationFrameRef.current = null;
-      }
-      return;
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const updateCurrentTime = () => {
+      setCurrentTime(audio.currentTime);
+    };
+
+    const setAudioData = () => {
+      setDuration(audio.duration);
+      setCurrentTime(audio.currentTime);
+      setIsLoading(false);
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+
+    const handleError = () => {
+      setError("Failed to load audio");
+      setIsLoading(false);
+      setIsPlaying(false);
+    };
+
+    audio.addEventListener("timeupdate", updateCurrentTime);
+    audio.addEventListener("loadedmetadata", setAudioData);
+    audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", handleError);
+
+    if (isPlaying) {
+      audio.play().catch((err) => {
+        console.error("Error playing audio:", err);
+        setError("Failed to play audio");
+        setIsLoading(false);
+        setIsPlaying(false);
+      });
+    } else {
+      audio.pause();
     }
 
-    const updateProgress = () => {
-      const audio = audioRef.current;
-      if (audio && !audio.paused && !audio.ended) {
-        setCurrentTime(audio.currentTime);
-        animationFrameRef.current = requestAnimationFrame(updateProgress);
-      }
-    };
-
-    animationFrameRef.current = requestAnimationFrame(updateProgress);
-
     return () => {
-      if (animationFrameRef.current !== null) {
-        cancelAnimationFrame(animationFrameRef.current);
-        animationFrameRef.current = null;
-      }
+      audio.removeEventListener("timeupdate", updateCurrentTime);
+      audio.removeEventListener("loadedmetadata", setAudioData);
+      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
     };
   }, [isPlaying]);
+
   const formatTime = (seconds: number) => {
     if (!isFinite(seconds)) return "0:00";
     const mins = Math.floor(seconds / 60);
@@ -322,73 +342,20 @@ export function AudioPlayer({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const handlePlayPause = async () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    try {
-      if (isPlaying) {
-        audio.pause();
-        setIsPlaying(false);
-      } else {
-        await audio.play();
-        setIsPlaying(true);
-      }
-    } catch (err: any) {
-      console.error("Error playing audio:", err);
-      setError("Failed to play audio");
-      setIsLoading(false);
-      setIsPlaying(false);
-    }
-  };
-
-  const handleTimeUpdate = () => {
-    const audio = audioRef.current;
-    // Only update from timeupdate when not seeking
-    if (audio && !isSeekingRef.current) {
-      setCurrentTime(audio.currentTime);
-    }
-  };
-
-  const handleLoadedMetadata = () => {
-    const audio = audioRef.current;
-    if (audio) {
-      setDuration(audio.duration);
-      setIsLoading(false);
-    }
-  };
-
-  const handleEnded = () => {
-    setIsPlaying(false);
-    setCurrentTime(0);
+  const handlePlayPause = () => {
+    setIsPlaying((prev) => !prev);
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const audio = audioRef.current;
     if (audio) {
-      isSeekingRef.current = true;
       const newTime = parseFloat(e.target.value);
-      setSeekPreview(newTime); // Update preview immediately
       audio.currentTime = newTime;
       setCurrentTime(newTime);
-
-      // Reset seeking flag after a short delay
-      setTimeout(() => {
-        isSeekingRef.current = false;
-        setSeekPreview(null); // Clear preview
-      }, 100);
     }
   };
 
-  const handleError = () => {
-    setError("Failed to load audio");
-    setIsLoading(false);
-    setIsPlaying(false);
-  };
-
-  // Use seekPreview for immediate visual feedback during scrubbing
-  const displayTime = seekPreview !== null ? seekPreview : currentTime;
-  const progress = duration > 0 ? (displayTime / duration) * 100 : 0;
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   // Check if transcription is being processed
   const isProcessing = !transcription || transcription.trim() === "";
@@ -396,13 +363,7 @@ export function AudioPlayer({
 
   return (
     <div className="space-y-3">
-      <audio
-        ref={audioRef}
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-        onEnded={handleEnded}
-        onError={handleError}
-      />
+      <audio ref={audioRef} />
 
       {/* Compact Audio Controls */}
       <div className="flex items-center gap-3 py-2 px-3 rounded-lg bg-slate-50 border border-slate-200">
@@ -450,7 +411,7 @@ export function AudioPlayer({
         {/* Progress and Time */}
         <div className="flex-1 min-w-0 flex items-center gap-2">
           <span className="text-[10px] text-slate-500 font-mono tabular-nums">
-            {formatTime(displayTime)}
+            {formatTime(currentTime)}
           </span>
           <div className="flex-1 relative">
             <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
@@ -477,7 +438,7 @@ export function AudioPlayer({
               min="0"
               max={duration || 0}
               step="0.0001"
-              value={displayTime}
+              value={currentTime}
               onChange={handleSeek}
               disabled={!duration}
               className="absolute inset-0 w-full opacity-0 cursor-pointer disabled:cursor-not-allowed"

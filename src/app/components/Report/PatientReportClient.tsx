@@ -300,7 +300,7 @@ export default function PatientReportClient({ id }: { id: string }) {
           }
         />
 
-        {/* <div className="mt-5">
+        <div className="mt-5">
           <InsightsBlock
             userId={id}
             data={data}
@@ -478,7 +478,7 @@ export default function PatientReportClient({ id }: { id: string }) {
               }
             }}
           />
-        </div> */}
+        </div>
 
         <div className="mt-5 columns-1 md:columns-2 gap-4  [column-fill:_balance]">
           <div className="mb-4 break-inside-avoid">
