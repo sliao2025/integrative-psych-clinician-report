@@ -263,6 +263,7 @@ export function AudioPlayer({
   const [duration, setDuration] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [isSeeking, setIsSeeking] = React.useState(false);
   const audioRef = React.useRef<HTMLAudioElement>(null);
 
   // Extract data from the fieldName
@@ -291,7 +292,9 @@ export function AudioPlayer({
     if (!audio) return;
 
     const updateCurrentTime = () => {
-      setCurrentTime(audio.currentTime);
+      if (!isSeeking) {
+        setCurrentTime(audio.currentTime);
+      }
     };
 
     const setAudioData = () => {
@@ -333,7 +336,7 @@ export function AudioPlayer({
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
     };
-  }, [isPlaying]);
+  }, [isPlaying, isSeeking]);
 
   const formatTime = (seconds: number) => {
     if (!isFinite(seconds)) return "0:00";
@@ -346,13 +349,21 @@ export function AudioPlayer({
     setIsPlaying((prev) => !prev);
   };
 
+  const handleSeekStart = () => {
+    setIsSeeking(true);
+  };
+
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const audio = audioRef.current;
-    if (audio) {
+    if (audio && duration) {
       const newTime = parseFloat(e.target.value);
       audio.currentTime = newTime;
       setCurrentTime(newTime);
     }
+  };
+
+  const handleSeekEnd = () => {
+    setIsSeeking(false);
   };
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
@@ -439,7 +450,11 @@ export function AudioPlayer({
               max={duration || 0}
               step="0.0001"
               value={currentTime}
+              onMouseDown={handleSeekStart}
+              onTouchStart={handleSeekStart}
               onChange={handleSeek}
+              onMouseUp={handleSeekEnd}
+              onTouchEnd={handleSeekEnd}
               disabled={!duration}
               className="absolute inset-0 w-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
               style={{ cursor: duration ? "pointer" : "not-allowed" }}
