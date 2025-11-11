@@ -489,6 +489,7 @@ export function AudioPlayer({
             <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
               {transcription}
             </p>
+            to
           </div>
 
           {/* Translation (if exists) */}

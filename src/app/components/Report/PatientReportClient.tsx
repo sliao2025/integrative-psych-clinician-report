@@ -17,6 +17,9 @@ import {
   FileText,
   HeartPulse,
   User,
+  MessageSquareText,
+  Pencil,
+  BrainCircuit,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { DM_Serif_Text } from "next/font/google";
@@ -300,387 +303,483 @@ export default function PatientReportClient({ id }: { id: string }) {
           }
         />
 
-        <div className="mt-5">
-          <InsightsBlock
-            userId={id}
-            data={data}
-            onNavigate={(field) => {
-              // Map field to appropriate modal/card
-              const fieldModalMap: Record<string, () => void> = {
-                goals: () =>
-                  open(
-                    <>
-                      <ClipboardList className="h-4 w-4 inline-block mr-2" />
-                      Presenting Goal(s)
-                    </>,
-                    <div
-                      className="rounded-xl border border-slate-200 bg-white overflow-hidden"
-                      data-field="goals"
-                    >
-                      <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-                        <h3 className="text-sm font-semibold text-slate-900">
-                          Presenting Goals
-                        </h3>
-                      </div>
-                      <div className="p-4">
-                        {data.goals?.text && (
-                          <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
-                            {data.goals.text}
-                          </p>
-                        )}
-                        {data.goals?.audio?.fileName && (
-                          <AudioPlayer data={data} fieldName="goals" label="" />
-                        )}
-                        {!data.goals?.text && !data.goals?.audio?.fileName && (
-                          <p className="text-[13px] text-slate-400">—</p>
-                        )}
-                      </div>
-                    </div>,
-                    undefined,
-                    "goals"
-                  ),
-                livingSituation: () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-                storyNarrative: () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-                cultureContext: () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-                upbringingEnvironments: () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-                upbringingWhoWith: () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-                childhoodNegativeReason: () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-                familyHistoryElaboration: () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-                // Support both old and new field name formats for followup questions
-                followupQuestion1: () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-                followupQuestion2: () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-                followupQuestion3: () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-                "followupQuestions.question1": () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-                "followupQuestions.question2": () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-                "followupQuestions.question3": () =>
-                  open(
-                    <>
-                      <BookOpen className="h-4 w-4 inline-block mr-2" />
-                      Story / History
-                    </>,
-                    <StoryDetail data={data} highlightField={field} />,
-                    "max-w-6xl",
-                    field
-                  ),
-              };
-
-              const handler = fieldModalMap[field];
-              if (handler) {
-                handler();
-              }
-            }}
-          />
-        </div>
-
-        <div className="mt-5 columns-1 md:columns-2 gap-4  [column-fill:_balance]">
-          <div className="mb-4 break-inside-avoid">
-            <GoalsCard
-              data={data}
-              onOpen={() =>
-                open(
-                  <>
-                    <ClipboardList className="h-4 w-4 inline-block mr-2" />
-                    Presenting Goal(s)
-                  </>,
-                  <div
-                    className="rounded-xl border border-slate-200 bg-white overflow-hidden"
-                    data-field="goals"
+        {/* Clinical Insights Section */}
+        <div className="mt-8">
+          <div className="rounded-2xl bg-white border border-slate-300 overflow-hidden">
+            <div className="px-6 py-5 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-b border-amber-200/80">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-md">
+                  <BrainCircuit className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2
+                    className={`${dm_serif.className} text-2xl font-normal text-slate-800`}
                   >
-                    <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-                      <h3 className="text-sm font-semibold text-slate-900">
-                        Presenting Goals
-                      </h3>
-                    </div>
-                    <div className="p-4">
-                      {data.goals?.text && (
-                        <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
-                          {data.goals.text}
-                        </p>
-                      )}
-                      {data.goals?.audio?.fileName && (
-                        <AudioPlayer data={data} fieldName="goals" label="" />
-                      )}
-                      {!data.goals?.text && !data.goals?.audio?.fileName && (
-                        <p className="text-[13px] text-slate-400">—</p>
-                      )}
-                    </div>
-                  </div>
-                )
-              }
-            />
-          </div>
-          <div className="mb-4 break-inside-avoid">
-            <AssessmentsCard
-              data={data}
-              onOpen={() =>
-                open(
-                  <>
-                    <Activity className="h-4 w-4 inline-block mr-2" />
-                    Assessment Details
-                  </>,
-                  <AssessmentsDetail data={data} />,
-                  "max-w-7xl"
-                )
-              }
-            />
-          </div>
-          <div className="mb-4 break-inside-avoid">
-            <StoryCard
-              data={data}
-              onOpen={() =>
-                open(
-                  <>
-                    <BookOpen className="h-4 w-4 inline-block mr-2" />
-                    Story / History
-                  </>,
-                  <StoryDetail data={data} />,
-                  "max-w-6xl"
-                )
-              }
-            />
-          </div>
-          {!data.isChild && (
-            <>
-              <div className="mb-4 break-inside-avoid">
-                <PrevTreatmentCard
-                  data={data}
-                  onOpen={() =>
-                    open(
-                      <>
-                        <FileText className="h-4 w-4 inline-block mr-2" />
-                        Previous Treatment
-                      </>,
-                      <PrevTreatmentDetail data={data} />
-                    )
-                  }
-                />
+                    Clinical Insights
+                  </h2>
+                  <p className="text-xs text-amber-700">
+                    AI-powered analysis and key findings
+                  </p>
+                </div>
               </div>
-            </>
-          )}
-
-          <div className="mb-4 break-inside-avoid">
-            <SafetyCard
-              data={data}
-              onOpen={() =>
-                open(
-                  <>
-                    <ShieldAlert className="h-4 w-4 inline-block mr-2" />
-                    Suicide Risk
-                  </>,
-                  <SafetyDetail data={data} />
-                )
-              }
-            />
-          </div>
-
-          <div className="mb-4 break-inside-avoid">
-            <GlanceCard
-              data={data}
-              onOpen={() =>
-                open(
-                  <>
-                    <Info className="h-4 w-4 inline-block mr-2" />
-                    At a Glance
-                  </>,
-                  <GlanceDetail data={data} />
-                )
-              }
-            />
-          </div>
-          {data.isChild && (
-            <div className="mb-4 break-inside-avoid">
-              <MedicalHistoryCard
+            </div>
+            <div className="p-6">
+              <InsightsBlock
+                userId={id}
                 data={data}
-                onOpen={() =>
-                  open(
-                    <>
-                      <HeartPulse className="h-4 w-4 inline-block mr-2" />
-                      Medical History
-                    </>,
-                    <MedicalHistoryDetail data={data} />,
-                    "max-w-6xl"
-                  )
-                }
+                onNavigate={(field) => {
+                  // Map field to appropriate modal/card
+                  const fieldModalMap: Record<string, () => void> = {
+                    goals: () =>
+                      open(
+                        <>
+                          <ClipboardList className="h-4 w-4 inline-block mr-2" />
+                          Presenting Goal(s)
+                        </>,
+                        <div
+                          className="rounded-xl border border-slate-200 bg-white overflow-hidden"
+                          data-field="goals"
+                        >
+                          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                            <h3 className="text-sm font-semibold text-slate-900">
+                              Presenting Goals
+                            </h3>
+                          </div>
+                          <div className="p-4 space-y-4">
+                            {/* Audio Response - First */}
+                            {data.goals?.audio?.fileName && (
+                              <AudioPlayer
+                                data={data}
+                                fieldName="goals"
+                                label=""
+                              />
+                            )}
+
+                            {/* Written Response - Second */}
+                            {data.goals?.text && (
+                              <div className="py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+                                <div className="flex items-center gap-1.5 mb-1.5">
+                                  <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                                  <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                                    Written Response
+                                  </h4>
+                                </div>
+                                <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+                                  {data.goals.text}
+                                </p>
+                              </div>
+                            )}
+
+                            {!data.goals?.text &&
+                              !data.goals?.audio?.fileName && (
+                                <p className="text-[13px] text-slate-400">—</p>
+                              )}
+                          </div>
+                        </div>,
+                        undefined,
+                        "goals"
+                      ),
+                    livingSituation: () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                    storyNarrative: () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                    cultureContext: () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                    upbringingEnvironments: () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                    upbringingWhoWith: () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                    childhoodNegativeReason: () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                    familyHistoryElaboration: () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                    // Support both old and new field name formats for followup questions
+                    followupQuestion1: () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                    followupQuestion2: () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                    followupQuestion3: () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                    "followupQuestions.question1": () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                    "followupQuestions.question2": () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                    "followupQuestions.question3": () =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} highlightField={field} />,
+                        "max-w-6xl",
+                        field
+                      ),
+                  };
+
+                  const handler = fieldModalMap[field];
+                  if (handler) {
+                    handler();
+                  }
+                }}
               />
             </div>
-          )}
-          <div className="mb-4 break-inside-avoid">
-            <RelationshipsCard
-              data={data}
-              onOpen={() =>
-                open(
-                  <>
-                    <UsersIcon className="h-4 w-4 inline-block mr-2" />
-                    Relationships
-                  </>,
-                  <RelationshipsDetail data={data} />
-                )
-              }
-            />
-          </div>
-
-          <div className="mb-4 break-inside-avoid">
-            <MedsCard
-              data={data}
-              onOpen={() =>
-                open(
-                  <>
-                    <PillIcon className="h-4 w-4 inline-block mr-2" />
-                    Medications
-                  </>,
-                  <MedsDetail data={data} />
-                )
-              }
-            />
-          </div>
-          <div className="mb-4 break-inside-avoid">
-            <AllergiesCard
-              data={data}
-              onOpen={() =>
-                open(
-                  <>
-                    <Syringe className="h-4 w-4 inline-block mr-2" />
-                    Allergies
-                  </>,
-                  <AllergiesDetail data={data} />
-                )
-              }
-            />
-          </div>
-          <div className="mb-4 break-inside-avoid">
-            <HospitalizationsCard
-              data={data}
-              onOpen={() =>
-                open(
-                  <>
-                    <Stethoscope className="h-4 w-4 inline-block mr-2" />
-                    Hospitalizations & Injuries
-                  </>,
-                  <HospitalizationsDetail data={data} />
-                )
-              }
-            />
           </div>
         </div>
 
-        {modal && (
-          <CenterModal
-            title={modal.title}
-            onClose={close}
-            maxWidth={modal.maxWidth}
-          >
-            {modal.content}
-          </CenterModal>
-        )}
+        {/* Patient Details Section */}
+        <div className="mt-8">
+          <div className="rounded-2xl bg-white border border-slate-300 overflow-hidden">
+            <div
+              className="px-6 py-5 border-b"
+              style={{
+                background: `linear-gradient(to right, #f0f9ff, #f5f9ff, #f0f9ff)`,
+                borderBottomColor: `${intPsychTheme.primary}30`,
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex items-center justify-center w-10 h-10 rounded-xl shadow-md"
+                  style={{
+                    background: `linear-gradient(to bottom right, ${intPsychTheme.primary}, ${intPsychTheme.accent})`,
+                  }}
+                >
+                  <FileText className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2
+                    className={`${dm_serif.className} text-2xl font-normal`}
+                    style={{ color: intPsychTheme.primary }}
+                  >
+                    Patient Details
+                  </h2>
+                  <p
+                    className="text-xs"
+                    style={{ color: intPsychTheme.accent }}
+                  >
+                    Full Intake Responses
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="columns-1 md:columns-2 gap-4 [column-fill:_balance]">
+                <div className="mb-4 break-inside-avoid">
+                  <GoalsCard
+                    data={data}
+                    onOpen={() =>
+                      open(
+                        <>
+                          <ClipboardList className="h-4 w-4 inline-block mr-2" />
+                          Presenting Goal(s)
+                        </>,
+                        <div
+                          className="rounded-xl border border-slate-200 bg-white overflow-hidden"
+                          data-field="goals"
+                        >
+                          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                            <h3 className="text-sm font-semibold text-slate-900">
+                              Presenting Goals
+                            </h3>
+                          </div>
+                          <div className="p-4 space-y-4">
+                            {/* Audio Response - First */}
+                            {data.goals?.audio?.fileName && (
+                              <AudioPlayer
+                                data={data}
+                                fieldName="goals"
+                                label=""
+                              />
+                            )}
+
+                            {/* Written Response - Second */}
+                            {data.goals?.text && (
+                              <div className="py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+                                <div className="flex items-center gap-1.5 mb-1.5">
+                                  <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                                  <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                                    Written Response
+                                  </h4>
+                                </div>
+                                <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+                                  {data.goals.text}
+                                </p>
+                              </div>
+                            )}
+
+                            {!data.goals?.text &&
+                              !data.goals?.audio?.fileName && (
+                                <p className="text-[13px] text-slate-400">—</p>
+                              )}
+                          </div>
+                        </div>
+                      )
+                    }
+                  />
+                </div>
+                <div className="mb-4 break-inside-avoid">
+                  <AssessmentsCard
+                    data={data}
+                    onOpen={() =>
+                      open(
+                        <>
+                          <Activity className="h-4 w-4 inline-block mr-2" />
+                          Assessment Details
+                        </>,
+                        <AssessmentsDetail data={data} />,
+                        "max-w-7xl"
+                      )
+                    }
+                  />
+                </div>
+                <div className="mb-4 break-inside-avoid">
+                  <StoryCard
+                    data={data}
+                    onOpen={() =>
+                      open(
+                        <>
+                          <BookOpen className="h-4 w-4 inline-block mr-2" />
+                          Story / History
+                        </>,
+                        <StoryDetail data={data} />,
+                        "max-w-6xl"
+                      )
+                    }
+                  />
+                </div>
+                {!data.isChild && (
+                  <>
+                    <div className="mb-4 break-inside-avoid">
+                      <PrevTreatmentCard
+                        data={data}
+                        onOpen={() =>
+                          open(
+                            <>
+                              <FileText className="h-4 w-4 inline-block mr-2" />
+                              Previous Treatment
+                            </>,
+                            <PrevTreatmentDetail data={data} />
+                          )
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+
+                <div className="mb-4 break-inside-avoid">
+                  <SafetyCard
+                    data={data}
+                    onOpen={() =>
+                      open(
+                        <>
+                          <ShieldAlert className="h-4 w-4 inline-block mr-2" />
+                          Suicide Risk
+                        </>,
+                        <SafetyDetail data={data} />
+                      )
+                    }
+                  />
+                </div>
+
+                <div className="mb-4 break-inside-avoid">
+                  <GlanceCard
+                    data={data}
+                    onOpen={() =>
+                      open(
+                        <>
+                          <Info className="h-4 w-4 inline-block mr-2" />
+                          At a Glance
+                        </>,
+                        <GlanceDetail data={data} />
+                      )
+                    }
+                  />
+                </div>
+                {data.isChild && (
+                  <div className="mb-4 break-inside-avoid">
+                    <MedicalHistoryCard
+                      data={data}
+                      onOpen={() =>
+                        open(
+                          <>
+                            <HeartPulse className="h-4 w-4 inline-block mr-2" />
+                            Medical History
+                          </>,
+                          <MedicalHistoryDetail data={data} />,
+                          "max-w-6xl"
+                        )
+                      }
+                    />
+                  </div>
+                )}
+
+                <div className="mb-4 break-inside-avoid">
+                  <RelationshipsCard
+                    data={data}
+                    onOpen={() =>
+                      open(
+                        <>
+                          <UsersIcon className="h-4 w-4 inline-block mr-2" />
+                          Relationships
+                        </>,
+                        <RelationshipsDetail data={data} />
+                      )
+                    }
+                  />
+                </div>
+
+                <div className="mb-4 break-inside-avoid">
+                  <MedsCard
+                    data={data}
+                    onOpen={() =>
+                      open(
+                        <>
+                          <PillIcon className="h-4 w-4 inline-block mr-2" />
+                          Medications
+                        </>,
+                        <MedsDetail data={data} />
+                      )
+                    }
+                  />
+                </div>
+                <div className="mb-4 break-inside-avoid">
+                  <AllergiesCard
+                    data={data}
+                    onOpen={() =>
+                      open(
+                        <>
+                          <Syringe className="h-4 w-4 inline-block mr-2" />
+                          Allergies
+                        </>,
+                        <AllergiesDetail data={data} />
+                      )
+                    }
+                  />
+                </div>
+                <div className="mb-4 break-inside-avoid">
+                  <HospitalizationsCard
+                    data={data}
+                    onOpen={() =>
+                      open(
+                        <>
+                          <Stethoscope className="h-4 w-4 inline-block mr-2" />
+                          Hospitalizations & Injuries
+                        </>,
+                        <HospitalizationsDetail data={data} />
+                      )
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {modal && (
+        <CenterModal
+          title={modal.title}
+          onClose={close}
+          maxWidth={modal.maxWidth}
+        >
+          {modal.content}
+        </CenterModal>
+      )}
     </>
   );
 }

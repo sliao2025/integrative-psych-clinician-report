@@ -25,7 +25,12 @@ import {
   SCARED_CHILD_QUESTIONS,
   SNAP_QUESTIONS,
 } from "../text";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  MessageSquareText,
+  Pencil,
+} from "lucide-react";
 
 const scoreSum = (obj: Record<string, any> = {}) =>
   Object.values(obj).reduce(
@@ -579,65 +584,115 @@ export function StoryDetail({
           }`}
           data-field="storyNarrative"
         >
-          <ScrollableBox title="Story" className="border-0 h-80">
-            {story && (
-              <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
-                {story}
-              </p>
-            )}
+          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+            <h4 className="text-sm font-semibold text-slate-900">Story</h4>
+          </div>
+          <div className="p-4 space-y-4 max-h-[400px] overflow-y-auto">
+            {/* Audio Response - First */}
             {storyAudioPath && (
               <AudioPlayer data={data} fieldName="storyNarrative" label="" />
             )}
+
+            {/* Written Response - Second */}
+            {story && (
+              <div className="py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                  <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                    Written Response
+                  </h4>
+                </div>
+                <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+                  {story}
+                </p>
+              </div>
+            )}
+
             {!story && !storyAudioPath && (
               <p className="text-[13px] text-slate-400">—</p>
             )}
-          </ScrollableBox>
+          </div>
         </div>
 
         {/* Living Situation */}
         <div
-          className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
+          className={`rounded-xl ${
+            !hasCulture ? "col-span-2" : "col-span-2 sm:col-span-1"
+          } border border-slate-200 bg-white overflow-hidden ${
             highlightField === "livingSituation"
               ? "ring-2 ring-blue-400 ring-offset-2"
               : ""
           }`}
           data-field="livingSituation"
         >
-          <ScrollableBox title="Living Situation" className="border-0 h-80">
-            {living && (
-              <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
-                {living}
-              </p>
-            )}
+          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+            <h4 className="text-sm font-semibold text-slate-900">
+              Living Situation
+            </h4>
+          </div>
+          <div className="p-4 space-y-4 max-h-[400px] overflow-y-auto">
+            {/* Audio Response - First */}
             {livingAudioPath && (
               <AudioPlayer data={data} fieldName="livingSituation" label="" />
             )}
+
+            {/* Written Response - Second */}
+            {living && (
+              <div className="py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                  <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                    Written Response
+                  </h4>
+                </div>
+                <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+                  {living}
+                </p>
+              </div>
+            )}
+
             {!living && !livingAudioPath && (
               <p className="text-[13px] text-slate-400">—</p>
             )}
-          </ScrollableBox>
+          </div>
         </div>
 
         {/* Cultural Context */}
         {hasCulture && (
           <div
-            className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
+            className={`rounded-xl col-span-2 sm:col-span-1 border border-slate-200 bg-white overflow-hidden ${
               highlightField === "cultureContext"
                 ? "ring-2 ring-blue-400 ring-offset-2"
                 : ""
             }`}
             data-field="cultureContext"
           >
-            <ScrollableBox title="Cultural / Context" className="border-0 h-80">
-              {culture && (
-                <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
-                  {culture}
-                </p>
-              )}
+            <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+              <h4 className="text-sm font-semibold text-slate-900">
+                Cultural / Context
+              </h4>
+            </div>
+            <div className="p-4 space-y-4 max-h-[400px] overflow-y-auto">
+              {/* Audio Response - First */}
               {cultureAudioPath && (
                 <AudioPlayer data={data} fieldName="cultureContext" label="" />
               )}
-            </ScrollableBox>
+
+              {/* Written Response - Second */}
+              {culture && (
+                <div className="py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                    <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                      Written Response
+                    </h4>
+                  </div>
+                  <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+                    {culture}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </section>
@@ -645,7 +700,7 @@ export function StoryDetail({
       <h3 className="mb-3 text-sm font-semibold tracking-wide text-slate-900">
         {!data.isChild ? "Upbringing" : "Family History"}
       </h3>
-      <div className="grid gap-4 grid-cols-2">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
         <div
           className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
             highlightField === "upbringingWhoWith"
@@ -654,18 +709,18 @@ export function StoryDetail({
           }`}
           data-field="upbringingWhoWith"
         >
-          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-            <h4 className="text-sm font-semibold text-slate-900">
-              {data.isChild
+          <ScrollableBox
+            title={
+              data.isChild
                 ? "Medical Issues (Father Side)"
-                : "Who the patient grew up with"}
-            </h4>
-          </div>
-          <div className="p-4">
+                : "Who the patient grew up with"
+            }
+            className="border-0 h-40"
+          >
             <p className="whitespace-pre-wrap text-[13px] text-slate-700 leading-relaxed">
               {data.isChild ? data.fatherSideMedicalIssues : grewWith || "—"}
             </p>
-          </div>
+          </ScrollableBox>
         </div>
         <div
           className={`rounded-xl border border-slate-200 bg-white overflow-hidden ${
@@ -675,18 +730,18 @@ export function StoryDetail({
           }`}
           data-field="upbringingEnvironments"
         >
-          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-            <h4 className="text-sm font-semibold text-slate-900">
-              {data.isChild
+          <ScrollableBox
+            title={
+              data.isChild
                 ? "Medical Issues (Mother Side)"
-                : "Upbringing Environments"}
-            </h4>
-          </div>
-          <div className="p-4">
+                : "Upbringing Environments"
+            }
+            className="border-0 h-40"
+          >
             <p className="whitespace-pre-wrap text-[13px] text-slate-700 leading-relaxed">
               {data.isChild ? data.motherSideMedicalIssues : env || "—"}
             </p>
-          </div>
+          </ScrollableBox>
         </div>
       </div>
 
@@ -1145,7 +1200,7 @@ export function StoryDetail({
         >
           <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
             <h4 className="text-sm font-semibold text-slate-900">
-              Childhood Comments
+              Negative Childhood Comments
             </h4>
           </div>
           <div className="p-4">
@@ -1365,7 +1420,7 @@ export function RelationshipsDetail({ data }: { data: ProfileJson }) {
                 <p className="text-[13px] font-medium text-slate-900 truncate">
                   {r.name} • {r.role}
                 </p>
-                <p className="text-[12px] text-slate-700">
+                <p className="text-[12px] italic text-slate-700">
                   {strengthLabel(r.strength)} relationship
                 </p>
               </div>

@@ -20,6 +20,7 @@ import {
   Frown,
   Meh,
   Smile,
+  MapPin,
 } from "lucide-react";
 import { KV, Gauge } from "./ui";
 import { ProfileJson } from "../types";
@@ -45,7 +46,7 @@ export function DemographicsHeader({
   ) =>
     value ? options.find((o) => o.value === value)?.label ?? value : undefined;
   return (
-    <div className="relative rounded-2xl border border-slate-300 bg-white p-4 sm:p-5 ">
+    <div className="relative rounded-2xl border border-slate-300 bg-white p-4 sm:p-5">
       <div className="grid grid-cols-12 gap-3 sm:gap-4 md:gap-5 items-start">
         {/* Left: Avatar + Name */}
         <div className="col-span-12 md:col-span-4 lg:col-span-7 flex items-center gap-3 min-w-0">
@@ -207,45 +208,75 @@ export function InsightsBlock({
     null
   );
   const [summaryData, setSummaryData] = useState<Summary | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [positiveIndex, setPositiveIndex] = useState(0);
   const [negativeIndex, setNegativeIndex] = useState(0);
+  const [loadingPhrase, setLoadingPhrase] = useState(0);
+
+  const loadingPhrases = [
+    "Analyzing patient responses...",
+    "Processing emotional patterns...",
+    "Identifying key insights...",
+    "Evaluating sentiment distribution...",
+    "Synthesizing clinical observations...",
+    "Extracting meaningful patterns...",
+    "Generating comprehensive analysis...",
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        // Always fetch both sentiment and summary (for now, no caching check)
+        // Check if sentiment and summary already exist in profile data
+        const existingSentiment = data?.sentimentAnalysis;
+        const existingSummary = data?.summary;
+
+        // If both exist, use cached data
+        if (existingSentiment && existingSummary) {
+          setSentimentData(existingSentiment);
+          setSummaryData(existingSummary);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch only missing data
         const promises = [];
 
-        promises.push(
-          fetch("/api/sentiment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId }),
-          })
-            .then((res) => res.json())
-            .then((responseData) => {
-              if (responseData.success && responseData.result) {
-                setSentimentData(responseData.result);
-              }
+        if (!existingSentiment) {
+          promises.push(
+            fetch("/api/sentiment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId }),
             })
-        );
+              .then((res) => res.json())
+              .then((responseData) => {
+                if (responseData.success && responseData.result) {
+                  setSentimentData(responseData.result);
+                }
+              })
+          );
+        } else {
+          setSentimentData(existingSentiment);
+        }
 
-        promises.push(
-          fetch("/api/summarize", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId }),
-          })
-            .then((res) => res.json())
-            .then((responseData) => {
-              if (responseData.success && responseData.summary) {
-                setSummaryData(responseData.summary);
-              }
+        if (!existingSummary) {
+          promises.push(
+            fetch("/api/summarize", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId }),
             })
-        );
+              .then((res) => res.json())
+              .then((responseData) => {
+                if (responseData.success && responseData.summary) {
+                  setSummaryData(responseData.summary);
+                }
+              })
+          );
+        } else {
+          setSummaryData(existingSummary);
+        }
 
         await Promise.all(promises);
       } catch (err: any) {
@@ -260,6 +291,17 @@ export function InsightsBlock({
       fetchData();
     }
   }, [userId, data]);
+
+  // Rotate loading phrases
+  useEffect(() => {
+    if (!loading) return;
+
+    const interval = setInterval(() => {
+      setLoadingPhrase((prev) => (prev + 1) % loadingPhrases.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [loading, loadingPhrases.length]);
 
   if (loading) {
     return (
@@ -281,13 +323,31 @@ export function InsightsBlock({
             </p>
           </div>
         </div>
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-pulse text-center">
-            <div
-              style={{ borderTopColor: intPsychTheme.secondary }}
-              className="rounded-full h-8 w-8 mx-auto mb-3 border-4 border-gray-300 border-t-4 border-t-transparent animate-spin"
-            />
-            <p className="text-sm text-slate-600">Analyzing patient data...</p>
+
+        <div className="flex flex-col items-center justify-center py-12 space-y-5">
+          {/* Simple Spinner */}
+          <div
+            style={{ borderTopColor: intPsychTheme.secondary }}
+            className="rounded-full h-10 w-10 border-4 border-gray-200 border-t-4 animate-spin"
+          />
+
+          {/* Rotating Text with Fade Transition */}
+          <div className="relative h-6 flex items-center justify-center overflow-hidden w-full">
+            {loadingPhrases.map((phrase, index) => (
+              <p
+                key={index}
+                className={`absolute text-sm font-medium transition-all duration-500 ${
+                  index === loadingPhrase
+                    ? "opacity-100 translate-y-0"
+                    : index < loadingPhrase
+                    ? "opacity-0 -translate-y-4"
+                    : "opacity-0 translate-y-4"
+                }`}
+                style={{ color: intPsychTheme.primary }}
+              >
+                {phrase}
+              </p>
+            ))}
           </div>
         </div>
       </div>
@@ -307,7 +367,7 @@ export function InsightsBlock({
               className={`text-xl sm:text-2xl ${dm_serif.className} font-semibold tracking-tight`}
               style={{ color: intPsychTheme.primary }}
             >
-              AI Sentiment Analysis
+              Clinical Insights
             </h2>
             <p className="text-[11px] sm:text-xs text-slate-600 mt-0.5">
               Analyzing emotional tone of patient responses
@@ -395,9 +455,10 @@ export function InsightsBlock({
             </p>
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <span
-                className={`${accentColor} text-[11px] sm:text-xs font-medium`}
+                className={`${accentColor} text-[11px] sm:text-xs font-medium flex items-center gap-1`}
               >
-                📍 {fieldLabel}
+                <MapPin className="h-3 w-3" />
+                {fieldLabel}
               </span>
               <div className="flex items-center gap-2">
                 <div className="h-1.5 w-16 sm:w-20 bg-white/50 rounded-full overflow-hidden">
@@ -435,33 +496,19 @@ export function InsightsBlock({
   };
 
   return (
-    <div className="relative rounded-2xl border border-slate-300 bg-white p-4 sm:p-5">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-4">
-        <BrainCircuit
-          className="h-5 w-5"
-          style={{ color: intPsychTheme.primary }}
-        />
-        <div>
-          <h2
-            className={`text-xl sm:text-2xl ${dm_serif.className} font-semibold tracking-tight`}
-            style={{ color: intPsychTheme.primary }}
-          >
-            Clinical Insights
-          </h2>
-          <p className="text-[11px] sm:text-xs text-slate-600 mt-0.5">
-            AI-powered patient analysis
-          </p>
-        </div>
-      </div>
-
+    <>
       {/* Patient Summary Section */}
       {summaryData && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
           {/* Patient Bio */}
-          <div className="rounded-xl border border-blue-200/60 bg-gradient-to-br from-blue-50/50 to-white p-4">
-            <h3 className="text-sm sm:text-base font-bold text-blue-900 mb-2 flex items-center gap-2">
-              <UserRound className="h-5 w-5 text-blue-600" />
+          <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <h3
+              className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold text-slate-900 mb-2 flex items-center gap-2`}
+            >
+              <UserRound
+                className="h-5 w-5"
+                style={{ color: intPsychTheme.primary }}
+              />
               Patient Bio
             </h3>
             <p className="text-[13px] sm:text-sm text-slate-700 leading-relaxed">
@@ -470,9 +517,14 @@ export function InsightsBlock({
           </div>
 
           {/* Chief Complaint */}
-          <div className="rounded-xl border border-blue-200/60 bg-gradient-to-br from-blue-50/50 to-white p-4">
-            <h3 className="text-sm sm:text-base font-bold text-blue-900 mb-2 flex items-center gap-2">
-              <MessageCircleMore className="h-5 w-5 text-blue-600" />
+          <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <h3
+              className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold text-slate-900 mb-2 flex items-center gap-2`}
+            >
+              <MessageCircleMore
+                className="h-5 w-5"
+                style={{ color: intPsychTheme.primary }}
+              />
               Chief Complaint
             </h3>
             <p className="text-[13px] sm:text-sm text-slate-700 leading-relaxed">
@@ -484,41 +536,29 @@ export function InsightsBlock({
 
       {/* Sentiment Analysis Section */}
       {sentimentData && (
-        <div className="rounded-xl border border-slate-200/60 bg-gradient-to-br from-slate-50/50 to-white p-4">
-          {/* Section Title with Button */}
-          <div className="mb-3 flex items-start justify-between gap-4">
-            <div>
-              <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-slate-600" />
-                Emotional Tone Analysis
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {sentimentData.total_sentences} sentences analyzed across all
-                responses
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="flex-shrink-0 flex cursor-pointer items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] sm:text-[12px] font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 active:bg-slate-200 transition-all hover:shadow"
+        <div className="rounded-xl border border-slate-200 bg-white p-4">
+          {/* Section Title */}
+          <div className="mb-3">
+            <h3
+              className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold text-slate-900 flex items-center gap-2`}
             >
-              {isExpanded ? "Hide" : "View"} Sentences
-              {isExpanded ? (
-                <ChevronUp className="h-3.5 w-3.5" />
-              ) : (
-                <ChevronDown className="h-3.5 w-3.5 animate-bounce" />
-              )}
-            </button>
+              <TrendingUp className="h-4 w-4 text-slate-600" />
+              Emotional Tone Analysis
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {sentimentData.total_sentences} sentences analyzed across all
+              responses
+            </p>
           </div>
 
           {/* Summary Stats - Always visible when sentiment exists */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
             {/* Positive */}
-            <div className="rounded-xl border border-emerald-200/60 bg-gradient-to-br from-emerald-50/50 to-white p-3.5 sm:p-4">
+            <div className="rounded-xl border border-slate-200 bg-white p-3.5 sm:p-4">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Smile className="h-5 w-5 text-emerald-500" />
-                  <span className="text-[13px] sm:text-sm font-semibold text-emerald-900">
+                  <span className="text-[13px] sm:text-sm  font-semibold text-emerald-900">
                     Positive
                   </span>
                 </div>
@@ -549,7 +589,7 @@ export function InsightsBlock({
             </div>
 
             {/* Negative */}
-            <div className="rounded-xl border border-rose-200/60 bg-gradient-to-br from-rose-50/50 to-white p-3.5 sm:p-4">
+            <div className="rounded-xl border border-slate-200 bg-white p-3.5 sm:p-4">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Frown className="h-5 w-5 text-rose-400" />
@@ -584,7 +624,7 @@ export function InsightsBlock({
             </div>
 
             {/* Neutral */}
-            <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50/50 to-white p-3.5 sm:p-4">
+            <div className="rounded-xl border border-slate-200 bg-white p-3.5 sm:p-4">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Meh className="h-5 w-5 text-slate-400" />
@@ -619,158 +659,148 @@ export function InsightsBlock({
             </div>
           </div>
 
-          {/* Collapsible Details - Carousel */}
-          {isExpanded && (
-            <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* Positive Column - Carousel */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm sm:text-base font-semibold text-emerald-900 flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4" />
-                    Most Positive Sentences
-                  </h3>
-                  {positiveSentences.length > 0 && (
-                    <span className="text-xs text-emerald-700 font-medium">
-                      {positiveIndex + 1} of {positiveSentences.length}
-                    </span>
-                  )}
-                </div>
-                {positiveSentences.length > 0 ? (
-                  <div className="relative">
-                    <SentenceCard
-                      sentence={positiveSentences[positiveIndex]}
-                      type="positive"
-                    />
-                    {positiveSentences.length > 1 && (
-                      <div className="flex items-center justify-center gap-2 mt-3">
-                        <button
-                          onClick={() =>
-                            setPositiveIndex((prev) =>
-                              prev === 0
-                                ? positiveSentences.length - 1
-                                : prev - 1
-                            )
-                          }
-                          className="flex items-center justify-center h-8 w-8 rounded-full border border-emerald-300 bg-white hover:bg-emerald-50 transition-colors"
-                          aria-label="Previous positive sentence"
-                        >
-                          <ChevronLeft className="h-4 w-4 text-emerald-700" />
-                        </button>
-                        <div className="flex gap-1.5">
-                          {positiveSentences.map((_, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => setPositiveIndex(idx)}
-                              className={`h-2 rounded-full transition-all ${
-                                idx === positiveIndex
-                                  ? "w-6 bg-emerald-600"
-                                  : "w-2 bg-emerald-300 hover:bg-emerald-400"
-                              }`}
-                              aria-label={`Go to positive sentence ${idx + 1}`}
-                            />
-                          ))}
-                        </div>
-                        <button
-                          onClick={() =>
-                            setPositiveIndex((prev) =>
-                              prev === positiveSentences.length - 1
-                                ? 0
-                                : prev + 1
-                            )
-                          }
-                          className="flex items-center justify-center h-8 w-8 rounded-full border border-emerald-300 bg-white hover:bg-emerald-50 transition-colors"
-                          aria-label="Next positive sentence"
-                        >
-                          <ChevronRight className="h-4 w-4 text-emerald-700" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
-                    <p className="text-sm text-slate-600">
-                      No positive sentences found
-                    </p>
-                  </div>
+          {/* Sentence Details - Carousel */}
+          <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Positive Column - Carousel */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm sm:text-base font-semibold text-emerald-900 flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Most Positive Sentences
+                </h3>
+                {positiveSentences.length > 0 && (
+                  <span className="text-xs text-emerald-700 font-medium">
+                    {positiveIndex + 1} of {positiveSentences.length}
+                  </span>
                 )}
               </div>
-
-              {/* Negative Column - Carousel */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm sm:text-base font-semibold text-rose-900 flex items-center gap-2">
-                    <TrendingDown className="h-4 w-4" />
-                    Most Negative Sentences
-                  </h3>
-                  {negativeSentences.length > 0 && (
-                    <span className="text-xs text-rose-700 font-medium">
-                      {negativeIndex + 1} of {negativeSentences.length}
-                    </span>
+              {positiveSentences.length > 0 ? (
+                <div className="relative">
+                  <SentenceCard
+                    sentence={positiveSentences[positiveIndex]}
+                    type="positive"
+                  />
+                  {positiveSentences.length > 1 && (
+                    <div className="flex items-center justify-center gap-2 mt-3">
+                      <button
+                        onClick={() =>
+                          setPositiveIndex((prev) =>
+                            prev === 0 ? positiveSentences.length - 1 : prev - 1
+                          )
+                        }
+                        className="flex items-center justify-center h-8 w-8 rounded-full border border-emerald-300 bg-white hover:bg-emerald-50 transition-colors"
+                        aria-label="Previous positive sentence"
+                      >
+                        <ChevronLeft className="h-4 w-4 text-emerald-700" />
+                      </button>
+                      <div className="flex gap-1.5">
+                        {positiveSentences.map((_, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setPositiveIndex(idx)}
+                            className={`h-2 rounded-full transition-all ${
+                              idx === positiveIndex
+                                ? "w-6 bg-emerald-600"
+                                : "w-2 bg-emerald-300 hover:bg-emerald-400"
+                            }`}
+                            aria-label={`Go to positive sentence ${idx + 1}`}
+                          />
+                        ))}
+                      </div>
+                      <button
+                        onClick={() =>
+                          setPositiveIndex((prev) =>
+                            prev === positiveSentences.length - 1 ? 0 : prev + 1
+                          )
+                        }
+                        className="flex items-center justify-center h-8 w-8 rounded-full border border-emerald-300 bg-white hover:bg-emerald-50 transition-colors"
+                        aria-label="Next positive sentence"
+                      >
+                        <ChevronRight className="h-4 w-4 text-emerald-700" />
+                      </button>
+                    </div>
                   )}
                 </div>
-                {negativeSentences.length > 0 ? (
-                  <div className="relative">
-                    <SentenceCard
-                      sentence={negativeSentences[negativeIndex]}
-                      type="negative"
-                    />
-                    {negativeSentences.length > 1 && (
-                      <div className="flex items-center justify-center gap-2 mt-3">
-                        <button
-                          onClick={() =>
-                            setNegativeIndex((prev) =>
-                              prev === 0
-                                ? negativeSentences.length - 1
-                                : prev - 1
-                            )
-                          }
-                          className="flex items-center justify-center h-8 w-8 rounded-full border border-rose-300 bg-white hover:bg-rose-50 transition-colors"
-                          aria-label="Previous negative sentence"
-                        >
-                          <ChevronLeft className="h-4 w-4 text-rose-700" />
-                        </button>
-                        <div className="flex gap-1.5">
-                          {negativeSentences.map((_, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => setNegativeIndex(idx)}
-                              className={`h-2 rounded-full transition-all ${
-                                idx === negativeIndex
-                                  ? "w-6 bg-rose-600"
-                                  : "w-2 bg-rose-300 hover:bg-rose-400"
-                              }`}
-                              aria-label={`Go to negative sentence ${idx + 1}`}
-                            />
-                          ))}
-                        </div>
-                        <button
-                          onClick={() =>
-                            setNegativeIndex((prev) =>
-                              prev === negativeSentences.length - 1
-                                ? 0
-                                : prev + 1
-                            )
-                          }
-                          className="flex items-center justify-center h-8 w-8 rounded-full border border-rose-300 bg-white hover:bg-rose-50 transition-colors"
-                          aria-label="Next negative sentence"
-                        >
-                          <ChevronRight className="h-4 w-4 text-rose-700" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
-                    <p className="text-sm text-slate-600">
-                      No negative sentences found
-                    </p>
-                  </div>
-                )}
-              </div>
+              ) : (
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
+                  <p className="text-sm text-slate-600">
+                    No positive sentences found
+                  </p>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Negative Column - Carousel */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm sm:text-base font-semibold text-rose-900 flex items-center gap-2">
+                  <TrendingDown className="h-4 w-4" />
+                  Most Negative Sentences
+                </h3>
+                {negativeSentences.length > 0 && (
+                  <span className="text-xs text-rose-700 font-medium">
+                    {negativeIndex + 1} of {negativeSentences.length}
+                  </span>
+                )}
+              </div>
+              {negativeSentences.length > 0 ? (
+                <div className="relative">
+                  <SentenceCard
+                    sentence={negativeSentences[negativeIndex]}
+                    type="negative"
+                  />
+                  {negativeSentences.length > 1 && (
+                    <div className="flex items-center justify-center gap-2 mt-3">
+                      <button
+                        onClick={() =>
+                          setNegativeIndex((prev) =>
+                            prev === 0 ? negativeSentences.length - 1 : prev - 1
+                          )
+                        }
+                        className="flex items-center justify-center h-8 w-8 rounded-full border border-rose-300 bg-white hover:bg-rose-50 transition-colors"
+                        aria-label="Previous negative sentence"
+                      >
+                        <ChevronLeft className="h-4 w-4 text-rose-700" />
+                      </button>
+                      <div className="flex gap-1.5">
+                        {negativeSentences.map((_, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setNegativeIndex(idx)}
+                            className={`h-2 rounded-full transition-all ${
+                              idx === negativeIndex
+                                ? "w-6 bg-rose-600"
+                                : "w-2 bg-rose-300 hover:bg-rose-400"
+                            }`}
+                            aria-label={`Go to negative sentence ${idx + 1}`}
+                          />
+                        ))}
+                      </div>
+                      <button
+                        onClick={() =>
+                          setNegativeIndex((prev) =>
+                            prev === negativeSentences.length - 1 ? 0 : prev + 1
+                          )
+                        }
+                        className="flex items-center justify-center h-8 w-8 rounded-full border border-rose-300 bg-white hover:bg-rose-50 transition-colors"
+                        aria-label="Next negative sentence"
+                      >
+                        <ChevronRight className="h-4 w-4 text-rose-700" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
+                  <p className="text-sm text-slate-600">
+                    No negative sentences found
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

@@ -13,6 +13,7 @@ import {
   FileText,
   Info,
   HeartPulse,
+  Mic,
 } from "lucide-react";
 import { Card, Pill, KV, Gauge, cx } from "./ui";
 import { ProfileJson } from "../types";
@@ -60,7 +61,13 @@ export function GoalsCard({
   // Helper to show text or "Recording available"
   const displayText = (text: string, hasAudio: string | undefined) => {
     if (text) return text;
-    if (hasAudio) return "🎙️ Recording available";
+    if (hasAudio)
+      return (
+        <span className="flex items-center gap-1.5 text-slate-600">
+          <Mic className="h-3.5 w-3.5" />
+          Recording available
+        </span>
+      );
     return "—";
   };
 
@@ -112,7 +119,13 @@ export function StoryCard({
   // Helper to show text or "Recording available"
   const displayText = (text: string, hasAudio: string | undefined) => {
     if (text) return text;
-    if (hasAudio) return "🎙️ Recording available";
+    if (hasAudio)
+      return (
+        <span className="flex items-center gap-1.5 text-slate-600">
+          <Mic className="h-3.5 w-3.5" />
+          Recording available
+        </span>
+      );
     return "—";
   };
 
@@ -386,91 +399,79 @@ export function AssessmentsCard({
         onExpand={onOpen}
         className={className}
       >
-        <div className="mt-4">
-          <div className="w-full" style={{ height: 320 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <RechartsRadarChart
-                data={radarData}
-                cx="50%"
-                cy="50%"
-                outerRadius="80%"
-                margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                className="size-full font-medium text-slate-700 [&_.recharts-polar-grid]:text-slate-200 [&_.recharts-text]:text-xs"
-              >
-                <PolarGrid stroke="currentColor" className="text-slate-200" />
-                <PolarAngleAxis
-                  dataKey="subject"
-                  tickLine={false}
-                  axisLine={false}
-                  tick={({ x, y, textAnchor, index, payload, ...props }) => (
-                    <text
-                      x={x}
-                      y={
-                        index === 0
-                          ? Number(y) - 14
-                          : index === 3 || index === 4
-                          ? Number(y) + 10
-                          : Number(y)
-                      }
-                      textAnchor={textAnchor}
-                      {...props}
-                      className={cx(
-                        "recharts-text recharts-polar-angle-axis-tick-value",
-                        props.className
-                      )}
+        <div className="w-full" style={{ height: 320 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsRadarChart
+              data={radarData}
+              cx="50%"
+              cy="50%"
+              outerRadius="80%"
+              margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
+              className="size-full font-medium text-slate-700 [&_.recharts-polar-grid]:text-slate-200 [&_.recharts-text]:text-xs"
+            >
+              <PolarGrid stroke="currentColor" className="text-slate-200" />
+              <PolarAngleAxis
+                dataKey="subject"
+                tickLine={false}
+                axisLine={false}
+                tick={({ x, y, textAnchor, index, payload, ...props }) => (
+                  <text
+                    x={x}
+                    y={
+                      index === 0
+                        ? Number(y) - 14
+                        : index === 3 || index === 4
+                        ? Number(y) + 10
+                        : Number(y)
+                    }
+                    textAnchor={textAnchor}
+                    {...props}
+                    className={cx(
+                      "recharts-text recharts-polar-angle-axis-tick-value",
+                      props.className
+                    )}
+                  >
+                    <tspan
+                      dy="0em"
+                      className="fill-utility-gray-700 text-xs font-medium"
                     >
-                      <tspan
-                        dy="0em"
-                        className="fill-utility-gray-700 text-xs font-medium"
-                      >
-                        {payload.value}
-                      </tspan>
-                    </text>
-                  )}
-                />
-                <PolarRadiusAxis
-                  angle={90}
-                  domain={[0, 100]}
-                  tick={(props) => <CustomRadarChartTick {...props} />}
-                  axisLine={false}
-                />
-                <ReTooltip
-                  formatter={(value, _name, props) => {
-                    const p = props?.payload as
-                      | { pct: number; raw: number; max: number }
-                      | undefined;
-                    return p
-                      ? [`${p.raw} / ${p.max} (${p.pct}%)`, "Score"]
-                      : [String(value), "Score"];
-                  }}
-                  labelFormatter={(label) => String(label)}
-                  wrapperStyle={{ fontSize: 12 }}
-                  wrapperClassName="rounded-lg shadow-lg"
-                />
-                <Radar
-                  name="% of max"
-                  dataKey="pct"
-                  isAnimationActive={false}
-                  className="text-[#0072ce]"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  fill="currentColor"
-                  fillOpacity={0.18}
-                  strokeLinejoin="round"
-                />
-              </RechartsRadarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-slate-700">
-            <Pill tone="info">GAD-7: {gad}/21</Pill>
-            <Pill tone="info">PHQ-9: {phq}/27</Pill>
-            <Pill tone="info">PSS-4: {pss}/16</Pill>
-            <Pill tone="info">ASRS-5: {asrs}/24</Pill>
-            <Pill tone="info">CRAFFT: {crafft}/6</Pill>
-            <Pill tone="info">PTSD: {ptsdYes}/5</Pill>
-            <Pill tone="info">ACE: {ace}/52</Pill>
-          </div>
+                      {payload.value}
+                    </tspan>
+                  </text>
+                )}
+              />
+              <PolarRadiusAxis
+                angle={90}
+                domain={[0, 100]}
+                tick={(props) => <CustomRadarChartTick {...props} />}
+                axisLine={false}
+              />
+              <ReTooltip
+                formatter={(value, _name, props) => {
+                  const p = props?.payload as
+                    | { pct: number; raw: number; max: number }
+                    | undefined;
+                  return p
+                    ? [`${p.raw} / ${p.max} (${p.pct}%)`, "Score"]
+                    : [String(value), "Score"];
+                }}
+                labelFormatter={(label) => String(label)}
+                wrapperStyle={{ fontSize: 12 }}
+                wrapperClassName="rounded-lg shadow-lg"
+              />
+              <Radar
+                name="% of max"
+                dataKey="pct"
+                isAnimationActive={false}
+                className="text-[#0072ce]"
+                stroke="currentColor"
+                strokeWidth={2}
+                fill="currentColor"
+                fillOpacity={0.18}
+                strokeLinejoin="round"
+              />
+            </RechartsRadarChart>
+          </ResponsiveContainer>
         </div>
       </Card>
     );
@@ -558,91 +559,79 @@ export function AssessmentsCard({
         onExpand={onOpen}
         className={className}
       >
-        <div className="mt-4">
-          <div className="w-full" style={{ height: 320 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <RechartsRadarChart
-                data={radarData}
-                cx="50%"
-                cy="50%"
-                outerRadius="80%"
-                margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                className="size-full font-medium text-slate-700 [&_.recharts-polar-grid]:text-slate-200 [&_.recharts-text]:text-xs"
-              >
-                <PolarGrid stroke="currentColor" className="text-slate-200" />
-                <PolarAngleAxis
-                  dataKey="subject"
-                  tickLine={false}
-                  axisLine={false}
-                  tick={({ x, y, textAnchor, index, payload, ...props }) => (
-                    <text
-                      x={x}
-                      y={
-                        index === 0
-                          ? Number(y) - 14
-                          : index === 3 || index === 4
-                          ? Number(y) + 10
-                          : Number(y)
-                      }
-                      textAnchor={textAnchor}
-                      {...props}
-                      className={cx(
-                        "recharts-text recharts-polar-angle-axis-tick-value",
-                        props.className
-                      )}
+        <div className="w-full" style={{ height: 320 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsRadarChart
+              data={radarData}
+              cx="50%"
+              cy="50%"
+              outerRadius="80%"
+              margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
+              className="size-full font-medium text-slate-700 [&_.recharts-polar-grid]:text-slate-200 [&_.recharts-text]:text-xs"
+            >
+              <PolarGrid stroke="currentColor" className="text-slate-200" />
+              <PolarAngleAxis
+                dataKey="subject"
+                tickLine={false}
+                axisLine={false}
+                tick={({ x, y, textAnchor, index, payload, ...props }) => (
+                  <text
+                    x={x}
+                    y={
+                      index === 0
+                        ? Number(y) - 14
+                        : index === 3 || index === 4
+                        ? Number(y) + 10
+                        : Number(y)
+                    }
+                    textAnchor={textAnchor}
+                    {...props}
+                    className={cx(
+                      "recharts-text recharts-polar-angle-axis-tick-value",
+                      props.className
+                    )}
+                  >
+                    <tspan
+                      dy="0em"
+                      className="fill-utility-gray-700 text-xs font-medium"
                     >
-                      <tspan
-                        dy="0em"
-                        className="fill-utility-gray-700 text-xs font-medium"
-                      >
-                        {payload.value}
-                      </tspan>
-                    </text>
-                  )}
-                />
-                <PolarRadiusAxis
-                  angle={90}
-                  domain={[0, 100]}
-                  tick={(props) => <CustomRadarChartTick {...props} />}
-                  axisLine={false}
-                />
-                <ReTooltip
-                  formatter={(value, _name, props) => {
-                    const p = props?.payload as
-                      | { pct: number; raw: number; max: number }
-                      | undefined;
-                    return p
-                      ? [`${p.raw} / ${p.max} (${p.pct}%)`, "Score"]
-                      : [String(value), "Score"];
-                  }}
-                  labelFormatter={(label) => String(label)}
-                  wrapperStyle={{ fontSize: 12 }}
-                  wrapperClassName="rounded-lg shadow-lg"
-                />
-                <Radar
-                  name="% of max"
-                  dataKey="pct"
-                  isAnimationActive={false}
-                  className="text-[#0072ce]"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  fill="currentColor"
-                  fillOpacity={0.18}
-                  strokeLinejoin="round"
-                />
-              </RechartsRadarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-slate-700">
-            <Pill tone="info">GAD-7: {gad}/21</Pill>
-            <Pill tone="info">PHQ-9: {phq}/27</Pill>
-            <Pill tone="info">PSS-4: {pss}/16</Pill>
-            <Pill tone="info">ASRS-5: {asrs}/24</Pill>
-            <Pill tone="info">CRAFFT: {crafft}/6</Pill>
-            <Pill tone="info">PTSD: {ptsdYes}/5</Pill>
-            <Pill tone="info">ACE: {ace}/52</Pill>
-          </div>
+                      {payload.value}
+                    </tspan>
+                  </text>
+                )}
+              />
+              <PolarRadiusAxis
+                angle={90}
+                domain={[0, 100]}
+                tick={(props) => <CustomRadarChartTick {...props} />}
+                axisLine={false}
+              />
+              <ReTooltip
+                formatter={(value, _name, props) => {
+                  const p = props?.payload as
+                    | { pct: number; raw: number; max: number }
+                    | undefined;
+                  return p
+                    ? [`${p.raw} / ${p.max} (${p.pct}%)`, "Score"]
+                    : [String(value), "Score"];
+                }}
+                labelFormatter={(label) => String(label)}
+                wrapperStyle={{ fontSize: 12 }}
+                wrapperClassName="rounded-lg shadow-lg"
+              />
+              <Radar
+                name="% of max"
+                dataKey="pct"
+                isAnimationActive={false}
+                className="text-[#0072ce]"
+                stroke="currentColor"
+                strokeWidth={2}
+                fill="currentColor"
+                fillOpacity={0.18}
+                strokeLinejoin="round"
+              />
+            </RechartsRadarChart>
+          </ResponsiveContainer>
         </div>
       </Card>
     );
@@ -764,95 +753,79 @@ export function AssessmentsCard({
         onExpand={onOpen}
         className={className}
       >
-        <div className="mt-4">
-          <div className="w-full" style={{ height: 420 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <RechartsRadarChart
-                data={radarData}
-                cx="50%"
-                cy="50%"
-                outerRadius="80%"
-                margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
-                className="size-full font-medium text-slate-700 [&_.recharts-polar-grid]:text-slate-200 [&_.recharts-text]:text-xs"
-              >
-                <PolarGrid stroke="currentColor" className="text-slate-200" />
-                <PolarAngleAxis
-                  dataKey="subject"
-                  tickLine={false}
-                  axisLine={false}
-                  tick={({ x, y, textAnchor, index, payload, ...props }) => (
-                    <text
-                      x={x}
-                      y={
-                        index === 0
-                          ? Number(y) - 14
-                          : index === 3 || index === 4
-                          ? Number(y) + 10
-                          : Number(y)
-                      }
-                      textAnchor={textAnchor}
-                      {...props}
-                      className={cx(
-                        "recharts-text recharts-polar-angle-axis-tick-value",
-                        props.className
-                      )}
+        <div className="w-full" style={{ height: 420 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsRadarChart
+              data={radarData}
+              cx="50%"
+              cy="50%"
+              outerRadius="80%"
+              margin={{ left: 0, right: 0, top: 0, bottom: 0 }}
+              className="size-full font-medium text-slate-700 [&_.recharts-polar-grid]:text-slate-200 [&_.recharts-text]:text-xs"
+            >
+              <PolarGrid stroke="currentColor" className="text-slate-200" />
+              <PolarAngleAxis
+                dataKey="subject"
+                tickLine={false}
+                axisLine={false}
+                tick={({ x, y, textAnchor, index, payload, ...props }) => (
+                  <text
+                    x={x}
+                    y={
+                      index === 0
+                        ? Number(y) - 14
+                        : index === 3 || index === 4
+                        ? Number(y) + 10
+                        : Number(y)
+                    }
+                    textAnchor={textAnchor}
+                    {...props}
+                    className={cx(
+                      "recharts-text recharts-polar-angle-axis-tick-value",
+                      props.className
+                    )}
+                  >
+                    <tspan
+                      dy="0em"
+                      className="fill-utility-gray-700 text-xs font-medium"
                     >
-                      <tspan
-                        dy="0em"
-                        className="fill-utility-gray-700 text-xs font-medium"
-                      >
-                        {payload.value}
-                      </tspan>
-                    </text>
-                  )}
-                />
-                <PolarRadiusAxis
-                  angle={90}
-                  domain={[0, 100]}
-                  tick={(props) => <CustomRadarChartTick {...props} />}
-                  axisLine={false}
-                />
-                <ReTooltip
-                  formatter={(value, _name, props) => {
-                    const p = props?.payload as
-                      | { pct: number; raw: number; max: number }
-                      | undefined;
-                    return p
-                      ? [`${p.raw} / ${p.max} (${p.pct}%)`, "Score"]
-                      : [String(value), "Score"];
-                  }}
-                  labelFormatter={(label) => String(label)}
-                  wrapperStyle={{ fontSize: 12 }}
-                  wrapperClassName="rounded-lg shadow-lg"
-                />
-                <Radar
-                  name="% of max"
-                  dataKey="pct"
-                  isAnimationActive={false}
-                  className="text-[#0072ce]"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  fill="currentColor"
-                  fillOpacity={0.18}
-                  strokeLinejoin="round"
-                />
-              </RechartsRadarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-slate-700">
-            <Pill tone="info">DISC (Self): {discSelfScore}/22</Pill>
-            {hasParentDisc && (
-              <Pill tone="info">DISC (Parent): {discParentScore}/22</Pill>
-            )}
-            <Pill tone="info">SNAP Inatt: {snapInattention}/27</Pill>
-            <Pill tone="info">SNAP Hyper: {snapHyperactivity}/27</Pill>
-            <Pill tone="info">SNAP Opp: {snapOpposition}/24</Pill>
-            <Pill tone="info">SCARED (Self): {scaredSelfScore}/82</Pill>
-            {hasParentScared && (
-              <Pill tone="info">SCARED (Parent): {scaredParentScore}/82</Pill>
-            )}
-          </div>
+                      {payload.value}
+                    </tspan>
+                  </text>
+                )}
+              />
+              <PolarRadiusAxis
+                angle={90}
+                domain={[0, 100]}
+                tick={(props) => <CustomRadarChartTick {...props} />}
+                axisLine={false}
+              />
+              <ReTooltip
+                formatter={(value, _name, props) => {
+                  const p = props?.payload as
+                    | { pct: number; raw: number; max: number }
+                    | undefined;
+                  return p
+                    ? [`${p.raw} / ${p.max} (${p.pct}%)`, "Score"]
+                    : [String(value), "Score"];
+                }}
+                labelFormatter={(label) => String(label)}
+                wrapperStyle={{ fontSize: 12 }}
+                wrapperClassName="rounded-lg shadow-lg"
+              />
+              <Radar
+                name="% of max"
+                dataKey="pct"
+                isAnimationActive={false}
+                className="text-[#0072ce]"
+                stroke="currentColor"
+                strokeWidth={2}
+                fill="currentColor"
+                fillOpacity={0.18}
+                strokeLinejoin="round"
+              />
+            </RechartsRadarChart>
+          </ResponsiveContainer>
         </div>
       </Card>
     );
