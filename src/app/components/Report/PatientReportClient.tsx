@@ -58,6 +58,7 @@ import {
   StoryDetail,
   DemographicsDetail,
   MedicalHistoryDetail,
+  GoalsDetail,
 } from "./DetailPanels";
 import type { ModalState, Patient, ProfileJson } from "../types";
 import { intPsychTheme, theme } from "../theme";
@@ -568,46 +569,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                           <ClipboardList className="h-4 w-4 inline-block mr-2" />
                           Presenting Goal(s)
                         </>,
-                        <div
-                          className="rounded-xl border border-slate-200 bg-white overflow-hidden"
-                          data-field="goals"
-                        >
-                          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-                            <h3 className="text-sm font-semibold text-slate-900">
-                              Presenting Goals
-                            </h3>
-                          </div>
-                          <div className="p-4 space-y-4">
-                            {/* Audio Response - First */}
-                            {data.goals?.audio?.fileName && (
-                              <AudioPlayer
-                                data={data}
-                                fieldName="goals"
-                                label=""
-                              />
-                            )}
-
-                            {/* Written Response - Second */}
-                            {data.goals?.text && (
-                              <div className="py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
-                                <div className="flex items-center gap-1.5 mb-1.5">
-                                  <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-                                  <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                                    Written Response
-                                  </h4>
-                                </div>
-                                <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
-                                  {data.goals.text}
-                                </p>
-                              </div>
-                            )}
-
-                            {!data.goals?.text &&
-                              !data.goals?.audio?.fileName && (
-                                <p className="text-[13px] text-slate-400">—</p>
-                              )}
-                          </div>
-                        </div>
+                        <GoalsDetail data={data} />
                       )
                     }
                   />

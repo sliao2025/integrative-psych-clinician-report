@@ -12,6 +12,8 @@ import {
   ChevronDown,
   Maximize2,
   Eye,
+  Copy,
+  Check,
 } from "lucide-react";
 
 const dm_serif = DM_Serif_Text({
@@ -20,6 +22,88 @@ const dm_serif = DM_Serif_Text({
 });
 
 export const cx = (...c: any[]) => c.filter(Boolean).join(" ");
+
+// Copy to clipboard button component
+export function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = React.useState(false);
+  const [showTooltip, setShowTooltip] = React.useState(false);
+  const [tooltipPosition, setTooltipPosition] = React.useState({
+    top: 0,
+    left: 0,
+  });
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  const updateTooltipPosition = () => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setTooltipPosition({
+        top: rect.top - 36, // Position above button
+        left: rect.left + rect.width / 2, // Center horizontally
+      });
+    }
+  };
+
+  const handleMouseEnter = () => {
+    updateTooltipPosition();
+    setShowTooltip(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowTooltip(false);
+  };
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        onClick={handleCopy}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className="relative flex items-center justify-center h-7 w-7 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all"
+        aria-label="Copy to clipboard"
+      >
+        {copied ? (
+          <Check className="h-3.5 w-3.5 text-emerald-600" />
+        ) : (
+          <Copy className="h-3.5 w-3.5 text-slate-500 group-hover:text-slate-700" />
+        )}
+      </button>
+
+      {/* Tooltip rendered at root level with fixed positioning */}
+      {showTooltip && (
+        <div
+          className="fixed pointer-events-none transition-opacity z-[9999]"
+          style={{
+            top: `${tooltipPosition.top}px`,
+            left: `${tooltipPosition.left}px`,
+            transform: "translateX(-50%)",
+          }}
+        >
+          <div
+            className="px-2.5 py-1.5 text-white text-[11px] rounded-md whitespace-nowrap shadow-lg relative"
+            style={{ backgroundColor: intPsychTheme.primary }}
+          >
+            {copied ? "Copied!" : "Copy"}
+            <span
+              className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45"
+              style={{ backgroundColor: intPsychTheme.primary }}
+            ></span>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 export function Backdrop({ onClose }: { onClose: () => void }) {
   return (
@@ -479,27 +563,32 @@ export function AudioPlayer({
       ) : (
         <>
           {/* Transcription */}
-          <div className="py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <MessageSquareText className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-              <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                {hasTranslation ? "Original" : "Transcript"}
-              </h4>
+          <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+            <div className="flex items-center justify-between gap-2 mb-1.5">
+              <div className="flex items-center gap-1.5">
+                <MessageSquareText className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                  {hasTranslation ? "Original" : "Transcript"}
+                </h4>
+              </div>
+              <CopyButton text={transcription} />
             </div>
             <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
               {transcription}
             </p>
-            to
           </div>
 
           {/* Translation (if exists) */}
           {hasTranslation && (
-            <div className="py-2 px-3 bg-blue-50/50 border border-blue-200/60 rounded-lg">
-              <div className="flex items-center gap-1.5 mb-1.5">
-                <Languages className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
-                <h4 className="text-[10px] font-semibold text-blue-600 uppercase tracking-wide">
-                  English Translation
-                </h4>
+            <div className="relative py-2 px-3 bg-blue-50/50 border border-blue-200/60 rounded-lg">
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <div className="flex items-center gap-1.5">
+                  <Languages className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
+                  <h4 className="text-[10px] font-semibold text-blue-600 uppercase tracking-wide">
+                    English Translation
+                  </h4>
+                </div>
+                <CopyButton text={translation} />
               </div>
               <p className="text-[13px] text-blue-900 leading-relaxed whitespace-pre-wrap break-words">
                 {translation}

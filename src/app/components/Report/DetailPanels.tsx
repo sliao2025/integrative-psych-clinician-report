@@ -1,7 +1,7 @@
 // app/report/components/DetailPanels.tsx
 "use client";
 import React from "react";
-import { KV, Gauge, Pill, AudioPlayer, ScrollableBox } from "./ui";
+import { KV, Gauge, Pill, AudioPlayer, ScrollableBox, CopyButton } from "./ui";
 import { ProfileJson } from "../types";
 import {
   ACE_RESILIENCE_QUESTIONS,
@@ -57,6 +57,49 @@ const formatPhoneNumber = (phone?: string) => {
 };
 
 // Inside DetailPanels.tsx
+
+export function GoalsDetail({ data }: { data: ProfileJson }) {
+  return (
+    <div
+      className="rounded-xl border border-slate-200 bg-white overflow-hidden"
+      data-field="goals"
+    >
+      <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+        <h3 className="text-sm font-semibold text-slate-900">
+          Presenting Goals
+        </h3>
+      </div>
+      <div className="p-4 space-y-4">
+        {/* Audio Response - First */}
+        {data.goals?.audio?.fileName && (
+          <AudioPlayer data={data} fieldName="goals" label="" />
+        )}
+
+        {/* Written Response - Second */}
+        {data.goals?.text && (
+          <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+            <div className="flex items-center justify-between gap-2 mb-1.5">
+              <div className="flex items-center gap-1.5">
+                <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                  Written Response
+                </h4>
+              </div>
+              <CopyButton text={data.goals.text} />
+            </div>
+            <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+              {data.goals.text}
+            </p>
+          </div>
+        )}
+
+        {!data.goals?.text && !data.goals?.audio?.fileName && (
+          <p className="text-[13px] text-slate-400">—</p>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export function DemographicsDetail({ data }: { data: ProfileJson }) {
   const educationLabel =
@@ -590,7 +633,7 @@ export function StoryDetail({
         {/* Story */}
         <div
           className={`rounded-xl ${
-            hasCulture && "col-span-2"
+            !hasCulture ? "col-span-2" : "col-span-2 sm:col-span-1"
           } border border-slate-200 bg-white overflow-hidden ${
             highlightField === "storyNarrative"
               ? "ring-2 ring-blue-400 ring-offset-2"
@@ -609,12 +652,15 @@ export function StoryDetail({
 
             {/* Written Response - Second */}
             {story && (
-              <div className="py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-                  <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                    Written Response
-                  </h4>
+              <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                    <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                      Written Response
+                    </h4>
+                  </div>
+                  <CopyButton text={story} />
                 </div>
                 <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
                   {story}
@@ -652,12 +698,15 @@ export function StoryDetail({
 
             {/* Written Response - Second */}
             {living && (
-              <div className="py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-                  <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                    Written Response
-                  </h4>
+              <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                    <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                      Written Response
+                    </h4>
+                  </div>
+                  <CopyButton text={living} />
                 </div>
                 <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
                   {living}
@@ -694,12 +743,15 @@ export function StoryDetail({
 
               {/* Written Response - Second */}
               {culture && (
-                <div className="py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-                    <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                      Written Response
-                    </h4>
+                <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                      <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                        Written Response
+                      </h4>
+                    </div>
+                    <CopyButton text={culture} />
                   </div>
                   <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
                     {culture}
@@ -731,9 +783,25 @@ export function StoryDetail({
             }
             className="border-0 h-40"
           >
-            <p className="whitespace-pre-wrap text-[13px] text-slate-700 leading-relaxed">
-              {data.isChild ? data.fatherSideMedicalIssues : grewWith || "—"}
-            </p>
+            <div className="relative">
+              {((data.isChild &&
+                data.fatherSideMedicalIssues &&
+                data.fatherSideMedicalIssues !== "—") ||
+                (!data.isChild && grewWith && grewWith !== "—")) && (
+                <div className="absolute top-0 right-0">
+                  <CopyButton
+                    text={
+                      data.isChild
+                        ? data.fatherSideMedicalIssues
+                        : grewWith || ""
+                    }
+                  />
+                </div>
+              )}
+              <p className="whitespace-pre-wrap text-[13px] text-slate-700 leading-relaxed">
+                {data.isChild ? data.fatherSideMedicalIssues : grewWith || "—"}
+              </p>
+            </div>
           </ScrollableBox>
         </div>
         <div
@@ -752,9 +820,23 @@ export function StoryDetail({
             }
             className="border-0 h-40"
           >
-            <p className="whitespace-pre-wrap text-[13px] text-slate-700 leading-relaxed">
-              {data.isChild ? data.motherSideMedicalIssues : env || "—"}
-            </p>
+            <div className="relative">
+              {((data.isChild &&
+                data.motherSideMedicalIssues &&
+                data.motherSideMedicalIssues !== "—") ||
+                (!data.isChild && env && env !== "—")) && (
+                <div className="absolute top-0 right-0">
+                  <CopyButton
+                    text={
+                      data.isChild ? data.motherSideMedicalIssues : env || ""
+                    }
+                  />
+                </div>
+              )}
+              <p className="whitespace-pre-wrap text-[13px] text-slate-700 leading-relaxed">
+                {data.isChild ? data.motherSideMedicalIssues : env || "—"}
+              </p>
+            </div>
           </ScrollableBox>
         </div>
       </div>
@@ -787,7 +869,12 @@ export function StoryDetail({
                 <p className="text-[13px] text-slate-500">None reported</p>
               )}
             </div>
-            <div className="md:border-l md:border-slate-200 md:pl-4">
+            <div className="md:border-l md:border-slate-200 md:pl-4 relative">
+              {famElaboration && famElaboration !== "—" && (
+                <div className="absolute top-0 right-0">
+                  <CopyButton text={famElaboration} />
+                </div>
+              )}
               <p className="whitespace-pre-wrap text-[13px] text-slate-700 leading-relaxed">
                 {famElaboration || "—"}
               </p>
@@ -875,30 +962,45 @@ export function StoryDetail({
                   data.schoolInfo?.specialServicesDetail) && (
                   <div className="mt-3 grid gap-3 sm:grid-cols-2">
                     {data.schoolInfo?.repeatedGradeDetail ? (
-                      <div className="rounded-xl border border-slate-200 p-2">
-                        <h5 className="mb-1 text-[12px] font-medium text-slate-600">
-                          Repeated grade · Reason
-                        </h5>
+                      <div className="relative rounded-xl border border-slate-200 p-2">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <h5 className="text-[12px] font-medium text-slate-600">
+                            Repeated grade · Reason
+                          </h5>
+                          <CopyButton
+                            text={data.schoolInfo.repeatedGradeDetail}
+                          />
+                        </div>
                         <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                           {data.schoolInfo.repeatedGradeDetail}
                         </p>
                       </div>
                     ) : null}
                     {data.schoolInfo?.specialClassesDetail ? (
-                      <div className="rounded-xl border border-slate-200 p-2">
-                        <h5 className="mb-1 text-[12px] font-medium text-slate-600">
-                          Special classes · Info
-                        </h5>
+                      <div className="relative rounded-xl border border-slate-200 p-2">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <h5 className="text-[12px] font-medium text-slate-600">
+                            Special classes · Info
+                          </h5>
+                          <CopyButton
+                            text={data.schoolInfo.specialClassesDetail}
+                          />
+                        </div>
                         <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                           {data.schoolInfo.specialClassesDetail}
                         </p>
                       </div>
                     ) : null}
                     {data.schoolInfo?.specialServicesDetail ? (
-                      <div className="rounded-xl border border-slate-200 p-2 sm:col-span-2">
-                        <h5 className="mb-1 text-[12px] font-medium text-slate-600">
-                          Special services · Info
-                        </h5>
+                      <div className="relative rounded-xl border border-slate-200 p-2 sm:col-span-2">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <h5 className="text-[12px] font-medium text-slate-600">
+                            Special services · Info
+                          </h5>
+                          <CopyButton
+                            text={data.schoolInfo.specialServicesDetail}
+                          />
+                        </div>
                         <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                           {data.schoolInfo.specialServicesDetail}
                         </p>
@@ -993,30 +1095,56 @@ export function StoryDetail({
                       </Pill>
                     </div>
                   </div>
-                  <div className="rounded-xl border border-slate-200 p-2">
-                    <h5 className="mb-1 text-[12px] font-medium text-slate-600">
-                      Teacher/Peer Relationships
-                    </h5>
+                  <div className="relative rounded-xl border border-slate-200 p-2">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <h5 className="text-[12px] font-medium text-slate-600">
+                        Teacher/Peer Relationships
+                      </h5>
+                      {data.relationshipsAbilities?.teachersPeersRelationship &&
+                        data.relationshipsAbilities
+                          .teachersPeersRelationship !== "—" && (
+                          <CopyButton
+                            text={
+                              data.relationshipsAbilities
+                                .teachersPeersRelationship
+                            }
+                          />
+                        )}
+                    </div>
                     <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                       {data.relationshipsAbilities?.teachersPeersRelationship ||
                         "—"}
                     </p>
                   </div>
                   {data.relationshipsAbilities?.truancyProceedingsDetail ? (
-                    <div className="rounded-xl border border-slate-200 p-2">
-                      <h5 className="mb-1 text-[12px] font-medium text-slate-600">
-                        Truancy proceedings · detail
-                      </h5>
+                    <div className="relative rounded-xl border border-slate-200 p-2">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <h5 className="text-[12px] font-medium text-slate-600">
+                          Truancy proceedings · detail
+                        </h5>
+                        <CopyButton
+                          text={
+                            data.relationshipsAbilities.truancyProceedingsDetail
+                          }
+                        />
+                      </div>
                       <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                         {data.relationshipsAbilities.truancyProceedingsDetail}
                       </p>
                     </div>
                   ) : null}
                   {data.relationshipsAbilities?.schoolCounselingDetail ? (
-                    <div className="rounded-xl border border-slate-200 p-2">
-                      <h5 className="mb-1 text-[12px] font-medium text-slate-600">
-                        School counseling · detail
-                      </h5>
+                    <div className="relative rounded-xl border border-slate-200 p-2">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <h5 className="text-[12px] font-medium text-slate-600">
+                          School counseling · detail
+                        </h5>
+                        <CopyButton
+                          text={
+                            data.relationshipsAbilities.schoolCounselingDetail
+                          }
+                        />
+                      </div>
                       <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                         {data.relationshipsAbilities.schoolCounselingDetail}
                       </p>
@@ -1034,7 +1162,13 @@ export function StoryDetail({
                     Academic grades
                   </h4>
                 </div>
-                <div className="p-4">
+                <div className="p-4 relative">
+                  {data.schoolInfo?.academicGrades &&
+                    data.schoolInfo.academicGrades !== "—" && (
+                      <div className="absolute top-2 right-2">
+                        <CopyButton text={data.schoolInfo.academicGrades} />
+                      </div>
+                    )}
                   <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap">
                     {data.schoolInfo?.academicGrades || "—"}
                   </p>
@@ -1046,7 +1180,19 @@ export function StoryDetail({
                     Activities / interests / strengths
                   </h4>
                 </div>
-                <div className="p-4">
+                <div className="p-4 relative">
+                  {data.relationshipsAbilities?.activitiesInterestsStrengths &&
+                    data.relationshipsAbilities.activitiesInterestsStrengths !==
+                      "—" && (
+                      <div className="absolute top-2 right-2">
+                        <CopyButton
+                          text={
+                            data.relationshipsAbilities
+                              .activitiesInterestsStrengths
+                          }
+                        />
+                      </div>
+                    )}
                   <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap">
                     {data.relationshipsAbilities
                       ?.activitiesInterestsStrengths || "—"}
@@ -1059,7 +1205,16 @@ export function StoryDetail({
                     Other concerns
                   </h4>
                 </div>
-                <div className="p-4">
+                <div className="p-4 relative">
+                  {data.relationshipsAbilities?.otherConcerns &&
+                    data.relationshipsAbilities.otherConcerns !==
+                      "No other concerns reported." && (
+                      <div className="absolute top-2 right-2">
+                        <CopyButton
+                          text={data.relationshipsAbilities.otherConcerns}
+                        />
+                      </div>
+                    )}
                   <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap">
                     {data.relationshipsAbilities?.otherConcerns ||
                       "No other concerns reported."}
@@ -1098,9 +1253,22 @@ export function StoryDetail({
               </div>
               <div className="p-4">
                 {data.followupQuestions.question1.answer?.text?.trim() && (
-                  <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
-                    {data.followupQuestions.question1.answer.text.trim()}
-                  </p>
+                  <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg mb-3">
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                        <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                          Written Response
+                        </h4>
+                      </div>
+                      <CopyButton
+                        text={data.followupQuestions.question1.answer.text.trim()}
+                      />
+                    </div>
+                    <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+                      {data.followupQuestions.question1.answer.text.trim()}
+                    </p>
+                  </div>
                 )}
                 {data.followupQuestions.question1.answer?.audio?.fileName && (
                   <AudioPlayer
@@ -1139,9 +1307,22 @@ export function StoryDetail({
               </div>
               <div className="p-4">
                 {data.followupQuestions.question2.answer?.text?.trim() && (
-                  <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
-                    {data.followupQuestions.question2.answer.text.trim()}
-                  </p>
+                  <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg mb-3">
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                        <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                          Written Response
+                        </h4>
+                      </div>
+                      <CopyButton
+                        text={data.followupQuestions.question2.answer.text.trim()}
+                      />
+                    </div>
+                    <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+                      {data.followupQuestions.question2.answer.text.trim()}
+                    </p>
+                  </div>
                 )}
                 {data.followupQuestions.question2.answer?.audio?.fileName && (
                   <AudioPlayer
@@ -1180,9 +1361,22 @@ export function StoryDetail({
               </div>
               <div className="p-4">
                 {data.followupQuestions.question3.answer?.text?.trim() && (
-                  <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap mb-3">
-                    {data.followupQuestions.question3.answer.text.trim()}
-                  </p>
+                  <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg mb-3">
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                        <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                          Written Response
+                        </h4>
+                      </div>
+                      <CopyButton
+                        text={data.followupQuestions.question3.answer.text.trim()}
+                      />
+                    </div>
+                    <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+                      {data.followupQuestions.question3.answer.text.trim()}
+                    </p>
+                  </div>
                 )}
                 {data.followupQuestions.question3.answer?.audio?.fileName && (
                   <AudioPlayer
@@ -1217,7 +1411,10 @@ export function StoryDetail({
               Negative Childhood Comments
             </h4>
           </div>
-          <div className="p-4">
+          <div className="p-4 relative">
+            <div className="absolute top-2 right-2">
+              <CopyButton text={childhoodComment} />
+            </div>
             <p className="whitespace-pre-wrap text-[13px] text-slate-700 leading-relaxed">
               {childhoodComment}
             </p>
@@ -1360,18 +1557,28 @@ export function HospitalizationsDetail({ data }: { data: ProfileJson }) {
         {injHasContent ? (
           <div className="rounded-xl border border-slate-200 p-4">
             <div className="grid gap-3 md:grid-cols-2">
-              <div>
-                <h4 className="mb-1 text-[13px] font-semibold text-slate-900">
-                  Injury List
-                </h4>
+              <div className="relative">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <h4 className="text-[13px] font-semibold text-slate-900">
+                    Injury List
+                  </h4>
+                  {inj!.injuryList && inj!.injuryList !== "—" && (
+                    <CopyButton text={inj!.injuryList} />
+                  )}
+                </div>
                 <p className="whitespace-pre-wrap text-[13px] text-slate-800">
                   {inj!.injuryList || "—"}
                 </p>
               </div>
-              <div className="md:border-l md:border-slate-200 md:pl-4">
-                <h4 className="mb-1 text-[13px] font-semibold text-slate-900">
-                  Explanation
-                </h4>
+              <div className="md:border-l md:border-slate-200 md:pl-4 relative">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <h4 className="text-[13px] font-semibold text-slate-900">
+                    Explanation
+                  </h4>
+                  {inj!.explanation && inj!.explanation !== "—" && (
+                    <CopyButton text={inj!.explanation} />
+                  )}
+                </div>
                 <p className="whitespace-pre-wrap text-[13px] text-slate-800">
                   {inj!.explanation || "—"}
                 </p>
@@ -1451,9 +1658,12 @@ export function PrevTreatmentDetail({ data }: { data: ProfileJson }) {
   return (
     <div className="space-y-3">
       <div className="rounded-xl border border-slate-200 p-4">
-        <h4 className="mb-2 text-[13px] font-semibold text-slate-900">
-          Summary
-        </h4>
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <h4 className="text-[13px] font-semibold text-slate-900">Summary</h4>
+          {data.prevTreatmentSummary?.text && (
+            <CopyButton text={data.prevTreatmentSummary.text} />
+          )}
+        </div>
         <p className="whitespace-pre-wrap text-[13px] text-slate-800">
           {data.prevTreatmentSummary?.text || "—"}
         </p>
@@ -2498,9 +2708,14 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
               }
             />
             {data.childMedicalHistory?.neuropsychEvalReason && (
-              <div>
-                <div className="text-[12px] font-medium text-slate-600 mb-1">
-                  Reason for Evaluation
+              <div className="relative">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="text-[12px] font-medium text-slate-600">
+                    Reason for Evaluation
+                  </div>
+                  <CopyButton
+                    text={data.childMedicalHistory.neuropsychEvalReason}
+                  />
                 </div>
                 <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                   {data.childMedicalHistory.neuropsychEvalReason}
@@ -2508,9 +2723,16 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
               </div>
             )}
             {data.childMedicalHistory?.neuropsychEvaluationsPerformed && (
-              <div>
-                <div className="text-[12px] font-medium text-slate-600 mb-1">
-                  Evaluations Performed
+              <div className="relative">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="text-[12px] font-medium text-slate-600">
+                    Evaluations Performed
+                  </div>
+                  <CopyButton
+                    text={
+                      data.childMedicalHistory.neuropsychEvaluationsPerformed
+                    }
+                  />
                 </div>
                 <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                   {data.childMedicalHistory.neuropsychEvaluationsPerformed}
@@ -2552,9 +2774,14 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
                 />
               )}
               {data.childPsychiatricHistory?.individualDetails && (
-                <div>
-                  <div className="text-[12px] font-medium text-slate-600 mb-1">
-                    Individual Psychotherapy Details
+                <div className="relative">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="text-[12px] font-medium text-slate-600">
+                      Individual Psychotherapy Details
+                    </div>
+                    <CopyButton
+                      text={data.childPsychiatricHistory.individualDetails}
+                    />
                   </div>
                   <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                     {data.childPsychiatricHistory.individualDetails}
@@ -2562,9 +2789,14 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
                 </div>
               )}
               {data.childPsychiatricHistory?.groupDetails && (
-                <div>
-                  <div className="text-[12px] font-medium text-slate-600 mb-1">
-                    Group Psychotherapy Details
+                <div className="relative">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="text-[12px] font-medium text-slate-600">
+                      Group Psychotherapy Details
+                    </div>
+                    <CopyButton
+                      text={data.childPsychiatricHistory.groupDetails}
+                    />
                   </div>
                   <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                     {data.childPsychiatricHistory.groupDetails}
@@ -2572,9 +2804,14 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
                 </div>
               )}
               {data.childPsychiatricHistory?.familyCouplesDetails && (
-                <div>
-                  <div className="text-[12px] font-medium text-slate-600 mb-1">
-                    Family/Couples Therapy Details
+                <div className="relative">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="text-[12px] font-medium text-slate-600">
+                      Family/Couples Therapy Details
+                    </div>
+                    <CopyButton
+                      text={data.childPsychiatricHistory.familyCouplesDetails}
+                    />
                   </div>
                   <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                     {data.childPsychiatricHistory.familyCouplesDetails}
@@ -2582,9 +2819,14 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
                 </div>
               )}
               {data.childPsychiatricHistory?.otherDetails && (
-                <div>
-                  <div className="text-[12px] font-medium text-slate-600 mb-1">
-                    Other Treatment Details
+                <div className="relative">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <div className="text-[12px] font-medium text-slate-600">
+                      Other Treatment Details
+                    </div>
+                    <CopyButton
+                      text={data.childPsychiatricHistory.otherDetails}
+                    />
                   </div>
                   <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                     {data.childPsychiatricHistory.otherDetails}
@@ -2603,55 +2845,84 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Psychiatric Hospitalization */}
           {data.childMedicalHistory?.psychiatricHospitalized !== undefined && (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 relative">
               <KV
                 label="Psychiatric Hospitalization"
                 value={yn(data.childMedicalHistory.psychiatricHospitalized)}
               />
               {data.childMedicalHistory.psychiatricHospitalized &&
                 data.childMedicalHistory.psychiatricHospitalizationDetails && (
-                  <p className="mt-2 text-[12px] text-slate-700 whitespace-pre-wrap">
-                    {data.childMedicalHistory.psychiatricHospitalizationDetails}
-                  </p>
+                  <>
+                    <div className="absolute top-2 right-2">
+                      <CopyButton
+                        text={
+                          data.childMedicalHistory
+                            .psychiatricHospitalizationDetails
+                        }
+                      />
+                    </div>
+                    <p className="mt-2 text-[12px] text-slate-700 whitespace-pre-wrap">
+                      {
+                        data.childMedicalHistory
+                          .psychiatricHospitalizationDetails
+                      }
+                    </p>
+                  </>
                 )}
             </div>
           )}
 
           {/* Suicide Thoughts */}
           {data.childMedicalHistory?.suicideThoughtsEver !== undefined && (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 relative">
               <KV
                 label="Suicidal Thoughts"
                 value={yn(data.childMedicalHistory.suicideThoughtsEver)}
               />
               {data.childMedicalHistory.suicideThoughtsEver &&
                 data.childMedicalHistory.suicideThoughtsLastTimePlan && (
-                  <p className="mt-2 text-[12px] text-slate-700 whitespace-pre-wrap">
-                    {data.childMedicalHistory.suicideThoughtsLastTimePlan}
-                  </p>
+                  <>
+                    <div className="absolute top-2 right-2">
+                      <CopyButton
+                        text={
+                          data.childMedicalHistory.suicideThoughtsLastTimePlan
+                        }
+                      />
+                    </div>
+                    <p className="mt-2 text-[12px] text-slate-700 whitespace-pre-wrap">
+                      {data.childMedicalHistory.suicideThoughtsLastTimePlan}
+                    </p>
+                  </>
                 )}
             </div>
           )}
 
           {/* Suicide Attempt */}
           {data.childMedicalHistory?.suicideAttemptEver !== undefined && (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 relative">
               <KV
                 label="Suicide Attempt"
                 value={yn(data.childMedicalHistory.suicideAttemptEver)}
               />
               {data.childMedicalHistory.suicideAttemptEver &&
                 data.childMedicalHistory.suicideAttemptDetails && (
-                  <p className="mt-2 text-[12px] text-slate-700 whitespace-pre-wrap">
-                    {data.childMedicalHistory.suicideAttemptDetails}
-                  </p>
+                  <>
+                    <div className="absolute top-2 right-2">
+                      <CopyButton
+                        text={data.childMedicalHistory.suicideAttemptDetails}
+                      />
+                    </div>
+                    <p className="mt-2 text-[12px] text-slate-700 whitespace-pre-wrap">
+                      {data.childMedicalHistory.suicideAttemptDetails}
+                    </p>
+                  </>
                 )}
             </div>
           )}
 
           {/* Self-Harm */}
           {data.childMedicalHistory?.selfHarmEver !== undefined && (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 relative">
               <KV
                 label="Self-Harm History"
                 value={yn(data.childMedicalHistory.selfHarmEver)}
@@ -2664,9 +2935,18 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
                   />
                   {data.childMedicalHistory.selfHarmStill &&
                     data.childMedicalHistory.selfHarmFrequencyDetails && (
-                      <p className="mt-2 text-[12px] text-slate-700 whitespace-pre-wrap">
-                        {data.childMedicalHistory.selfHarmFrequencyDetails}
-                      </p>
+                      <>
+                        <div className="absolute top-2 right-2">
+                          <CopyButton
+                            text={
+                              data.childMedicalHistory.selfHarmFrequencyDetails
+                            }
+                          />
+                        </div>
+                        <p className="mt-2 text-[12px] text-slate-700 whitespace-pre-wrap">
+                          {data.childMedicalHistory.selfHarmFrequencyDetails}
+                        </p>
+                      </>
                     )}
                 </>
               )}
@@ -2675,16 +2955,23 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
 
           {/* Substance Use */}
           {data.childMedicalHistory?.substanceUseEver !== undefined && (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 relative">
               <KV
                 label="Substance Use"
                 value={yn(data.childMedicalHistory.substanceUseEver)}
               />
               {data.childMedicalHistory.substanceUseEver &&
                 data.childMedicalHistory.substanceUseDetails && (
-                  <p className="mt-2 text-[12px] text-slate-700 whitespace-pre-wrap">
-                    {data.childMedicalHistory.substanceUseDetails}
-                  </p>
+                  <>
+                    <div className="absolute top-2 right-2">
+                      <CopyButton
+                        text={data.childMedicalHistory.substanceUseDetails}
+                      />
+                    </div>
+                    <p className="mt-2 text-[12px] text-slate-700 whitespace-pre-wrap">
+                      {data.childMedicalHistory.substanceUseDetails}
+                    </p>
+                  </>
                 )}
             </div>
           )}
@@ -2885,9 +3172,14 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
           {/* Complications */}
           {data.childPrenatalHistory?.hasComplications &&
             data.childPrenatalHistory.complicationsDetails && (
-              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
-                <div className="text-[12px] font-medium text-amber-900 mb-1">
-                  Pregnancy Complications
+              <div className="relative mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="text-[12px] font-medium text-amber-900">
+                    Pregnancy Complications
+                  </div>
+                  <CopyButton
+                    text={data.childPrenatalHistory.complicationsDetails}
+                  />
                 </div>
                 <p className="text-[13px] text-amber-900 whitespace-pre-wrap">
                   {data.childPrenatalHistory.complicationsDetails}
@@ -2898,9 +3190,14 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
           {/* Medications During Pregnancy */}
           {data.childPrenatalHistory?.hadMedsDuringPregnancy &&
             data.childPrenatalHistory.medsDuringPregnancyDetails && (
-              <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <div className="text-[12px] font-medium text-slate-900 mb-1">
-                  Medications During Pregnancy
+              <div className="relative mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="text-[12px] font-medium text-slate-900">
+                    Medications During Pregnancy
+                  </div>
+                  <CopyButton
+                    text={data.childPrenatalHistory.medsDuringPregnancyDetails}
+                  />
                 </div>
                 <p className="text-[13px] text-slate-800 whitespace-pre-wrap">
                   {data.childPrenatalHistory.medsDuringPregnancyDetails}
@@ -2911,9 +3208,16 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
           {/* Alcohol During Pregnancy */}
           {data.childPrenatalHistory?.hadAlcoholDuringPregnancy &&
             data.childPrenatalHistory.alcoholDuringPregnancyDetails && (
-              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
-                <div className="text-[12px] font-medium text-amber-900 mb-1">
-                  Alcohol During Pregnancy
+              <div className="relative mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="text-[12px] font-medium text-amber-900">
+                    Alcohol During Pregnancy
+                  </div>
+                  <CopyButton
+                    text={
+                      data.childPrenatalHistory.alcoholDuringPregnancyDetails
+                    }
+                  />
                 </div>
                 <p className="text-[13px] text-amber-900 whitespace-pre-wrap">
                   {data.childPrenatalHistory.alcoholDuringPregnancyDetails}
@@ -2924,9 +3228,14 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
           {/* Drugs During Pregnancy */}
           {data.childPrenatalHistory?.hadDrugsDuringPregnancy &&
             data.childPrenatalHistory.drugsDuringPregnancyDetails && (
-              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
-                <div className="text-[12px] font-medium text-amber-900 mb-1">
-                  Drugs During Pregnancy
+              <div className="relative mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="text-[12px] font-medium text-amber-900">
+                    Drugs During Pregnancy
+                  </div>
+                  <CopyButton
+                    text={data.childPrenatalHistory.drugsDuringPregnancyDetails}
+                  />
                 </div>
                 <p className="text-[13px] text-amber-900 whitespace-pre-wrap">
                   {data.childPrenatalHistory.drugsDuringPregnancyDetails}
@@ -2937,9 +3246,17 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
           {/* Smoking During Pregnancy */}
           {data.childPrenatalHistory?.motherSmokedDuringPregnancy &&
             data.childPrenatalHistory.motherSmokedDuringPregnancyDetails && (
-              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
-                <div className="text-[12px] font-medium text-amber-900 mb-1">
-                  Smoking During Pregnancy
+              <div className="relative mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="text-[12px] font-medium text-amber-900">
+                    Smoking During Pregnancy
+                  </div>
+                  <CopyButton
+                    text={
+                      data.childPrenatalHistory
+                        .motherSmokedDuringPregnancyDetails
+                    }
+                  />
                 </div>
                 <p className="text-[13px] text-amber-900 whitespace-pre-wrap">
                   {data.childPrenatalHistory.motherSmokedDuringPregnancyDetails}
@@ -2950,9 +3267,14 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
           {/* Delivery Problems */}
           {data.childPrenatalHistory?.deliveryNormal === false &&
             data.childPrenatalHistory.deliveryProblems && (
-              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
-                <div className="text-[12px] font-medium text-amber-900 mb-1">
-                  Delivery Problems
+              <div className="relative mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="text-[12px] font-medium text-amber-900">
+                    Delivery Problems
+                  </div>
+                  <CopyButton
+                    text={data.childPrenatalHistory.deliveryProblems}
+                  />
                 </div>
                 <p className="text-[13px] text-amber-900 whitespace-pre-wrap">
                   {data.childPrenatalHistory.deliveryProblems}
@@ -2963,9 +3285,14 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
           {/* Feeding Problems */}
           {data.childPrenatalHistory?.hadFeedingProblems &&
             data.childPrenatalHistory.feedingProblemsDetails && (
-              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
-                <div className="text-[12px] font-medium text-amber-900 mb-1">
-                  Feeding Problems
+              <div className="relative mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="text-[12px] font-medium text-amber-900">
+                    Feeding Problems
+                  </div>
+                  <CopyButton
+                    text={data.childPrenatalHistory.feedingProblemsDetails}
+                  />
                 </div>
                 <p className="text-[13px] text-amber-900 whitespace-pre-wrap">
                   {data.childPrenatalHistory.feedingProblemsDetails}
@@ -2976,9 +3303,14 @@ export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
           {/* Early Problems */}
           {data.childPrenatalHistory?.hadEarlyProblems &&
             data.childPrenatalHistory.earlyProblemsDetails && (
-              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
-                <div className="text-[12px] font-medium text-amber-900 mb-1">
-                  Early Problems (First Week/Month/Year)
+              <div className="relative mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="text-[12px] font-medium text-amber-900">
+                    Early Problems (First Week/Month/Year)
+                  </div>
+                  <CopyButton
+                    text={data.childPrenatalHistory.earlyProblemsDetails}
+                  />
                 </div>
                 <p className="text-[13px] text-amber-900 whitespace-pre-wrap">
                   {data.childPrenatalHistory.earlyProblemsDetails}
