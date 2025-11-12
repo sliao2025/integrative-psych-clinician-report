@@ -307,7 +307,7 @@ export default function PatientReportClient({ id }: { id: string }) {
         {/* Clinical Insights Section */}
         <div className="mt-8">
           <div className="rounded-2xl bg-white border border-slate-300 overflow-hidden">
-            <div className="px-6 py-5 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-b border-amber-200/80">
+            <div className="px-4 md:px-6 py-4 md:py-5 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-b border-amber-200/80">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-md">
                   <BrainCircuit className="w-5 h-5 text-white" />
@@ -324,7 +324,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                 </div>
               </div>
             </div>
-            <div className="p-6">
+            <div className="p-4 md:p-6">
               <InsightsBlock
                 userId={id}
                 data={data}
@@ -527,7 +527,7 @@ export default function PatientReportClient({ id }: { id: string }) {
         <div className="mt-8">
           <div className="rounded-2xl bg-white border border-slate-300 overflow-hidden">
             <div
-              className="px-6 py-5 border-b"
+              className="px-4 md:px-6 py-4 md:py-5border-b"
               style={{
                 background: `linear-gradient(to right, #f0f9ff, #f5f9ff, #f0f9ff)`,
                 borderBottomColor: `${intPsychTheme.primary}30`,
@@ -558,7 +558,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                 </div>
               </div>
             </div>
-            <div className="p-6">
+            <div className="p-4 md:p-6">
               <div className="columns-1 md:columns-2 gap-4 [column-fill:_balance]">
                 <div className="mb-4 break-inside-avoid">
                   <GoalsCard
