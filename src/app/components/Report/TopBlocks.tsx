@@ -31,6 +31,19 @@ import { genderOptions } from "../text";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 
+// Format phone number to XXX-XXX-XXXX
+const formatPhoneNumber = (phone?: string) => {
+  if (!phone) return "—";
+  // Remove all non-digit characters
+  const digits = phone.replace(/\D/g, "");
+  // Format as XXX-XXX-XXXX if we have 10 digits
+  if (digits.length === 10) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  // Return original if not 10 digits
+  return phone;
+};
+
 export function DemographicsHeader({
   data,
   patientDbData,
@@ -114,7 +127,7 @@ export function DemographicsHeader({
               />
               <KV
                 label={data.isChild ? "Parent/Guardian Phone" : "Phone"}
-                value={data.contactNumber}
+                value={formatPhoneNumber(data.contactNumber)}
                 truncate={false}
                 alignRight={false}
                 className="flex-1 min-w-0"
@@ -501,9 +514,10 @@ export function InsightsBlock({
       {summaryData && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
           {/* Patient Bio */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <div className="rounded-xl border border-slate-300 bg-white p-4">
             <h3
-              className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold text-slate-900 mb-2 flex items-center gap-2`}
+              className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold mb-2 flex items-center gap-2`}
+              style={{ color: intPsychTheme.primary }}
             >
               <UserRound
                 className="h-5 w-5"
@@ -517,9 +531,10 @@ export function InsightsBlock({
           </div>
 
           {/* Chief Complaint */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <div className="rounded-xl border border-slate-300 bg-white p-4">
             <h3
-              className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold text-slate-900 mb-2 flex items-center gap-2`}
+              className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold mb-2 flex items-center gap-2`}
+              style={{ color: intPsychTheme.primary }}
             >
               <MessageCircleMore
                 className="h-5 w-5"
@@ -536,11 +551,12 @@ export function InsightsBlock({
 
       {/* Sentiment Analysis Section */}
       {sentimentData && (
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <div className="rounded-xl border border-slate-300 bg-white p-4">
           {/* Section Title */}
           <div className="mb-3">
             <h3
-              className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold text-slate-900 flex items-center gap-2`}
+              className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold flex items-center gap-2`}
+              style={{ color: intPsychTheme.primary }}
             >
               <TrendingUp className="h-4 w-4 text-slate-600" />
               Emotional Tone Analysis
@@ -554,7 +570,7 @@ export function InsightsBlock({
           {/* Summary Stats - Always visible when sentiment exists */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
             {/* Positive */}
-            <div className="rounded-xl border border-slate-200 bg-white p-3.5 sm:p-4">
+            <div className="rounded-xl border border-slate-300 bg-white p-3.5 sm:p-4">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Smile className="h-5 w-5 text-emerald-500" />
@@ -589,7 +605,7 @@ export function InsightsBlock({
             </div>
 
             {/* Negative */}
-            <div className="rounded-xl border border-slate-200 bg-white p-3.5 sm:p-4">
+            <div className="rounded-xl border border-slate-300 bg-white p-3.5 sm:p-4">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Frown className="h-5 w-5 text-rose-400" />
@@ -624,7 +640,7 @@ export function InsightsBlock({
             </div>
 
             {/* Neutral */}
-            <div className="rounded-xl border border-slate-200 bg-white p-3.5 sm:p-4">
+            <div className="rounded-xl border border-slate-300 bg-white p-3.5 sm:p-4">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Meh className="h-5 w-5 text-slate-400" />
@@ -722,7 +738,7 @@ export function InsightsBlock({
                   )}
                 </div>
               ) : (
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
+                <div className="rounded-xl border border-slate-300 bg-slate-50 p-4 text-center">
                   <p className="text-sm text-slate-600">
                     No positive sentences found
                   </p>
@@ -791,7 +807,7 @@ export function InsightsBlock({
                   )}
                 </div>
               ) : (
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
+                <div className="rounded-xl border border-slate-300 bg-slate-50 p-4 text-center">
                   <p className="text-sm text-slate-600">
                     No negative sentences found
                   </p>

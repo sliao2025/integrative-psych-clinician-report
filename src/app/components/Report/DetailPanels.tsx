@@ -42,6 +42,20 @@ const labelFor = (
   value?: string | null
 ) =>
   value ? options.find((o) => o.value === value)?.label ?? value : undefined;
+
+// Format phone number to XXX-XXX-XXXX
+const formatPhoneNumber = (phone?: string) => {
+  if (!phone) return "—";
+  // Remove all non-digit characters
+  const digits = phone.replace(/\D/g, "");
+  // Format as XXX-XXX-XXXX if we have 10 digits
+  if (digits.length === 10) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  // Return original if not 10 digits
+  return phone;
+};
+
 // Inside DetailPanels.tsx
 
 export function DemographicsDetail({ data }: { data: ProfileJson }) {
@@ -72,7 +86,7 @@ export function DemographicsDetail({ data }: { data: ProfileJson }) {
           <KV label="DOB" value={data.dob ? data.dob : "—"} />
         </div>
         <div className="rounded-xl border border-slate-200 p-3">
-          <KV label="Phone" value={data.contactNumber} />
+          <KV label="Phone" value={formatPhoneNumber(data.contactNumber)} />
         </div>
         <div className="rounded-xl border border-slate-200 p-3">
           <KV label="Email" value={data.email} />

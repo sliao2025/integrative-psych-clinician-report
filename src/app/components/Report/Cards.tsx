@@ -219,6 +219,7 @@ export function SafetyCard({
   const isChild = data.isChild || assessments?.kind === "child";
 
   let acute = false;
+  let hasWarning = false;
 
   if (isChild) {
     // Child CSSRS logic
@@ -234,17 +235,40 @@ export function SafetyCard({
       (cssrs?.plan && cssrs.plan === "yes") ||
       (cssrs?.behavior && cssrs.behavior === "yes") ||
       (cssrs?.behavior3mo && cssrs.behavior3mo === "yes");
+
+    // Warning if any question answered "yes"
+    hasWarning =
+      (cssrs?.wishDead && cssrs.wishDead === "yes") ||
+      (cssrs?.thoughts && cssrs.thoughts === "yes") ||
+      (cssrs?.methodHow && cssrs.methodHow === "yes") ||
+      (cssrs?.intention && cssrs.intention === "yes") ||
+      (cssrs?.plan && cssrs.plan === "yes") ||
+      (cssrs?.behavior && cssrs.behavior === "yes") ||
+      (cssrs?.behavior3mo && cssrs.behavior3mo === "yes");
   } else {
     // Adult suicide logic (legacy or new schema)
     const s = isNewSchema
       ? (assessments as any)?.data?.suicide
       : assessments?.suicide;
 
+    const selfHarm = isNewSchema
+      ? (assessments as any)?.data?.selfHarm
+      : assessments?.selfHarm;
+
     acute =
       (s?.thoughts && s.thoughts !== "no") ||
       (s?.wishDead && s.wishDead !== "no") ||
       s?.plan?.trim() ||
       s?.intention?.trim();
+
+    // Warning if any suicide or self-harm question answered "yes"
+    hasWarning =
+      (s?.thoughts && s.thoughts === "yes") ||
+      (s?.wishDead && s.wishDead === "yes") ||
+      s?.plan?.trim() ||
+      s?.intention?.trim() ||
+      (selfHarm?.pastMonth && selfHarm.pastMonth === "yes") ||
+      (selfHarm?.lifetime && selfHarm.lifetime === "yes");
   }
 
   return (
@@ -260,10 +284,14 @@ export function SafetyCard({
     >
       <div className="flex items-center justify-between">
         <span className="text-[13px] text-slate-800">
-          {acute ? "Review urgently" : "No acute risk"}
+          {acute
+            ? "Review urgently"
+            : hasWarning
+            ? "Caution advised"
+            : "No acute risk"}
         </span>
-        <Pill tone={acute ? "danger" : "success"}>
-          {acute ? "Alert" : "Stable"}
+        <Pill tone={acute ? "danger" : hasWarning ? "warn" : "success"}>
+          {acute ? "Alert" : hasWarning ? "Warning" : "Stable"}
         </Pill>
       </div>
     </Card>

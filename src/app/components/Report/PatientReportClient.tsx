@@ -313,7 +313,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                 </div>
                 <div>
                   <h2
-                    className={`${dm_serif.className} text-2xl font-normal text-slate-800`}
+                    className={`${dm_serif.className} text-2xl font-normal text-amber-800`}
                   >
                     Clinical Insights
                   </h2>
