@@ -33,7 +33,7 @@ export default function ClinicianHome() {
   const name = session?.user?.name ?? "Clinician";
   const email = session?.user?.email ?? "";
   const isAdmin =
-    email === "sliao@psych-nyc.com" || email === "rsultan@psych-nyc.com";
+    email === "sliao@psych-nyc.com" || email === "rsultan@psych-nyc.com"; || email === "yherbst@psych-nyc.com";
 
   const [patientName, setPatientName] = useState("");
   const [loading, setLoading] = useState(false);
