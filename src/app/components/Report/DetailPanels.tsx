@@ -633,7 +633,7 @@ export function StoryDetail({
         {/* Story */}
         <div
           className={`rounded-xl ${
-            !hasCulture ? "col-span-2" : "col-span-2 sm:col-span-1"
+            !hasCulture ? "col-span-2" : "col-span-2"
           } border border-slate-200 bg-white overflow-hidden ${
             highlightField === "storyNarrative"
               ? "ring-2 ring-blue-400 ring-offset-2"
