@@ -9,17 +9,25 @@ datasource db {
 
 /// --- Auth.js (NextAuth) tables ---
 model User {
-  id            String    @id @default(cuid())
-  email         String?   @unique
-  name          String?
-  image         String?
-  emailVerified DateTime?
-  passwordHash  String?
-  guest         Boolean?  @default(false)
-  intakeFinished Boolean @default(false)
-  accounts      Account[]
-  profile       Profile?
-  sessions      Session[]
+  id                 String               @id @default(cuid())
+  email              String?
+  name               String?
+  image              String?
+  emailVerified      DateTime?
+  passwordHash       String?
+  guest              Boolean?             @default(false)
+  intakeFinished     Boolean              @default(false)
+  clinicId           String
+  accounts           Account[]
+  AssessmentResponse AssessmentResponse[]
+  JournalEntry       JournalEntry[]
+  ModuleProgress     ModuleProgress[]
+  profile            Profile?
+  sessions           Session[]
+  Clinic             Clinic               @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@unique([email, clinicId])
+  @@index([clinicId])
 }
 
 model Account {
@@ -61,23 +69,122 @@ model VerificationToken {
 
 /// --- Your Profile persistence (JSON blob) ---
 model Profile {
-  userId    String   @id
-  json      Json
-  version   Int      @default(1)
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // --- Denormalized scalars for faster querying/analytics ---
-  firstName         String?
-  lastName          String?
-  email             String?
-  contactNumber     String?
+  userId            String    @id
+  json              Json
+  version           Int       @default(1)
+  updatedAt         DateTime  @updatedAt
   age               String?
-  race              String?
+  email             String?
+  firstName         String?
+  firstSubmittedAt  DateTime? @default(now())
   genderIdentity    String?
-  sexualOrientation String?
   highestDegree     String?
   isEmployed        Boolean?
-  firstSubmittedAt  DateTime? @default(now())
+  lastName          String?
+  race              String?
+  sexualOrientation String?
+  contactNumber     String?
   isChild           Boolean?
+  clinicId          String
+  Clinic            Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId, firstSubmittedAt])
+  @@index([clinicId])
+}
+
+model AssessmentResponse {
+  id             String   @id
+  userId         String
+  clinicId       String   @default("default-clinic")
+  assessmentType String
+  responses      Json
+  totalScore     Int?
+  severity       String?
+  completedAt    DateTime @default(now())
+  requestedBy    String?
+  Clinic         Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  User           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId, completedAt])
+  @@index([clinicId])
+  @@index([userId, assessmentType, completedAt])
+  @@index([userId, completedAt])
+}
+
+model Clinic {
+  id                 String               @id
+  name               String
+  subdomain          String               @unique
+  customDomain       String?              @unique
+  logoUrl            String?
+  primaryColor       String?              @default("#3B82F6")
+  secondaryColor     String?              @default("#10B981")
+  config             Json?
+  isActive           Boolean              @default(true)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  AssessmentResponse AssessmentResponse[]
+  JournalEntry       JournalEntry[]
+  ModuleProgress     ModuleProgress[]
+  Profile            Profile[]
+  User               User[]
+
+  @@index([customDomain])
+  @@index([subdomain])
+}
+
+model JournalEntry {
+  id              String   @id
+  userId          String
+  clinicId        String   @default("default-clinic")
+  content         String   @db.Text
+  mood            Int
+  sentimentResult Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+  Clinic          Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  User            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId, createdAt])
+  @@index([clinicId])
+  @@index([userId, createdAt])
+}
+
+model ModuleProgress {
+  id             String         @id
+  userId         String
+  clinicId       String
+  moduleId       String
+  currentStep    Int            @default(0)
+  isCompleted    Boolean        @default(false)
+  completedAt    DateTime?
+  startedAt      DateTime       @default(now())
+  lastAccessAt   DateTime
+  Clinic         Clinic         @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  PsychoedModule PsychoedModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  User           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+  @@index([clinicId])
+  @@index([moduleId], map: "ModuleProgress_moduleId_fkey")
+  @@index([userId])
+}
+
+model PsychoedModule {
+  id             String           @id
+  title          String
+  description    String           @db.Text
+  category       String
+  content        Json
+  totalSteps     Int
+  duration       Int?
+  ageGroup       String           @default("both")
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  ModuleProgress ModuleProgress[]
+
+  @@index([category])
+  @@index([isActive])
 }

@@ -14,7 +14,8 @@ export async function GET() {
   // Only allow sliao@psych-nyc.com
   if (
     clinicianEmail !== "sliao@psych-nyc.com" &&
-    clinicianEmail !== "rsultan@psych-nyc.com"
+    clinicianEmail !== "rsultan@psych-nyc.com" &&
+    clinicianEmail !== "yherbst@psych-nyc.com"
   ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
