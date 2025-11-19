@@ -7,6 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// --- Clinic (Multi-Tenant) ---
+model Clinic {
+  id                 String               @id @default(cuid())
+  name               String
+  subdomain          String               @unique
+  customDomain       String?              @unique
+  logoUrl            String?
+  primaryColor       String?              @default("#3B82F6")
+  secondaryColor     String?              @default("#10B981")
+  config             Json?
+  isActive           Boolean              @default(true)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  AssessmentResponse AssessmentResponse[]
+  JournalEntry       JournalEntry[]
+  ModuleProgress     ModuleProgress[]
+  profiles           Profile[]
+  users              User[]
+
+  @@index([subdomain])
+  @@index([customDomain])
+}
+
 /// --- Auth.js (NextAuth) tables ---
 model User {
   id                 String               @id @default(cuid())
@@ -18,13 +41,14 @@ model User {
   guest              Boolean?             @default(false)
   intakeFinished     Boolean              @default(false)
   clinicId           String
+  clinician          String               @default("")
   accounts           Account[]
   AssessmentResponse AssessmentResponse[]
   JournalEntry       JournalEntry[]
   ModuleProgress     ModuleProgress[]
   profile            Profile?
   sessions           Session[]
-  Clinic             Clinic               @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  clinic             Clinic               @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 
   @@unique([email, clinicId])
   @@index([clinicId])
@@ -69,7 +93,7 @@ model VerificationToken {
 
 /// --- Your Profile persistence (JSON blob) ---
 model Profile {
-  userId            String    @id
+  userId            String    @id @default(cuid())
   json              Json
   version           Int       @default(1)
   updatedAt         DateTime  @updatedAt
@@ -86,15 +110,15 @@ model Profile {
   contactNumber     String?
   isChild           Boolean?
   clinicId          String
-  Clinic            Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  clinic            Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([clinicId, firstSubmittedAt])
   @@index([clinicId])
+  @@index([clinicId, firstSubmittedAt])
 }
 
 model AssessmentResponse {
-  id             String   @id
+  id             String   @id @default(cuid())
   userId         String
   clinicId       String   @default("default-clinic")
   assessmentType String
@@ -112,30 +136,8 @@ model AssessmentResponse {
   @@index([userId, completedAt])
 }
 
-model Clinic {
-  id                 String               @id
-  name               String
-  subdomain          String               @unique
-  customDomain       String?              @unique
-  logoUrl            String?
-  primaryColor       String?              @default("#3B82F6")
-  secondaryColor     String?              @default("#10B981")
-  config             Json?
-  isActive           Boolean              @default(true)
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime
-  AssessmentResponse AssessmentResponse[]
-  JournalEntry       JournalEntry[]
-  ModuleProgress     ModuleProgress[]
-  Profile            Profile[]
-  User               User[]
-
-  @@index([customDomain])
-  @@index([subdomain])
-}
-
 model JournalEntry {
-  id              String   @id
+  id              String   @id @default(cuid())
   userId          String
   clinicId        String   @default("default-clinic")
   content         String   @db.Text
@@ -152,7 +154,7 @@ model JournalEntry {
 }
 
 model ModuleProgress {
-  id             String         @id
+  id             String         @id @default(cuid())
   userId         String
   clinicId       String
   moduleId       String
@@ -172,7 +174,7 @@ model ModuleProgress {
 }
 
 model PsychoedModule {
-  id             String           @id
+  id             String           @id @default(cuid())
   title          String
   description    String           @db.Text
   category       String
