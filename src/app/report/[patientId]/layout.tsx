@@ -36,10 +36,10 @@ export default function PatientLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { patientId: string };
+  params: Promise<{ patientId: string }>;
 }) {
   const pathname = usePathname();
-  const { patientId } = params;
+  const { patientId } = React.use(params);
   const { data: session } = useSession();
 
   // Initialize state from localStorage synchronously to prevent flash
