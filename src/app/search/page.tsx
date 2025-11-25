@@ -6,50 +6,66 @@ import { motion } from "framer-motion";
 import Garden from "@/app/components/Garden/Garden";
 import logo from "@/assets/IP_Logo.png";
 import { intPsychTheme } from "@/app/components/theme";
-import { DM_Serif_Text, Roboto } from "next/font/google";
-import { useState, useEffect } from "react";
-import { Search, CalendarDays, User as UserIcon } from "lucide-react";
+import { DM_Serif_Text } from "next/font/google";
+import { useState, useEffect, useMemo } from "react";
+import {
+  Search,
+  CalendarDays,
+  User as UserIcon,
+  Filter,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import { DM_Sans } from "next/font/google";
+import { CLINICIANS } from "@/app/components/text";
 
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"] });
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
+const dm_sans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"] });
 
 type Patient = {
   id: string;
   name: string | null;
   email: string | null;
   image: string | null;
+  clinician: string | null;
   profile: {
     firstName: string | null;
     lastName: string | null;
     age: string | null;
     json: any;
+    firstSubmittedAt: string | null;
   } | null;
 };
+
+type SortOption = "date" | "name" | "age";
 
 export default function ClinicianHome() {
   const router = useRouter();
   const { data: session } = useSession();
   const name = session?.user?.name ?? "Clinician";
   const email = session?.user?.email ?? "";
-  const isAdmin =
-    email === "sliao@psych-nyc.com" ||
-    email === "rsultan@psych-nyc.com" ||
-    email === "yherbst@psych-nyc.com";
+
+  // Determine if current user is one of the designated clinicians
+  const currentClinician = CLINICIANS.find((c) => c.email === email);
+  const isRestrictedClinician = !!currentClinician;
 
   const [patientName, setPatientName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [showTip, setShowTip] = useState(false);
-
-  // Admin-only: patient list
   const [allPatients, setAllPatients] = useState<Patient[]>([]);
-  const [loadingPatients, setLoadingPatients] = useState(false);
+  const [loadingPatients, setLoadingPatients] = useState(true);
 
-  // Fetch all patients for admin
+  // Filtering & Sorting state
+  const [sortParams, setSortParams] = useState<{
+    by: SortOption;
+    asc: boolean;
+  }>({ by: "date", asc: false });
+  const [filterClinician, setFilterClinician] = useState<string>("all");
+  const [showTopArrow, setShowTopArrow] = useState(false);
+  const [showBottomArrow, setShowBottomArrow] = useState(false);
+
+  // Fetch all patients on mount
   useEffect(() => {
-    if (!isAdmin) return;
-
     const fetchPatients = async () => {
       try {
         setLoadingPatients(true);
@@ -70,59 +86,108 @@ export default function ClinicianHome() {
       }
     };
 
-    fetchPatients();
-  }, [isAdmin]);
-
-  // Auto-dismiss error tooltip after 3 seconds
-  useEffect(() => {
-    if (!showTip) return;
-    const t = setTimeout(() => {
-      setShowTip(false);
-    }, 3000);
-    return () => clearTimeout(t);
-  }, [showTip]);
-
-  const searchPatient = async () => {
-    const full = patientName.trim();
-    if (!full) return;
-
-    try {
-      setLoading(true);
-      setErrorMsg(null);
-      setShowTip(false);
-      const qs = new URLSearchParams({ name: full }).toString();
-      const r = await fetch(`/api/clinician/patients?${qs}`, {
-        method: "GET",
-        cache: "no-store",
-      });
-      if (!r.ok) {
-        const text = await r.text();
-        if (r.status === 400) {
-          setErrorMsg("Please enter a full name.");
-        } else if (r.status === 401) {
-          setErrorMsg("You are not authorized to search.");
-        } else if (r.status === 403) {
-          setErrorMsg("Patient found, but intake is not completed yet.");
-        } else if (r.status === 404) {
-          setErrorMsg("No matching patient found. Check spelling and spacing.");
-        } else if (r.status >= 500) {
-          setErrorMsg("Server error. Please try again in a moment.");
-        } else {
-          setErrorMsg(`Search failed (${r.status}). ${text || ""}`);
-        }
-        setShowTip(true);
-        return;
-      }
-      const data = await r.json();
-      router.push(`/report/${data.patient.user.id}`);
-    } catch (err) {
-      console.error("Error searching patient:", err);
-      setErrorMsg("Network error. Please try again.");
-      setShowTip(true);
-    } finally {
-      setLoading(false);
+    if (email) {
+      fetchPatients();
     }
+  }, [email]);
+
+  // Filter and Sort Logic
+  const filteredPatients = useMemo(() => {
+    let result = [...allPatients];
+
+    // 1. Search Filter (Dynamic as user types)
+    if (patientName.trim()) {
+      const query = patientName.toLowerCase();
+      result = result.filter((p) => {
+        const fullName =
+          `${p.profile?.firstName} ${p.profile?.lastName}`.toLowerCase();
+        return fullName.includes(query);
+      });
+    }
+
+    // 2. Role-based & Clinician Filter
+    if (isRestrictedClinician) {
+      // If user is a restricted clinician, ONLY show their own patients
+      // Map email to clinician name from CLINICIANS list
+      // Note: This relies on exact name matching between DB 'clinician' field and CLINICIANS const
+      result = result.filter((p) => p.clinician === currentClinician?.name);
+    } else {
+      // If regular admin/staff, allow filtering by selected clinician
+      if (filterClinician !== "all") {
+        result = result.filter((p) => p.clinician === filterClinician);
+      }
+    }
+
+    // 3. Sorting
+    result.sort((a, b) => {
+      let valA: any = "";
+      let valB: any = "";
+
+      switch (sortParams.by) {
+        case "name":
+          valA = `${a.profile?.firstName} ${a.profile?.lastName}`.toLowerCase();
+          valB = `${b.profile?.firstName} ${b.profile?.lastName}`.toLowerCase();
+          break;
+        case "age":
+          // Convert age to number for sorting, fallback to 0
+          valA = parseInt(a.profile?.age || "0", 10);
+          valB = parseInt(b.profile?.age || "0", 10);
+          break;
+        case "date":
+        default:
+          valA = new Date(a.profile?.firstSubmittedAt || 0).getTime();
+          valB = new Date(b.profile?.firstSubmittedAt || 0).getTime();
+          break;
+      }
+
+      if (valA < valB) return sortParams.asc ? -1 : 1;
+      if (valA > valB) return sortParams.asc ? 1 : -1;
+      return 0;
+    });
+
+    return result;
+  }, [
+    allPatients,
+    patientName,
+    isRestrictedClinician,
+    currentClinician,
+    filterClinician,
+    sortParams,
+  ]);
+
+  const toggleSort = (option: SortOption) => {
+    setSortParams((prev) => ({
+      by: option,
+      asc: prev.by === option ? !prev.asc : true, // Default to ascending for new sort, toggle otherwise
+    }));
   };
+
+  // Scroll indicator logic
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const atTop = el.scrollTop < 10;
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 10;
+    setShowTopArrow(!atTop);
+    setShowBottomArrow(!atBottom);
+  };
+
+  // Check scroll on resize or content change
+  useEffect(() => {
+    const el = document.getElementById("patient-list-container");
+    if (el) {
+      const hasScroll = el.scrollHeight > el.clientHeight;
+      if (!hasScroll) {
+        setShowTopArrow(false);
+        setShowBottomArrow(false);
+      } else {
+        // Initial check
+        const atTop = el.scrollTop < 10;
+        const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 10;
+        setShowTopArrow(!atTop);
+        setShowBottomArrow(!atBottom);
+      }
+    }
+  }, [filteredPatients, loadingPatients]);
 
   return (
     <main
@@ -130,7 +195,7 @@ export default function ClinicianHome() {
       style={{
         WebkitTapHighlightColor: "transparent",
         background:
-          "linear-gradient(to top,rgba(188, 255, 196, 1), rgba(241, 255, 245, 1), rgba(255, 255, 255, 1))",
+          "linear-gradient(to top, rgb(171, 248, 158), rgb(242, 255, 241), rgba(255, 255, 255, 1))",
       }}
     >
       {/* Background visuals */}
@@ -143,10 +208,12 @@ export default function ClinicianHome() {
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 w-full max-w-3xl px-4 sm:px-5"
       >
-        <div className="rounded-3xl border border-gray-200 bg-white/95 shadow-md backdrop-blur-sm">
+        <div
+          className={`rounded-4xl border border-slate-200 border-b-4 bg-white shadow-sm ${dm_sans.className}`}
+        >
           <div className="p-5 sm:p-6 md:p-8">
             {/* Header */}
-            <div className="mb-4 flex items-center gap-3">
+            <div className="mb-6 flex items-center gap-3">
               <Image
                 src={logo}
                 alt="Integrative Psych Logo"
@@ -167,79 +234,221 @@ export default function ClinicianHome() {
               </div>
             </div>
 
-            {/* Conditional rendering: Admin sees patient list, others see search */}
-            {isAdmin ? (
-              <div className="space-y-3">
-                {loadingPatients ? (
-                  <div className="py-8 text-center">
-                    <div
-                      style={{ borderTopColor: intPsychTheme.secondary }}
-                      className="inline-block h-8 w-8 animate-spin rounded-full border-3 border-slate-300 border-t-transparent"
-                    ></div>
-                    <p className="mt-3 text-sm text-slate-600">
-                      Loading patients...
-                    </p>
+            {/* Search & Filter Controls */}
+            <div className="space-y-4 mb-6">
+              {/* Search Input */}
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search
+                    className="h-5 w-5"
+                    style={{ color: intPsychTheme.primary }}
+                  />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search patients by name..."
+                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-2xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-slate-200 transition-all"
+                  value={patientName}
+                  onChange={(e) => setPatientName(e.target.value)}
+                />
+              </div>
+
+              {/* Filters Row */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                {/* Clinician Filter (Only for non-restricted users) */}
+                {!isRestrictedClinician && (
+                  <div className="relative min-w-[200px]">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Filter
+                        className="h-4 w-4"
+                        style={{ color: intPsychTheme.primary }}
+                      />
+                    </div>
+                    <select
+                      value={filterClinician}
+                      onChange={(e) => setFilterClinician(e.target.value)}
+                      className="block w-full pl-10 pr-8 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-slate-200 appearance-none cursor-pointer"
+                    >
+                      <option value="all">All Clinicians</option>
+                      {CLINICIANS.map((c) => (
+                        <option key={c.email} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                ) : allPatients.length === 0 ? (
-                  <div className="py-8 text-center text-sm text-slate-500">
+                )}
+
+                {/* Sort Options */}
+                <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0">
+                  {[
+                    { id: "date", label: "Date" },
+                    { id: "name", label: "Name" },
+                    { id: "age", label: "Age" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => toggleSort(opt.id as SortOption)}
+                      className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-sm font-medium border transition-all whitespace-nowrap ${
+                        sortParams.by === opt.id
+                          ? `bg-${intPsychTheme.primary} text-slate-800 border-slate-300 bg-slate-100`
+                          : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                      }`}
+                    >
+                      {opt.label}
+                      {sortParams.by === opt.id ? (
+                        sortParams.asc ? (
+                          <ArrowUp className="h-3 w-3" />
+                        ) : (
+                          <ArrowDown className="h-3 w-3" />
+                        )
+                      ) : (
+                        <ArrowUpDown className="h-3 w-3 opacity-50" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between items-center px-1 mb-2">
+              <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Patients ({filteredPatients.length})
+              </span>
+            </div>
+            {/* Patient List */}
+            <div className="space-y-2">
+              {loadingPatients ? (
+                <div className="py-12 text-center">
+                  <div
+                    style={{ borderTopColor: intPsychTheme.secondary }}
+                    className="inline-block h-8 w-8 animate-spin rounded-full border-3 border-slate-300 border-t-transparent"
+                  ></div>
+                  <p className="mt-3 text-sm text-slate-600">
+                    Loading patients...
+                  </p>
+                </div>
+              ) : filteredPatients.length === 0 ? (
+                <div className="py-12 text-center">
+                  <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-3">
+                    <UserIcon
+                      className="h-8 w-8"
+                      style={{ color: intPsychTheme.accentLight }}
+                    />
+                  </div>
+                  <p className="text-slate-500 font-medium">
                     No patients found
-                  </div>
-                ) : (
-                  <div className="max-h-[60vh] overflow-y-auto space-y-2 pr-2">
-                    <p className="text-slate-700">{`# of Patients: ${allPatients.length}`}</p>
-                    {allPatients.map((patient) => {
+                  </p>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Try adjusting your search or filters
+                  </p>
+                </div>
+              ) : (
+                <div className="relative max-h-[60vh] flex flex-col">
+                  {/* Top scroll indicator */}
+                  {showTopArrow && (
+                    <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent z-10 flex items-start justify-center pointer-events-none">
+                      <div className="animate-bounce bg-white p-[2px] rounded-full shadow-md mt-1">
+                        <ArrowUp className="h-5 w-5 text-[#0072ce]" />
+                      </div>
+                    </div>
+                  )}
+
+                  <div
+                    id="patient-list-container"
+                    onScroll={handleScroll}
+                    className="overflow-y-auto pr-1 -mr-1 space-y-3 scrollbar-hide pb-8 pt-2"
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                  >
+                    {filteredPatients.map((patient) => {
                       const profileData = patient.profile?.json || {};
                       const firstName = patient.profile?.firstName || "";
                       const lastName = patient.profile?.lastName || "";
                       const age = patient.profile?.age || "—";
                       const dob = profileData.dob || "—";
                       const pronouns = profileData.pronouns?.[0]?.label || "—";
+                      const clinicianName = patient.clinician || "Unassigned";
+                      const submittedDate = patient.profile?.firstSubmittedAt
+                        ? new Date(
+                            patient.profile.firstSubmittedAt
+                          ).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                        : "—";
 
                       return (
                         <button
                           key={patient.id}
                           onClick={() => router.push(`/report/${patient.id}`)}
-                          className="w-full p-4 rounded-xl cursor-pointer border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 transition-colors text-left group"
+                          className="w-full p-4 rounded-2xl cursor-pointer border border-slate-200 border-b-4 hover:bg-slate-50 active:border-b-0 active:translate-y-1 transition-all text-left group relative overflow-hidden"
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-start gap-4">
                             {/* Profile Picture */}
-                            {patient.image ? (
-                              <img
-                                src={patient.image}
-                                alt={`${firstName}'s Profile`}
-                                className="h-12 w-12 rounded-full object-cover flex-none"
-                                referrerPolicy="no-referrer"
-                              />
-                            ) : (
-                              <div
-                                style={{
-                                  background: intPsychTheme.secondary,
-                                }}
-                                className="flex h-12 w-12 items-center justify-center rounded-full text-white text-lg font-medium flex-none"
-                              >
-                                {firstName?.[0] || "P"}
-                              </div>
-                            )}
+                            <div className="flex-none">
+                              {patient.image ? (
+                                <img
+                                  src={patient.image}
+                                  alt={`${firstName}'s Profile`}
+                                  className="h-12 w-12 rounded-full object-cover ring-2 ring-white shadow-sm"
+                                  referrerPolicy="no-referrer"
+                                />
+                              ) : (
+                                <div
+                                  style={{
+                                    background: intPsychTheme.secondary,
+                                  }}
+                                  className="flex h-12 w-12 items-center justify-center rounded-full text-white text-lg font-medium shadow-sm"
+                                >
+                                  {firstName?.[0] || "P"}
+                                </div>
+                              )}
+                            </div>
 
                             {/* Patient Info */}
                             <div className="flex-1 min-w-0">
-                              <div
-                                className={`${dm_serif.className} text-lg font-semibold tracking-tight truncate group-hover:text-slate-900`}
-                                style={{ color: intPsychTheme.primary }}
-                              >
-                                {firstName} {lastName}
+                              <div className="flex justify-between items-start gap-2">
+                                <div>
+                                  <h3
+                                    className={`${dm_serif.className} text-lg font-semibold tracking-tight text-slate-800 group-hover:text-slate-900 truncate`}
+                                    style={{ color: intPsychTheme.primary }}
+                                  >
+                                    {firstName} {lastName}
+                                  </h3>
+                                  {/* Clinician Name Display */}
+                                  <div className="text-xs font-medium text-slate-500 mb-1">
+                                    Patient of:{" "}
+                                    <span className="text-slate-700">
+                                      {clinicianName}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
-                              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-600">
-                                <span className="flex items-center gap-1">
-                                  <UserIcon className="h-3 w-3" />
+
+                              <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-600 mt-1">
+                                <span className="flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md">
+                                  <UserIcon
+                                    className="h-3 w-3"
+                                    style={{ color: intPsychTheme.primary }}
+                                  />
                                   Age {age}
                                 </span>
-                                <span>•</span>
-                                <span>{pronouns}</span>
-                                <span>•</span>
-                                <span className="flex items-center gap-1">
-                                  <CalendarDays className="h-3 w-3" />
-                                  {dob}
+                                <span className="flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md">
+                                  <CalendarDays
+                                    className="h-3 w-3"
+                                    style={{ color: intPsychTheme.primary }}
+                                  />
+                                  Intake: {submittedDate}
+                                </span>
+                                <span className="flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md">
+                                  <CalendarDays
+                                    className="h-3 w-3"
+                                    style={{ color: intPsychTheme.primary }}
+                                  />
+                                  DOB: {dob}
+                                </span>
+                                <span className="flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md">
+                                  {pronouns}
                                 </span>
                               </div>
                             </div>
@@ -248,82 +457,18 @@ export default function ClinicianHome() {
                       );
                     })}
                   </div>
-                )}
-              </div>
-            ) : (
-              <>
-                {/* Search */}
-                <div className="space-y-3">
-                  <h3 className="text-base sm:text-lg font-medium text-slate-700">
-                    Search Patient
-                  </h3>
 
-                  <div className="grid grid-cols-1 gap-4 sm:flex sm:flex-row sm:gap-3 min-w-0">
-                    <input
-                      type="text"
-                      name="fullName"
-                      placeholder="Patient Full Name (e.g., Mary Anne Smith)"
-                      aria-label="Patient full name"
-                      autoComplete="name"
-                      className="w-full flex-1 min-w-0 h-12 rounded-xl border border-gray-300 bg-white/70 backdrop-blur px-3 text-base text-slate-700 placeholder:text-slate-400 focus:outline-none"
-                      value={patientName}
-                      onChange={(e) => setPatientName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") searchPatient();
-                      }}
-                      onFocus={(e) => {
-                        e.currentTarget.style.boxShadow = `0 0 0 1.5px ${intPsychTheme.secondary}`;
-                      }}
-                      onBlur={(e) => {
-                        e.currentTarget.style.boxShadow = "";
-                      }}
-                    />
-
-                    <button
-                      type="button"
-                      aria-label="Search patient"
-                      className="w-full sm:w-auto h-12 inline-flex items-center justify-center gap-2 rounded-full px-4 sm:px-5 font-medium text-white transition-all duration-200 cursor-pointer disabled:opacity-50 sm:mt-0 mt-1.5"
-                      style={{
-                        background: `linear-gradient(0deg, ${intPsychTheme.primary}, ${intPsychTheme.accent})`,
-                        boxShadow: "0 2px 8px 0 rgba(0,0,0,0.08)",
-                        transition:
-                          "transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s",
-                      }}
-                      onMouseOver={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.transform =
-                          "scale(1.04)";
-                      }}
-                      onMouseOut={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.transform =
-                          "";
-                      }}
-                      onClick={searchPatient}
-                      disabled={loading}
-                    >
-                      <Search className="h-5 w-5" />
-                      <span className="hidden sm:inline">
-                        {loading ? "Searching…" : "Search"}
-                      </span>
-                    </button>
-                  </div>
-
-                  {showTip && errorMsg && (
-                    <div
-                      role="alert"
-                      aria-live="polite"
-                      className="mt-3 w-full rounded-xl border border-rose-200 bg-rose-50/90 px-4 py-3 text-rose-700 text-sm shadow-sm"
-                    >
-                      {errorMsg}
+                  {/* Bottom scroll indicator */}
+                  {showBottomArrow && (
+                    <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent z-10 flex items-end justify-center pointer-events-none">
+                      <div className="animate-bounce bg-white p-[2px] rounded-full shadow-md mb-1">
+                        <ArrowDown className="h-5 w-5 text-[#0072ce]" />
+                      </div>
                     </div>
                   )}
                 </div>
-
-                <p className="text-[11px] mt-3 sm:text-xs text-slate-600">
-                  Tip: Enter the patient's full name exactly as written in the
-                  intake (case and spacing).
-                </p>
-              </>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </motion.div>

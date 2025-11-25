@@ -59,7 +59,7 @@ export function DemographicsHeader({
   ) =>
     value ? options.find((o) => o.value === value)?.label ?? value : undefined;
   return (
-    <div className="relative rounded-2xl border border-slate-300 bg-white p-4 sm:p-5">
+    <div className="relative rounded-2xl bg-white p-4 sm:p-6 shadow-sm border border-slate-200 border-b-4">
       <div className="grid grid-cols-12 gap-3 sm:gap-4 md:gap-5 items-start">
         {/* Left: Avatar + Name */}
         <div className="col-span-12 md:col-span-4 lg:col-span-7 flex items-center gap-3 min-w-0">
@@ -80,7 +80,7 @@ export function DemographicsHeader({
           )}
           <div className="min-w-0">
             <div
-              className={`text-xl sm:text-2xl md:text-3xl ${dm_serif.className} font-semibold tracking-tight text-slate-900 truncate`}
+              className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl ${dm_serif.className} font-semibold tracking-tight text-slate-900 truncate`}
               style={{ color: intPsychTheme.primary }}
             >
               {data.firstName} {data.lastName}
@@ -318,7 +318,7 @@ export function InsightsBlock({
 
   if (loading) {
     return (
-      <div className="relative rounded-2xl border border-slate-300 bg-white p-4 sm:p-5">
+      <div className="relative rounded-2xl bg-white p-4 sm:p-6 shadow-sm border border-slate-200 border-b-4">
         <div className="flex items-center gap-3 mb-4">
           <BrainCircuit
             className="h-5 w-5"
@@ -369,7 +369,7 @@ export function InsightsBlock({
 
   if (error || !sentimentData) {
     return (
-      <div className="relative rounded-2xl border border-slate-300 bg-white p-4 sm:p-5">
+      <div className="relative rounded-2xl bg-white p-4 sm:p-6 shadow-sm border border-slate-200 border-b-4">
         <div className="flex items-center gap-3 mb-4">
           <BrainCircuit
             className="h-5 w-5"
@@ -431,7 +431,7 @@ export function InsightsBlock({
       <button
         type="button"
         onClick={() => onNavigate?.(sentence.field, sentence.sentence)}
-        className={`w-full text-left ${bgColor} ${hoverBgColor} ${borderColor} border rounded-xl p-3.5 sm:p-4 transition-all hover:shadow-lg hover:border-opacity-80 cursor-pointer hover:scale-[1.02] active:scale-[0.98] group relative`}
+        className={`w-full text-left ${bgColor} ${hoverBgColor} rounded-3xl p-3.5 sm:p-4 2xl:p-2.5 transition-all hover:shadow-lg cursor-pointer hover:scale-[1.02] active:scale-[0.98] group relative`}
       >
         {/* Click indicator */}
         <div
@@ -452,29 +452,35 @@ export function InsightsBlock({
           </svg>
         </div>
 
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3 2xl:gap-2">
           <div className="flex-shrink-0 mt-0.5">
             {type === "positive" ? (
-              <TrendingUp className="h-5 w-5" style={{ color: iconColor }} />
+              <TrendingUp
+                className="h-5 w-5 2xl:h-4 2xl:w-4"
+                style={{ color: iconColor }}
+              />
             ) : (
-              <TrendingDown className="h-5 w-5" style={{ color: iconColor }} />
+              <TrendingDown
+                className="h-5 w-5 2xl:h-4 2xl:w-4"
+                style={{ color: iconColor }}
+              />
             )}
           </div>
           <div className="flex-1 min-w-0 pr-6">
             <p
-              className={`${textColor} text-[13px] sm:text-sm leading-relaxed mb-2.5`}
+              className={`${textColor} text-[13px] sm:text-sm 2xl:text-xs leading-relaxed mb-2.5`}
             >
               "{sentence.sentence}"
             </p>
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <span
-                className={`${accentColor} text-[11px] sm:text-xs font-medium flex items-center gap-1`}
+                className={`${accentColor} text-[11px] sm:text-xs 2xl:text-[10px] font-medium flex items-center gap-1`}
               >
                 <MapPin className="h-3 w-3" />
                 {fieldLabel}
               </span>
               <div className="flex items-center gap-2">
-                <div className="h-1.5 w-16 sm:w-20 bg-white/50 rounded-full overflow-hidden">
+                <div className="h-1.5 w-16 sm:w-20 2xl:w-12 bg-white/50 rounded-full overflow-hidden">
                   <div
                     className={`h-full ${
                       type === "positive" ? "bg-emerald-600" : "bg-rose-600"
@@ -483,7 +489,7 @@ export function InsightsBlock({
                   />
                 </div>
                 <span
-                  className={`${accentColor} text-[11px] sm:text-xs font-bold tabular-nums`}
+                  className={`${accentColor} text-[11px] sm:text-xs 2xl:text-[10px] font-bold tabular-nums`}
                 >
                   {percentage}%
                 </span>
@@ -499,7 +505,7 @@ export function InsightsBlock({
           } opacity-0 group-hover:opacity-100 transition-opacity`}
         >
           <p
-            className={`text-[10px] sm:text-[11px] ${accentColor} font-medium text-center`}
+            className={`text-[10px] sm:text-[11px] 2xl:text-[9px] ${accentColor} font-medium text-center`}
           >
             Click to view in full context →
           </p>
@@ -512,9 +518,9 @@ export function InsightsBlock({
     <>
       {/* Patient Summary Section */}
       {summaryData && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+        <div className="flex flex-col gap-4 mb-4">
           {/* Patient Bio */}
-          <div className="rounded-xl border border-slate-300 bg-white p-4">
+          <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200 border-b-4">
             <h3
               className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold mb-2 flex items-center gap-2`}
               style={{ color: intPsychTheme.primary }}
@@ -531,7 +537,7 @@ export function InsightsBlock({
           </div>
 
           {/* Chief Complaint */}
-          <div className="rounded-xl border border-slate-300 bg-white p-4">
+          <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200 border-b-4">
             <h3
               className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold mb-2 flex items-center gap-2`}
               style={{ color: intPsychTheme.primary }}
@@ -551,7 +557,7 @@ export function InsightsBlock({
 
       {/* Sentiment Analysis Section */}
       {sentimentData && (
-        <div className="rounded-xl border border-slate-300 bg-white p-4">
+        <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200 border-b-4">
           {/* Section Title */}
           <div className="mb-3">
             <h3
@@ -570,15 +576,15 @@ export function InsightsBlock({
           {/* Summary Stats - Always visible when sentiment exists */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
             {/* Positive */}
-            <div className="rounded-xl border border-slate-300 bg-white p-3.5 sm:p-4">
+            <div className="rounded-2xl bg-emerald-50/50 p-4 2xl:p-3 border border-emerald-100/50 border-b-4 2xl:border-b-2 border-b-emerald-100">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <Smile className="h-5 w-5 text-emerald-500" />
-                  <span className="text-[13px] sm:text-sm  font-semibold text-emerald-900">
+                  <Smile className="h-5 w-5 2xl:h-4 2xl:w-4 text-emerald-500" />
+                  <span className="text-[13px] sm:text-sm 2xl:text-xs font-semibold text-emerald-900">
                     Positive
                   </span>
                 </div>
-                <span className="text-2xl sm:text-3xl font-bold text-emerald-900">
+                <span className="text-2xl 2xl:text-lg font-bold text-emerald-900">
                   {Math.round(
                     (sentimentData.breakdown.positive /
                       sentimentData.total_sentences) *
@@ -599,21 +605,21 @@ export function InsightsBlock({
                   }}
                 />
               </div>
-              <p className="text-[11px] text-emerald-700">
+              <p className="text-[11px] 2xl:text-[10px] text-emerald-700">
                 {sentimentData.breakdown.positive} sentences
               </p>
             </div>
 
             {/* Negative */}
-            <div className="rounded-xl border border-slate-300 bg-white p-3.5 sm:p-4">
+            <div className="rounded-2xl bg-rose-50/50 p-4 2xl:p-3 border border-rose-100/50 border-b-4 2xl:border-b-2 border-b-rose-100">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <Frown className="h-5 w-5 text-rose-400" />
-                  <span className="text-[13px] sm:text-sm font-semibold text-rose-900">
+                  <Frown className="h-5 w-5 2xl:h-4 2xl:w-4 text-rose-400" />
+                  <span className="text-[13px] sm:text-sm 2xl:text-xs font-semibold text-rose-900">
                     Negative
                   </span>
                 </div>
-                <span className="text-2xl sm:text-3xl font-bold text-rose-900">
+                <span className="text-2xl 2xl:text-lg font-bold text-rose-900">
                   {Math.round(
                     (sentimentData.breakdown.negative /
                       sentimentData.total_sentences) *
@@ -634,21 +640,21 @@ export function InsightsBlock({
                   }}
                 />
               </div>
-              <p className="text-[11px] text-rose-700">
+              <p className="text-[11px] 2xl:text-[10px] text-rose-700">
                 {sentimentData.breakdown.negative} sentences
               </p>
             </div>
 
             {/* Neutral */}
-            <div className="rounded-xl border border-slate-300 bg-white p-3.5 sm:p-4">
+            <div className="rounded-2xl bg-slate-50/50 p-4 2xl:p-3 border border-slate-100/50 border-b-4 2xl:border-b-2 border-b-slate-100">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <Meh className="h-5 w-5 text-slate-400" />
-                  <span className="text-[13px] sm:text-sm font-semibold text-slate-900">
+                  <Meh className="h-5 w-5 2xl:h-4 2xl:w-4 text-slate-400" />
+                  <span className="text-[13px] sm:text-sm 2xl:text-xs font-semibold text-slate-900">
                     Neutral
                   </span>
                 </div>
-                <span className="text-2xl sm:text-3xl font-bold text-slate-900">
+                <span className="text-2xl 2xl:text-lg font-bold text-slate-900">
                   {Math.round(
                     (sentimentData.breakdown.neutral /
                       sentimentData.total_sentences) *
@@ -669,7 +675,7 @@ export function InsightsBlock({
                   }}
                 />
               </div>
-              <p className="text-[11px] text-slate-600">
+              <p className="text-[11px] 2xl:text-[10px] text-slate-600">
                 {sentimentData.breakdown.neutral} sentences
               </p>
             </div>
@@ -738,7 +744,7 @@ export function InsightsBlock({
                   )}
                 </div>
               ) : (
-                <div className="rounded-xl border border-slate-300 bg-slate-50 p-4 text-center">
+                <div className="rounded-[2rem] bg-slate-50/50 border border-slate-100 p-6 text-center">
                   <p className="text-sm text-slate-600">
                     No positive sentences found
                   </p>
@@ -807,7 +813,7 @@ export function InsightsBlock({
                   )}
                 </div>
               ) : (
-                <div className="rounded-xl border border-slate-300 bg-slate-50 p-4 text-center">
+                <div className="rounded-3xl shadow-[0_1.5px_6px_rgba(15,23,42,0.11)] bg-white p-4 text-center">
                   <p className="text-sm text-slate-600">
                     No negative sentences found
                   </p>

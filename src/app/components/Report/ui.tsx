@@ -69,7 +69,7 @@ export function CopyButton({ text }: { text: string }) {
         onClick={handleCopy}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="relative flex items-center justify-center h-7 w-7 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all"
+        className="relative flex items-center justify-center h-7 w-7 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all cursor-pointer"
         aria-label="Copy to clipboard"
       >
         {copied ? (
@@ -168,8 +168,9 @@ export function Card({
   return (
     <div
       className={cx(
-        "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl border-1 border-slate-300 bg-white backdrop-blur-sm p-3 sm:p-4 text-left transition",
-        "transform will-change-transform",
+        "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl bg-white p-4 sm:p-6 text-left transition-all duration-300",
+        "shadow-sm hover:shadow-md hover:-translate-y-1",
+        "border border-slate-200 border-b-4",
         className
       )}
     >

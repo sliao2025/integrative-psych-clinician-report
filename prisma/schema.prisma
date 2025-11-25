@@ -118,17 +118,18 @@ model Profile {
 }
 
 model AssessmentResponse {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   userId         String
-  clinicId       String   @default("default-clinic")
+  clinicId       String    @default("default-clinic")
   assessmentType String
   responses      Json
   totalScore     Int?
-  severity       String?
-  completedAt    DateTime @default(now())
+  completedAt    DateTime?
   requestedBy    String?
-  Clinic         Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
-  User           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dueDate        DateTime?
+  assignedAt     DateTime?
+  Clinic         Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  User           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([clinicId, completedAt])
   @@index([clinicId])

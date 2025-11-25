@@ -3,16 +3,14 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { DM_Serif_Text, DM_Sans } from "next/font/google";
+import { useSearchParams } from "next/navigation";
 import Garden from "@/app/components/Garden/Garden";
 import logo from "@/assets/IP_Logo.png";
 import { intPsychTheme } from "@/app/components/theme";
-import { Roboto, DM_Serif_Text } from "next/font/google";
-import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
 
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"] });
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
-
+const dm_sans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"] });
 export default function LoginPage() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/search";
@@ -24,7 +22,7 @@ export default function LoginPage() {
       style={{
         WebkitTapHighlightColor: "transparent",
         background:
-          "linear-gradient(to top, rgba(188, 255, 196, 1), rgba(241, 255, 245, 1), rgba(255, 255, 255, 1))",
+          "linear-gradient(to top, rgb(171, 248, 158), rgb(242, 255, 241), rgba(255, 255, 255, 1))",
       }}
     >
       {/* Background visuals */}
@@ -36,10 +34,12 @@ export default function LoginPage() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 w-full max-w-2xl px-4"
-        style={{ marginTop: "30vh" }}
+        style={{ marginTop: "35vh" }}
       >
-        <div className="rounded-3xl border border-gray-200 bg-white/50 backdrop-blur-sm shadow-md">
-          <div className="p-6 md:p-8">
+        <div
+          className={`rounded-3xl border border-slate-200 border-b-4 bg-white shadow-sm ${dm_sans.className}`}
+        >
+          <div className={`p-6 md:p-8 ${dm_sans.className}`}>
             <div className="mb-6 flex items-center gap-3">
               <Image
                 src={logo}
@@ -62,18 +62,9 @@ export default function LoginPage() {
 
             <button
               onClick={() => signIn("google", { callbackUrl: callbackUrl })}
-              className="w-full cursor-pointer inline-flex items-center justify-center gap-3 rounded-full px-5 py-3 font-medium text-white transition-all duration-200"
+              className="w-full cursor-pointer inline-flex items-center justify-center gap-3 rounded-2xl px-6 py-4 font-medium text-white transition-all duration-200 border-b-4 border-blue-900/20 active:border-b-0 active:translate-y-1 hover:brightness-110"
               style={{
                 background: `linear-gradient(0deg, ${intPsychTheme.primary}, ${intPsychTheme.accent})`,
-                boxShadow: "0 2px 8px 0 rgba(0,0,0,0.08)",
-                transition: `transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s`,
-              }}
-              onMouseOver={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.transform =
-                  "scale(1.01)";
-              }}
-              onMouseOut={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.transform = "";
               }}
             >
               <svg

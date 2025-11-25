@@ -632,117 +632,22 @@ export function StoryDetail({
       >
         {/* Story */}
         <div
-          className={`rounded-xl ${
-            !hasCulture ? "col-span-2" : "col-span-2"
-          } border border-slate-200 bg-white overflow-hidden ${
+          className={`${!hasCulture ? "col-span-2" : "col-span-2"} ${
             highlightField === "storyNarrative"
-              ? "ring-2 ring-blue-400 ring-offset-2"
+              ? "ring-2 ring-blue-400 ring-offset-2 rounded-xl"
               : ""
           }`}
           data-field="storyNarrative"
         >
-          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-            <h4 className="text-sm font-semibold text-slate-900">Story</h4>
-          </div>
-          <div className="p-4 space-y-4 max-h-[400px] overflow-y-auto">
-            {/* Audio Response - First */}
-            {storyAudioPath && (
-              <AudioPlayer data={data} fieldName="storyNarrative" label="" />
-            )}
-
-            {/* Written Response - Second */}
-            {story && (
-              <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-                    <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                      Written Response
-                    </h4>
-                  </div>
-                  <CopyButton text={story} />
-                </div>
-                <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
-                  {story}
-                </p>
-              </div>
-            )}
-
-            {!story && !storyAudioPath && (
-              <p className="text-[13px] text-slate-400">—</p>
-            )}
-          </div>
-        </div>
-
-        {/* Living Situation */}
-        <div
-          className={`rounded-xl ${
-            !hasCulture ? "col-span-2" : "col-span-2 sm:col-span-1"
-          } border border-slate-200 bg-white overflow-hidden ${
-            highlightField === "livingSituation"
-              ? "ring-2 ring-blue-400 ring-offset-2"
-              : ""
-          }`}
-          data-field="livingSituation"
-        >
-          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-            <h4 className="text-sm font-semibold text-slate-900">
-              Living Situation
-            </h4>
-          </div>
-          <div className="p-4 space-y-4 max-h-[400px] overflow-y-auto">
-            {/* Audio Response - First */}
-            {livingAudioPath && (
-              <AudioPlayer data={data} fieldName="livingSituation" label="" />
-            )}
-
-            {/* Written Response - Second */}
-            {living && (
-              <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-                    <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                      Written Response
-                    </h4>
-                  </div>
-                  <CopyButton text={living} />
-                </div>
-                <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
-                  {living}
-                </p>
-              </div>
-            )}
-
-            {!living && !livingAudioPath && (
-              <p className="text-[13px] text-slate-400">—</p>
-            )}
-          </div>
-        </div>
-
-        {/* Cultural Context */}
-        {hasCulture && (
-          <div
-            className={`rounded-xl col-span-2 sm:col-span-1 border border-slate-200 bg-white overflow-hidden ${
-              highlightField === "cultureContext"
-                ? "ring-2 ring-blue-400 ring-offset-2"
-                : ""
-            }`}
-            data-field="cultureContext"
-          >
-            <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-              <h4 className="text-sm font-semibold text-slate-900">
-                Cultural / Context
-              </h4>
-            </div>
-            <div className="p-4 space-y-4 max-h-[400px] overflow-y-auto">
+          <ScrollableBox title="Story" className="h-[400px]">
+            <div className="space-y-4">
               {/* Audio Response - First */}
-              {cultureAudioPath && (
-                <AudioPlayer data={data} fieldName="cultureContext" label="" />
+              {storyAudioPath && (
+                <AudioPlayer data={data} fieldName="storyNarrative" label="" />
               )}
 
               {/* Written Response - Second */}
-              {culture && (
+              {story && (
                 <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <div className="flex items-center gap-1.5">
@@ -751,14 +656,108 @@ export function StoryDetail({
                         Written Response
                       </h4>
                     </div>
-                    <CopyButton text={culture} />
+                    <CopyButton text={story} />
                   </div>
                   <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
-                    {culture}
+                    {story}
                   </p>
                 </div>
               )}
+
+              {!story && !storyAudioPath && (
+                <p className="text-[13px] text-slate-400">—</p>
+              )}
             </div>
+          </ScrollableBox>
+        </div>
+
+        {/* Living Situation */}
+        <div
+          className={`${
+            !hasCulture ? "col-span-2" : "col-span-2 sm:col-span-1"
+          } ${
+            highlightField === "livingSituation"
+              ? "ring-2 ring-blue-400 ring-offset-2 rounded-xl"
+              : ""
+          }`}
+          data-field="livingSituation"
+        >
+          <ScrollableBox title="Living Situation" className="h-[400px]">
+            <div className="space-y-4">
+              {/* Audio Response - First */}
+              {livingAudioPath && (
+                <AudioPlayer data={data} fieldName="livingSituation" label="" />
+              )}
+
+              {/* Written Response - Second */}
+              {living && (
+                <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                      <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                        Written Response
+                      </h4>
+                    </div>
+                    <CopyButton text={living} />
+                  </div>
+                  <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+                    {living}
+                  </p>
+                </div>
+              )}
+
+              {!living && !livingAudioPath && (
+                <p className="text-[13px] text-slate-400">—</p>
+              )}
+            </div>
+          </ScrollableBox>
+        </div>
+
+        {/* Cultural Context */}
+        {hasCulture && (
+          <div
+            className={`col-span-2 sm:col-span-1 ${
+              highlightField === "cultureContext"
+                ? "ring-2 ring-blue-400 ring-offset-2 rounded-xl"
+                : ""
+            }`}
+            data-field="cultureContext"
+          >
+            <ScrollableBox title="Cultural / Context" className="h-[400px]">
+              <div className="space-y-4">
+                {/* Audio Response - First */}
+                {cultureAudioPath && (
+                  <AudioPlayer
+                    data={data}
+                    fieldName="cultureContext"
+                    label=""
+                  />
+                )}
+
+                {/* Written Response - Second */}
+                {culture && (
+                  <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <Pencil className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                        <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
+                          Written Response
+                        </h4>
+                      </div>
+                      <CopyButton text={culture} />
+                    </div>
+                    <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+                      {culture}
+                    </p>
+                  </div>
+                )}
+
+                {!culture && !cultureAudioPath && (
+                  <p className="text-[13px] text-slate-400">—</p>
+                )}
+              </div>
+            </ScrollableBox>
           </div>
         )}
       </section>

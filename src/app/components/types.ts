@@ -16,3 +16,5 @@ export type ModalState = {
 } | null;
 
 export type Option = { label: string; value: string };
+
+export type Clinician = { name: string; email: string };

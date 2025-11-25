@@ -11,12 +11,8 @@ export async function GET() {
   const session = await getServerSession(authOptions);
   const clinicianEmail = session?.user?.email ?? "";
 
-  // Only allow sliao@psych-nyc.com
-  if (
-    clinicianEmail !== "sliao@psych-nyc.com" &&
-    clinicianEmail !== "rsultan@psych-nyc.com" &&
-    clinicianEmail !== "yherbst@psych-nyc.com"
-  ) {
+  // Removed strict admin check to allow all authenticated clinicians to fetch patients
+  if (!clinicianEmail.endsWith("@psych-nyc.com")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -33,6 +29,7 @@ export async function GET() {
         name: true,
         email: true,
         image: true,
+        clinician: true,
         profile: {
           select: {
             firstName: true,

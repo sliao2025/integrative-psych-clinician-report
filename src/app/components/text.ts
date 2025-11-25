@@ -1,4 +1,4 @@
-import { Option } from "./types";
+import { Clinician, Option } from "./types";
 // DISC Teen Depression questions (child self-report)
 export const DISC_CHILD_QUESTIONS: Record<string, string> = {
   dtds01: "Have you often felt sad or depressed?",
@@ -451,4 +451,16 @@ export const degreeOptions: Option[] = [
   { label: "Bachelor's degree", value: "bachelors" },
   { label: "Master's degree", value: "masters" },
   { label: "Professional/doctorate degree", value: "doctorate" },
+];
+
+export const CLINICIANS: Clinician[] = [
+  { name: "Ryan Sultan", email: "rsultan@psych-nyc.com" },
+  { name: "Zurama Rodriguez", email: "zrodriguez@psych-nyc.com" },
+  { name: "Ryan Mather", email: "rmather@psych-nyc.com" },
+  { name: "Alexandra Christodoulou", email: "achristodoulou@psych-nyc.com" },
+  { name: "Omarr Savage", email: "osavage@psych-nyc.com" },
+  { name: "Luisa Tinapay", email: "ltinapay@psych-nyc.com" },
+  { name: "Shayna Feuer", email: "sfeuer@psych-nyc.com" },
+  { name: "Jordan Arbelaez", email: "jarbelaez@psych-nyc.com" },
+  { name: "Jennifer Ray", email: "jray@psych-nyc.com" },
 ];
