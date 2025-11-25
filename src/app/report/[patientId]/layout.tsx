@@ -98,12 +98,12 @@ export default function PatientLayout({
       icon: BookOpen,
       color: `text-[#ffa440]`,
     },
-    // {
-    //   name: "Learn",
-    //   href: `/report/${patientId}/learn`,
-    //   icon: Brain,
-    //   color: `text-[#f43f5e]`,
-    // },
+    {
+      name: "Learn",
+      href: `/report/${patientId}/learn`,
+      icon: Brain,
+      color: `text-[#f43f5e]`,
+    },
   ];
 
   const isActive = (href: string) => {
@@ -119,7 +119,7 @@ export default function PatientLayout({
     >
       {/* Sidebar */}
       <aside
-        className={`${sidebarWidth} bg-white border-r-2 border-[#e7e5e4] flex flex-col transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-20 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]`}
+        className={`${sidebarWidth} bg-white border-r-2 border-[#e7e5e4] flex flex-col transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-20 `}
       >
         {/* Logo/Title - Header */}
         <div className="relative p-6 flex items-center gap-3 justify-center border-b-2 border-[#e7e5e4]">
@@ -290,7 +290,7 @@ export default function PatientLayout({
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <ReportHeader />
+        <ReportHeader patientId={patientId} />
         <main
           className="flex-1 overflow-y-auto scroll-smooth"
           style={{ backgroundColor: "#f8fafc" }}
