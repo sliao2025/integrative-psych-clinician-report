@@ -5,7 +5,7 @@ import { prisma } from "@/app/lib/prisma";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { patientid: string } }
+  props: { params: Promise<{ patientid: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,6 +14,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const params = await props.params;
     const { patientid } = params;
 
     // Fetch journal entries for this patient, ordered by most recent first
