@@ -6,6 +6,8 @@ import {
   Plus,
   Calendar as CalendarIcon,
   ChevronRight,
+  ChevronDown,
+  Check,
   Send,
   CheckCircle2,
   Clock,
@@ -16,6 +18,12 @@ import { DM_Serif_Text, DM_Sans } from "next/font/google";
 import Drawer from "@/app/components/Drawer";
 import AssessmentDetailDrawer from "@/app/components/AssessmentDetailDrawer";
 import { Gauge } from "@/app/components/Report/ui";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+} from "@headlessui/react";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 const dm_sans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"] });
@@ -215,17 +223,60 @@ export default function AssessmentsPage({
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">
                     Assessment Type
                   </label>
-                  <select
-                    value={selectedType}
-                    onChange={(e) => setSelectedType(e.target.value)}
-                    className="w-full rounded-xl border-slate-200 bg-slate-50 py-2.5 px-3 text-sm focus:border-blue-500 focus:ring-blue-500"
-                  >
-                    {ASSESSMENT_TYPES.map((type) => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
+                  <Listbox value={selectedType} onChange={setSelectedType}>
+                    <div className="relative">
+                      <ListboxButton className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-3 pr-10 text-left text-sm text-slate-900 focus:border-blue-500 focus:ring-blue-500 focus:outline-none">
+                        <span className="block truncate">
+                          {
+                            ASSESSMENT_TYPES.find(
+                              (t) => t.value === selectedType
+                            )?.label
+                          }
+                        </span>
+                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                          <ChevronDown
+                            className="h-4 w-4 text-slate-400"
+                            aria-hidden="true"
+                          />
+                        </span>
+                      </ListboxButton>
+                      <ListboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-base shadow-lg border border-slate-200 ring-opacity-5 focus:outline-none sm:text-sm">
+                        {ASSESSMENT_TYPES.map((type) => (
+                          <ListboxOption
+                            key={type.value}
+                            value={type.value}
+                            className={({ active, selected }) =>
+                              `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
+                                active
+                                  ? "bg-blue-50 text-blue-900"
+                                  : "text-slate-900"
+                              }`
+                            }
+                          >
+                            {({ selected }) => (
+                              <>
+                                <span
+                                  className={`block truncate ${
+                                    selected ? "font-medium" : "font-normal"
+                                  }`}
+                                >
+                                  {type.label}
+                                </span>
+                                {selected ? (
+                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600">
+                                    <Check
+                                      className="h-4 w-4"
+                                      aria-hidden="true"
+                                    />
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
+                          </ListboxOption>
+                        ))}
+                      </ListboxOptions>
+                    </div>
+                  </Listbox>
                 </div>
 
                 <div>
@@ -233,12 +284,12 @@ export default function AssessmentsPage({
                     Due Date (Optional)
                   </label>
                   <div className="relative">
-                    <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                     <input
                       type="date"
                       value={dueDate}
                       onChange={(e) => setDueDate(e.target.value)}
-                      className="w-full rounded-xl border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm focus:border-blue-500 focus:ring-blue-500"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm text-slate-900 focus:border-blue-500 focus:ring-blue-500 placeholder-slate-500"
                     />
                   </div>
                 </div>

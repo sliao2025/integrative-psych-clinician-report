@@ -98,12 +98,12 @@ export default function PatientLayout({
       icon: BookOpen,
       color: `text-[#ffa440]`,
     },
-    {
-      name: "Learn",
-      href: `/report/${patientId}/learn`,
-      icon: Brain,
-      color: `text-[#f43f5e]`,
-    },
+    // {
+    //   name: "Learn",
+    //   href: `/report/${patientId}/learn`,
+    //   icon: Brain,
+    //   color: `text-[#f43f5e]`,
+    // },
   ];
 
   const isActive = (href: string) => {

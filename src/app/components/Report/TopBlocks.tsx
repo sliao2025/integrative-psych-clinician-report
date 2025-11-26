@@ -431,7 +431,7 @@ export function InsightsBlock({
       <button
         type="button"
         onClick={() => onNavigate?.(sentence.field, sentence.sentence)}
-        className={`w-full text-left ${bgColor} ${hoverBgColor} rounded-3xl p-3.5 sm:p-4 2xl:p-2.5 transition-all hover:shadow-lg cursor-pointer hover:scale-[1.02] active:scale-[0.98] group relative`}
+        className={`w-full text-left ${bgColor} ${hoverBgColor} rounded-xl p-3.5 sm:p-4 2xl:p-2.5 transition-all hover:shadow-lg cursor-pointer hover:scale-[1.02] active:scale-[0.98] group relative`}
       >
         {/* Click indicator */}
         <div
@@ -686,15 +686,10 @@ export function InsightsBlock({
             {/* Positive Column - Carousel */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm sm:text-base font-semibold text-emerald-900 flex items-center gap-2">
+                <h3 className="text-sm sm:text-md font-semibold text-emerald-900 flex items-center gap-2">
                   <TrendingUp className="h-4 w-4" />
                   Most Positive Sentences
                 </h3>
-                {positiveSentences.length > 0 && (
-                  <span className="text-xs text-emerald-700 font-medium">
-                    {positiveIndex + 1} of {positiveSentences.length}
-                  </span>
-                )}
               </div>
               {positiveSentences.length > 0 ? (
                 <div className="relative">
@@ -755,15 +750,10 @@ export function InsightsBlock({
             {/* Negative Column - Carousel */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm sm:text-base font-semibold text-rose-900 flex items-center gap-2">
+                <h3 className="text-sm sm:text-md font-semibold text-rose-900 flex items-center gap-2">
                   <TrendingDown className="h-4 w-4" />
                   Most Negative Sentences
                 </h3>
-                {negativeSentences.length > 0 && (
-                  <span className="text-xs text-rose-700 font-medium">
-                    {negativeIndex + 1} of {negativeSentences.length}
-                  </span>
-                )}
               </div>
               {negativeSentences.length > 0 ? (
                 <div className="relative">

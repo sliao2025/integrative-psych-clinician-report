@@ -16,10 +16,18 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DM_Sans } from "next/font/google";
 import { CLINICIANS } from "@/app/components/text";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+} from "@headlessui/react";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 const dm_sans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"] });
@@ -189,6 +197,12 @@ export default function ClinicianHome() {
     }
   }, [filteredPatients, loadingPatients]);
 
+  // Prepare options for Listbox
+  const clinicianOptions = [
+    { value: "all", label: "All Clinicians" },
+    ...CLINICIANS.map((c) => ({ value: c.name, label: c.name })),
+  ];
+
   return (
     <main
       className="relative min-h-[100svh] grid place-items-center overflow-hidden px-3 pb-[env(safe-area-inset-bottom)] pt-[calc(env(safe-area-inset-top)+16px)]"
@@ -258,24 +272,69 @@ export default function ClinicianHome() {
                 {/* Clinician Filter (Only for non-restricted users) */}
                 {!isRestrictedClinician && (
                   <div className="relative min-w-[200px]">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                       <Filter
                         className="h-4 w-4"
                         style={{ color: intPsychTheme.primary }}
                       />
                     </div>
-                    <select
+                    <Listbox
                       value={filterClinician}
-                      onChange={(e) => setFilterClinician(e.target.value)}
-                      className="block w-full pl-10 pr-8 py-2.5 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-slate-200 appearance-none cursor-pointer"
+                      onChange={setFilterClinician}
                     >
-                      <option value="all">All Clinicians</option>
-                      {CLINICIANS.map((c) => (
-                        <option key={c.email} value={c.name}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
+                      <div className="relative">
+                        <ListboxButton className="block w-full pl-10 pr-8 py-2.5 text-left text-sm text-slate-500 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-slate-200 cursor-pointer">
+                          <span className="block truncate">
+                            {
+                              clinicianOptions.find(
+                                (c) => c.value === filterClinician
+                              )?.label
+                            }
+                          </span>
+                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                            <ChevronDown
+                              className="h-4 w-4 text-slate-400"
+                              aria-hidden="true"
+                            />
+                          </span>
+                        </ListboxButton>
+                        <ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-base shadow-lg border border-slate-200  ring-opacity-5 focus:outline-none sm:text-sm">
+                          {clinicianOptions.map((option) => (
+                            <ListboxOption
+                              key={option.value}
+                              value={option.value}
+                              className={({ active, selected }) =>
+                                `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
+                                  active
+                                    ? "bg-blue-50 text-blue-900"
+                                    : "text-slate-900"
+                                }`
+                              }
+                            >
+                              {({ selected }) => (
+                                <>
+                                  <span
+                                    className={`block truncate ${
+                                      selected ? "font-medium" : "font-normal"
+                                    }`}
+                                  >
+                                    {option.label}
+                                  </span>
+                                  {selected ? (
+                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600">
+                                      <Check
+                                        className="h-4 w-4"
+                                        aria-hidden="true"
+                                      />
+                                    </span>
+                                  ) : null}
+                                </>
+                              )}
+                            </ListboxOption>
+                          ))}
+                        </ListboxOptions>
+                      </div>
+                    </Listbox>
                   </div>
                 )}
 

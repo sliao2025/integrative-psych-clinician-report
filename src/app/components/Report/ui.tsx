@@ -169,7 +169,7 @@ export function Card({
     <div
       className={cx(
         "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl bg-white p-4 sm:p-6 text-left transition-all duration-300",
-        "shadow-sm hover:shadow-md hover:-translate-y-1",
+        "shadow-sm hover:shadow-md",
         "border border-slate-200 border-b-4",
         className
       )}
