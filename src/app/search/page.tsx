@@ -57,7 +57,8 @@ export default function ClinicianHome() {
 
   // Determine if current user is one of the designated clinicians
   const currentClinician = CLINICIANS.find((c) => c.email === email);
-  const isRestrictedClinician = !!currentClinician;
+  const isRestrictedClinician =
+    !!currentClinician && email !== "rsultan@psych-nyc.com";
 
   const [patientName, setPatientName] = useState("");
   const [allPatients, setAllPatients] = useState<Patient[]>([]);

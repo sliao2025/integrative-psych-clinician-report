@@ -82,7 +82,7 @@ export function GoalsCard({
       }
       onExpand={onOpen}
     >
-      <p className="whitespace-pre-line line-clamp-12 text-[13px] leading-relaxed text-slate-700">
+      <p className="whitespace-pre-line line-clamp-6 text-[13px] leading-relaxed text-slate-700">
         {displayText(goalsText, goalsAudio)}
       </p>
     </Card>
