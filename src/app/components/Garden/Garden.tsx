@@ -1,6 +1,7 @@
 // src/app/components/decor/Garden.tsx
 
-import React, { memo } from "react";
+import React, { memo, useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import VinesTop from "./VinesTop";
 import MeadowRow from "./MeadowRow";
 import FlowerCluster from "./FlowerCluster";
@@ -9,42 +10,59 @@ import { intPsychTheme } from "../theme";
 /* ------------------ Main exported frames ------------------ */
 
 function GardenFrame({ bloom = 0 }: { bloom?: number }) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null;
+
   // Multi-layered decorative garden with broad coverage and varied sway speeds.
   return (
-    <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+    <motion.div
+      className="pointer-events-none absolute inset-0 z-0"
+      aria-hidden={true}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.5, ease: "easeOut" }}
+    >
       {/* soft, taller ground gradient across bottom ~45% of screen */}
       <div className="absolute inset-x-0 bottom-0" />
 
       {/* Background layer: large, lighter clusters spread tall for coverage */}
-      <div className="absolute inset-x-0 bottom-0 h-[52%] opacity-100">
+      <div className="absolute inset-x-0 bottom-0 h-[52%] opacity-60">
         <div className="mx-auto max-w-7xl px-2 space-y-6">
           <MeadowRow
-            count={12}
+            count={14}
             scale={1.2}
             progress={bloom}
             colors={[intPsychTheme.accent, "#cfe8ff", "#8ec5ff"]}
+            seed="row-bg-1-v2"
           />
           <MeadowRow
-            count={15}
+            count={16}
             flip
             scale={2.5}
             progress={bloom}
             colors={[intPsychTheme.alternate, intPsychTheme.accent, "#bfd9f2"]}
+            seed="row-bg-2-v2"
           />
         </div>
       </div>
 
       {/* Midground layer */}
-      <div className="absolute inset-x-0 bottom-0 h-[46%] opacity-100">
+      <div className="absolute inset-x-0 bottom-0 h-[46%] opacity-80">
         <div className="mx-auto max-w-6xl px-3 space-y-4">
           <MeadowRow
-            count={10}
+            count={12}
             scale={1.5}
             progress={bloom}
             colors={[intPsychTheme.secondary, "#ffd7a3", "#ffbe6b"]}
+            seed="row-mid-1-v2"
           />
           <MeadowRow
-            count={7}
+            count={9}
             flip
             scale={2.75}
             progress={bloom}
@@ -53,6 +71,7 @@ function GardenFrame({ bloom = 0 }: { bloom?: number }) {
               intPsychTheme.alternate,
               "#ff9966",
             ]}
+            seed="row-mid-2-v2"
           />
         </div>
       </div>
@@ -69,6 +88,7 @@ function GardenFrame({ bloom = 0 }: { bloom?: number }) {
               intPsychTheme.secondary,
               intPsychTheme.accent,
             ]}
+            seed="row-fg-1-v2"
           />
           <MeadowRow
             count={11}
@@ -80,6 +100,7 @@ function GardenFrame({ bloom = 0 }: { bloom?: number }) {
               intPsychTheme.alternate,
               intPsychTheme.secondary,
             ]}
+            seed="row-fg-2-v2"
           />
           <MeadowRow
             count={12}
@@ -91,6 +112,7 @@ function GardenFrame({ bloom = 0 }: { bloom?: number }) {
               intPsychTheme.primary,
               intPsychTheme.accent,
             ]}
+            seed="row-fg-3-v2"
           />
         </div>
       </div>
@@ -105,16 +127,18 @@ function GardenFrame({ bloom = 0 }: { bloom?: number }) {
               intPsychTheme.secondary,
               intPsychTheme.accent,
             ]}
+            seed="row-bot-1-v2"
           />
           <MeadowRow
             count={10}
-            scale={5}
+            scale={5.5}
             progress={bloom}
             colors={[
               intPsychTheme.primary,
               intPsychTheme.secondary,
               intPsychTheme.accent,
             ]}
+            seed="row-bot-2-v2"
           />
         </div>
       </div>
@@ -161,7 +185,7 @@ function GardenFrame({ bloom = 0 }: { bloom?: number }) {
           }
         }
       `}</style>
-    </div>
+    </motion.div>
   );
 }
 

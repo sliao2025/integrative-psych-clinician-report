@@ -16,12 +16,14 @@ function MeadowRow({
   scale = 1,
   colors = ["#f43f5e", "#e11d48", "#fb7185"],
   progress = 0,
+  seed,
 }: {
   count?: number;
   flip?: boolean;
   scale?: number;
   colors?: string[];
   progress?: number; // 0..1
+  seed: string;
 }) {
   const clamped = Math.max(0, Math.min(1, progress));
 
@@ -41,7 +43,7 @@ function MeadowRow({
         gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))`,
         transform: `scale(${scale})`,
       }}
-      aria-hidden
+      aria-hidden={true}
     >
       {Array.from({ length: count }).map((_, i) => {
         const r = ranks[i] ?? 0;
@@ -57,13 +59,17 @@ function MeadowRow({
             }`}
             style={{
               animationDelay: `${(i % 6) * 0.3}s`,
-              transition: "opacity 400ms ease, transform 400ms ease",
-              transitionDelay: `${delayMs}ms`,
               opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0)" : "translateY(8px)",
+              transform: visible
+                ? "translateY(0) scale(1)"
+                : "translateY(12px) scale(0.95)",
             }}
           >
-            <FlowerCluster colors={colors} flip={flip && i % 2 === 0} />
+            <FlowerCluster
+              colors={colors}
+              flip={flip && i % 2 === 0}
+              seed={`${seed}-cluster-${i}`}
+            />
           </div>
         );
       })}
