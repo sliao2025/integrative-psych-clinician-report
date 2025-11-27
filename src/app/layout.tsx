@@ -41,7 +41,6 @@ export default async function RootLayout({
       lang="en"
       data-auth={isAuthed ? "true" : "false"}
       data-user-email={email}
-      suppressHydrationWarning
     >
       <body className="min-h-dvh bg-blue-200 text-[color:var(--foreground)] antialiased">
         {/* 
@@ -52,7 +51,6 @@ export default async function RootLayout({
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
-        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta
           name="apple-mobile-web-app-status-bar-style"

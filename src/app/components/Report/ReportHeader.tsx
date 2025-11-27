@@ -3,14 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  Brain,
-  FileText,
-  Loader2,
-  RefreshCw,
-  Check,
-} from "lucide-react";
+import { ArrowLeft, Loader2, RefreshCw, Check } from "lucide-react";
 import { intPsychTheme } from "../theme";
 import { useWeather } from "@/app/lib/hooks/useWeather";
 import WeatherWidget from "../WeatherWidget";

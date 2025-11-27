@@ -15,6 +15,14 @@ import {
   Copy,
   Check,
 } from "lucide-react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Sector,
+  Tooltip,
+} from "recharts";
 
 const dm_serif = DM_Serif_Text({
   subsets: ["latin"],
@@ -689,6 +697,152 @@ export function ScrollableBox({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+export function SentimentChart({
+  data,
+  height = 250,
+  onSliceClick,
+}: {
+  data: { name: string; value: number; color: string }[];
+  height?: number;
+  onSliceClick?: (name: string) => void;
+}) {
+  const [activeIndex, setActiveIndex] = React.useState<number | undefined>(
+    undefined
+  );
+
+  const total = data.reduce((acc, cur) => acc + cur.value, 0);
+
+  const onPieEnter = (_: any, index: number) => {
+    setActiveIndex(index);
+  };
+
+  const onPieLeave = () => {
+    setActiveIndex(undefined);
+  };
+
+  // Custom label render function for external labels
+  const renderCustomizedLabel = (props: any) => {
+    const { cx, cy, midAngle, innerRadius, outerRadius, percent, name } = props;
+    if (percent === 0) return null;
+
+    const RADIAN = Math.PI / 180;
+    const radius = outerRadius * 1.2;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+        className="text-[13px] text-slate-700 font-medium"
+      >
+        {`${name} (${(percent * 100).toFixed(0)}%)`}
+      </text>
+    );
+  };
+
+  return (
+    <div
+      style={{ width: "100%", height }}
+      className="relative flex items-center justify-center font-medium text-slate-700"
+      onMouseLeave={onPieLeave}
+    >
+      {/* Always visible center text */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0">
+        <span className="text-sm font-semibold tracking-wider uppercase text-slate-700">
+          Sentiment
+        </span>
+      </div>
+
+      <ResponsiveContainer>
+        <PieChart>
+          <Pie
+            // @ts-expect-error: Recharts types might be outdated, activeIndex is valid
+            activeIndex={activeIndex}
+            activeShape={(props: any) => {
+              const {
+                cx,
+                cy,
+                innerRadius,
+                outerRadius,
+                startAngle,
+                endAngle,
+                fill,
+              } = props;
+              return (
+                <Sector
+                  cx={cx}
+                  cy={cy}
+                  innerRadius={innerRadius}
+                  outerRadius={outerRadius + 6}
+                  startAngle={startAngle}
+                  endAngle={endAngle}
+                  fill={fill}
+                  fillOpacity={0.65}
+                  stroke={fill}
+                  strokeWidth={2}
+                  strokeLinejoin="round"
+                  cornerRadius={2}
+                />
+              );
+            }}
+            data={data}
+            cx="50%"
+            cy="50%"
+            innerRadius={70}
+            outerRadius={100}
+            dataKey="value"
+            onMouseEnter={onPieEnter}
+            onMouseLeave={onPieLeave}
+            onClick={(data) => onSliceClick?.(data.name)}
+            paddingAngle={4}
+            cornerRadius={2}
+            stroke="none"
+            className="cursor-pointer focus:outline-none"
+            label={renderCustomizedLabel}
+            labelLine={false}
+            isAnimationActive={false}
+          >
+            {data.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.color}
+                fillOpacity={0.5}
+                stroke={entry.color}
+                strokeWidth={2}
+                strokeLinejoin="round"
+                className="transition-all duration-300 ease-out"
+              />
+            ))}
+          </Pie>
+          <Tooltip
+            formatter={(value: number, name: string) => [
+              `${value} / ${total} sentences`,
+              name,
+            ]}
+            contentStyle={{
+              backgroundColor: "#fff",
+              borderRadius: "8px",
+              border: "1px solid #e2e8f0",
+              boxShadow:
+                "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+              fontSize: "12px",
+              color: "#334155",
+              padding: "8px 12px",
+            }}
+            itemStyle={{ color: "#334155", padding: 0 }}
+            cursor={false}
+            isAnimationActive={false}
+            wrapperStyle={{ pointerEvents: "none", outline: "none" }}
+          />
+        </PieChart>
+      </ResponsiveContainer>
     </div>
   );
 }

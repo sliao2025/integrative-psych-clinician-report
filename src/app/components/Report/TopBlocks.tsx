@@ -22,7 +22,7 @@ import {
   Smile,
   MapPin,
 } from "lucide-react";
-import { KV, Gauge } from "./ui";
+import { KV, Gauge, SentimentChart } from "./ui";
 import { ProfileJson } from "../types";
 import React, { useEffect, useState } from "react";
 import { DM_Serif_Text } from "next/font/google";
@@ -573,242 +573,171 @@ export function InsightsBlock({
             </p>
           </div>
 
-          {/* Summary Stats - Always visible when sentiment exists */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-            {/* Positive */}
-            <div className="rounded-2xl bg-emerald-50/50 p-4 2xl:p-3 border border-emerald-100/50 border-b-4 2xl:border-b-2 border-b-emerald-100">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Smile className="h-5 w-5 2xl:h-4 2xl:w-4 text-emerald-500" />
-                  <span className="text-[13px] sm:text-sm 2xl:text-xs font-semibold text-emerald-900">
-                    Positive
-                  </span>
-                </div>
-                <span className="text-2xl 2xl:text-lg font-bold text-emerald-900">
-                  {Math.round(
-                    (sentimentData.breakdown.positive /
-                      sentimentData.total_sentences) *
-                      100
-                  )}
-                  %
-                </span>
-              </div>
-              <div className="relative h-2 w-full rounded-full bg-emerald-100 mb-2">
-                <div
-                  className="h-2 rounded-full bg-gradient-to-r from-emerald-300 to-emerald-500"
-                  style={{
-                    width: `${Math.round(
-                      (sentimentData.breakdown.positive /
-                        sentimentData.total_sentences) *
-                        100
-                    )}%`,
-                  }}
+          {/* Chart and Sentences - Responsive Layout */}
+          <div className="mt-5 grid md:grid-cols-1 lg:grid-cols-2 2xl:grid-cols-1 gap-6">
+            {/* Left: Chart */}
+            <div className="flex justify-center items-start">
+              <div className="w-full max-w-md">
+                <SentimentChart
+                  data={[
+                    {
+                      name: "Positive",
+                      value: sentimentData.breakdown.positive,
+                      color: "#6ee7b7",
+                    },
+                    {
+                      name: "Neutral",
+                      value: sentimentData.breakdown.neutral,
+                      color: "#cbd5e1",
+                    },
+                    {
+                      name: "Negative",
+                      value: sentimentData.breakdown.negative,
+                      color: "#fda4af",
+                    },
+                  ]}
+                  height={300}
                 />
               </div>
-              <p className="text-[11px] 2xl:text-[10px] text-emerald-700">
-                {sentimentData.breakdown.positive} sentences
-              </p>
             </div>
 
-            {/* Negative */}
-            <div className="rounded-2xl bg-rose-50/50 p-4 2xl:p-3 border border-rose-100/50 border-b-4 2xl:border-b-2 border-b-rose-100">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Frown className="h-5 w-5 2xl:h-4 2xl:w-4 text-rose-400" />
-                  <span className="text-[13px] sm:text-sm 2xl:text-xs font-semibold text-rose-900">
-                    Negative
-                  </span>
+            {/* Right: Sentence Carousels Stacked Vertically */}
+            <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6">
+              {/* Positive Sentences */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm sm:text-md font-semibold text-emerald-900 flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4" />
+                    Most Positive Sentences
+                  </h3>
                 </div>
-                <span className="text-2xl 2xl:text-lg font-bold text-rose-900">
-                  {Math.round(
-                    (sentimentData.breakdown.negative /
-                      sentimentData.total_sentences) *
-                      100
-                  )}
-                  %
-                </span>
-              </div>
-              <div className="relative h-2 w-full rounded-full bg-rose-100 mb-2">
-                <div
-                  className="h-2 rounded-full bg-gradient-to-r from-rose-300 to-rose-400"
-                  style={{
-                    width: `${Math.round(
-                      (sentimentData.breakdown.negative /
-                        sentimentData.total_sentences) *
-                        100
-                    )}%`,
-                  }}
-                />
-              </div>
-              <p className="text-[11px] 2xl:text-[10px] text-rose-700">
-                {sentimentData.breakdown.negative} sentences
-              </p>
-            </div>
-
-            {/* Neutral */}
-            <div className="rounded-2xl bg-slate-50/50 p-4 2xl:p-3 border border-slate-100/50 border-b-4 2xl:border-b-2 border-b-slate-100">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Meh className="h-5 w-5 2xl:h-4 2xl:w-4 text-slate-400" />
-                  <span className="text-[13px] sm:text-sm 2xl:text-xs font-semibold text-slate-900">
-                    Neutral
-                  </span>
-                </div>
-                <span className="text-2xl 2xl:text-lg font-bold text-slate-900">
-                  {Math.round(
-                    (sentimentData.breakdown.neutral /
-                      sentimentData.total_sentences) *
-                      100
-                  )}
-                  %
-                </span>
-              </div>
-              <div className="relative h-2 w-full rounded-full bg-slate-200 mb-2">
-                <div
-                  className="h-2 rounded-full bg-gradient-to-r from-slate-300 to-slate-400"
-                  style={{
-                    width: `${Math.round(
-                      (sentimentData.breakdown.neutral /
-                        sentimentData.total_sentences) *
-                        100
-                    )}%`,
-                  }}
-                />
-              </div>
-              <p className="text-[11px] 2xl:text-[10px] text-slate-600">
-                {sentimentData.breakdown.neutral} sentences
-              </p>
-            </div>
-          </div>
-
-          {/* Sentence Details - Carousel */}
-          <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Positive Column - Carousel */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm sm:text-md font-semibold text-emerald-900 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4" />
-                  Most Positive Sentences
-                </h3>
-              </div>
-              {positiveSentences.length > 0 ? (
-                <div className="relative">
-                  <SentenceCard
-                    sentence={positiveSentences[positiveIndex]}
-                    type="positive"
-                  />
-                  {positiveSentences.length > 1 && (
-                    <div className="flex items-center justify-center gap-2 mt-3">
-                      <button
-                        onClick={() =>
-                          setPositiveIndex((prev) =>
-                            prev === 0 ? positiveSentences.length - 1 : prev - 1
-                          )
-                        }
-                        className="flex items-center justify-center h-8 w-8 rounded-full border border-emerald-300 bg-white hover:bg-emerald-50 transition-colors"
-                        aria-label="Previous positive sentence"
-                      >
-                        <ChevronLeft className="h-4 w-4 text-emerald-700" />
-                      </button>
-                      <div className="flex gap-1.5">
-                        {positiveSentences.map((_, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => setPositiveIndex(idx)}
-                            className={`h-2 rounded-full transition-all ${
-                              idx === positiveIndex
-                                ? "w-6 bg-emerald-600"
-                                : "w-2 bg-emerald-300 hover:bg-emerald-400"
-                            }`}
-                            aria-label={`Go to positive sentence ${idx + 1}`}
-                          />
-                        ))}
+                {positiveSentences.length > 0 ? (
+                  <div className="relative">
+                    <SentenceCard
+                      sentence={positiveSentences[positiveIndex]}
+                      type="positive"
+                    />
+                    {positiveSentences.length > 1 && (
+                      <div className="flex items-center justify-center gap-2 mt-3">
+                        <button
+                          onClick={() =>
+                            setPositiveIndex((prev) =>
+                              prev === 0
+                                ? positiveSentences.length - 1
+                                : prev - 1
+                            )
+                          }
+                          className="flex items-center justify-center h-8 w-8 rounded-full border border-emerald-300 bg-white hover:bg-emerald-50 transition-colors"
+                          aria-label="Previous positive sentence"
+                        >
+                          <ChevronLeft className="h-4 w-4 text-emerald-700" />
+                        </button>
+                        <div className="flex gap-1.5">
+                          {positiveSentences.map((_, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => setPositiveIndex(idx)}
+                              className={`h-2 rounded-full transition-all ${
+                                idx === positiveIndex
+                                  ? "w-6 bg-emerald-600"
+                                  : "w-2 bg-emerald-300 hover:bg-emerald-400"
+                              }`}
+                              aria-label={`Go to positive sentence ${idx + 1}`}
+                            />
+                          ))}
+                        </div>
+                        <button
+                          onClick={() =>
+                            setPositiveIndex((prev) =>
+                              prev === positiveSentences.length - 1
+                                ? 0
+                                : prev + 1
+                            )
+                          }
+                          className="flex items-center justify-center h-8 w-8 rounded-full border border-emerald-300 bg-white hover:bg-emerald-50 transition-colors"
+                          aria-label="Next positive sentence"
+                        >
+                          <ChevronRight className="h-4 w-4 text-emerald-700" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() =>
-                          setPositiveIndex((prev) =>
-                            prev === positiveSentences.length - 1 ? 0 : prev + 1
-                          )
-                        }
-                        className="flex items-center justify-center h-8 w-8 rounded-full border border-emerald-300 bg-white hover:bg-emerald-50 transition-colors"
-                        aria-label="Next positive sentence"
-                      >
-                        <ChevronRight className="h-4 w-4 text-emerald-700" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="rounded-[2rem] bg-slate-50/50 border border-slate-100 p-6 text-center">
-                  <p className="text-sm text-slate-600">
-                    No positive sentences found
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Negative Column - Carousel */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm sm:text-md font-semibold text-rose-900 flex items-center gap-2">
-                  <TrendingDown className="h-4 w-4" />
-                  Most Negative Sentences
-                </h3>
+                    )}
+                  </div>
+                ) : (
+                  <div className="rounded-[2rem] bg-slate-50/50 border border-slate-100 p-6 text-center">
+                    <p className="text-sm text-slate-600">
+                      No positive sentences found
+                    </p>
+                  </div>
+                )}
               </div>
-              {negativeSentences.length > 0 ? (
-                <div className="relative">
-                  <SentenceCard
-                    sentence={negativeSentences[negativeIndex]}
-                    type="negative"
-                  />
-                  {negativeSentences.length > 1 && (
-                    <div className="flex items-center justify-center gap-2 mt-3">
-                      <button
-                        onClick={() =>
-                          setNegativeIndex((prev) =>
-                            prev === 0 ? negativeSentences.length - 1 : prev - 1
-                          )
-                        }
-                        className="flex items-center justify-center h-8 w-8 rounded-full border border-rose-300 bg-white hover:bg-rose-50 transition-colors"
-                        aria-label="Previous negative sentence"
-                      >
-                        <ChevronLeft className="h-4 w-4 text-rose-700" />
-                      </button>
-                      <div className="flex gap-1.5">
-                        {negativeSentences.map((_, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => setNegativeIndex(idx)}
-                            className={`h-2 rounded-full transition-all ${
-                              idx === negativeIndex
-                                ? "w-6 bg-rose-600"
-                                : "w-2 bg-rose-300 hover:bg-rose-400"
-                            }`}
-                            aria-label={`Go to negative sentence ${idx + 1}`}
-                          />
-                        ))}
+
+              {/* Negative Sentences */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm sm:text-md font-semibold text-rose-900 flex items-center gap-2">
+                    <TrendingDown className="h-4 w-4" />
+                    Most Negative Sentences
+                  </h3>
+                </div>
+                {negativeSentences.length > 0 ? (
+                  <div className="relative">
+                    <SentenceCard
+                      sentence={negativeSentences[negativeIndex]}
+                      type="negative"
+                    />
+                    {negativeSentences.length > 1 && (
+                      <div className="flex items-center justify-center gap-2 mt-3">
+                        <button
+                          onClick={() =>
+                            setNegativeIndex((prev) =>
+                              prev === 0
+                                ? negativeSentences.length - 1
+                                : prev - 1
+                            )
+                          }
+                          className="flex items-center justify-center h-8 w-8 rounded-full border border-rose-300 bg-white hover:bg-rose-50 transition-colors"
+                          aria-label="Previous negative sentence"
+                        >
+                          <ChevronLeft className="h-4 w-4 text-rose-700" />
+                        </button>
+                        <div className="flex gap-1.5">
+                          {negativeSentences.map((_, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => setNegativeIndex(idx)}
+                              className={`h-2 rounded-full transition-all ${
+                                idx === negativeIndex
+                                  ? "w-6 bg-rose-600"
+                                  : "w-2 bg-rose-300 hover:bg-rose-400"
+                              }`}
+                              aria-label={`Go to negative sentence ${idx + 1}`}
+                            />
+                          ))}
+                        </div>
+                        <button
+                          onClick={() =>
+                            setNegativeIndex((prev) =>
+                              prev === negativeSentences.length - 1
+                                ? 0
+                                : prev + 1
+                            )
+                          }
+                          className="flex items-center justify-center h-8 w-8 rounded-full border border-rose-300 bg-white hover:bg-rose-50 transition-colors"
+                          aria-label="Next negative sentence"
+                        >
+                          <ChevronRight className="h-4 w-4 text-rose-700" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() =>
-                          setNegativeIndex((prev) =>
-                            prev === negativeSentences.length - 1 ? 0 : prev + 1
-                          )
-                        }
-                        className="flex items-center justify-center h-8 w-8 rounded-full border border-rose-300 bg-white hover:bg-rose-50 transition-colors"
-                        aria-label="Next negative sentence"
-                      >
-                        <ChevronRight className="h-4 w-4 text-rose-700" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="rounded-3xl shadow-[0_1.5px_6px_rgba(15,23,42,0.11)] bg-white p-4 text-center">
-                  <p className="text-sm text-slate-600">
-                    No negative sentences found
-                  </p>
-                </div>
-              )}
+                    )}
+                  </div>
+                ) : (
+                  <div className="rounded-[2rem] bg-slate-50/50 border border-slate-100 p-6 text-center">
+                    <p className="text-sm text-slate-600">
+                      No negative sentences found
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

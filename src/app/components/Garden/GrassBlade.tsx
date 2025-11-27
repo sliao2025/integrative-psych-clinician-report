@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useId } from "react";
 import { seededRandom } from "./random";
 
 function GrassBlade({
@@ -6,7 +6,6 @@ function GrassBlade({
   bend = 6,
   baseWidth = 2,
   tipWidth = 1, // Increased tipWidth for less taper
-  seed,
   swayDelay,
   swayDuration,
 }: {
@@ -14,18 +13,18 @@ function GrassBlade({
   bend?: number;
   baseWidth?: number;
   tipWidth?: number;
-  seed: string;
   swayDelay?: number; // seconds (can be negative)
   swayDuration?: number; // seconds
 }) {
+  const reactId = useId();
   const delay =
     typeof swayDelay === "number"
       ? swayDelay
-      : seededRandom(`${seed}-delay`) * 3 - 1.5;
+      : seededRandom(`${reactId}-delay`) * 3 - 1.5;
   const duration =
     typeof swayDuration === "number"
       ? swayDuration
-      : 3.2 + seededRandom(`${seed}-duration`) * 2.0;
+      : 3.2 + seededRandom(`${reactId}-duration`) * 2.0;
 
   const top = 56 - h;
   const centerX = 6;
@@ -52,7 +51,7 @@ function GrassBlade({
       height={56}
       viewBox={`0 ${top} 12 ${h}`}
       xmlns="http://www.w3.org/2000/svg"
-      aria-hidden={true}
+      aria-hidden
     >
       <g
         className="gb-tip-sway"
@@ -79,6 +78,7 @@ function GrassBlade({
           transform-origin: 50% 92%; /* near the base so the tip moves more */
           transform-box: fill-box;
           animation: gb-sway 4.5s ease-in-out infinite;
+          will-change: transform;
         }
         @keyframes gb-sway {
           0%,

@@ -191,7 +191,7 @@ export default function PatientReportClient({ id }: { id: string }) {
           }
         />
 
-        <div className="mt-8 grid grid-cols-1 2xl:grid-cols-12 gap-8 items-start">
+        <div className="mt-8 grid grid-cols-1 2xl:grid-cols-12 gap-6 items-start">
           {/* Left Column: Clinical Insights (2XL: col-span-4) */}
           <div className="2xl:col-span-4 space-y-6">
             <div className="flex items-center gap-4">
@@ -430,7 +430,21 @@ export default function PatientReportClient({ id }: { id: string }) {
               </div>
             </div>
 
-            <div className="columns-1 md:columns-2 gap-6 [column-fill:_balance]">
+            <div className="columns-1 md:columns-2 gap-5 [column-fill:_balance]">
+              <div className="mb-4 break-inside-avoid">
+                <SafetyCard
+                  data={data}
+                  onOpen={() =>
+                    open(
+                      <>
+                        <ShieldAlert className="h-4 w-4 inline-block mr-2" />
+                        Suicide Risk
+                      </>,
+                      <SafetyDetail data={data} />
+                    )
+                  }
+                />
+              </div>
               <div className="mb-4 break-inside-avoid">
                 <GoalsCard
                   data={data}
@@ -493,21 +507,6 @@ export default function PatientReportClient({ id }: { id: string }) {
                   </div>
                 </>
               )}
-
-              <div className="mb-4 break-inside-avoid">
-                <SafetyCard
-                  data={data}
-                  onOpen={() =>
-                    open(
-                      <>
-                        <ShieldAlert className="h-4 w-4 inline-block mr-2" />
-                        Suicide Risk
-                      </>,
-                      <SafetyDetail data={data} />
-                    )
-                  }
-                />
-              </div>
 
               <div className="mb-4 break-inside-avoid">
                 <GlanceCard

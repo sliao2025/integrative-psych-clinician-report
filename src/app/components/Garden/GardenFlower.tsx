@@ -1,29 +1,28 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo, useId } from "react";
 import { seededRandom } from "./random";
 
 function GardenFlower({
   size = 22, // smaller default size
   color = "#f43f5e",
   tilt = 0,
-  seed,
   swayDelay,
   swayDuration,
 }: {
   size?: number;
   color?: string;
   tilt?: number;
-  seed: string;
   swayDelay?: number; // seconds (can be negative)
   swayDuration?: number; // seconds
 }) {
+  const reactId = useId();
   const delay =
     typeof swayDelay === "number"
       ? swayDelay
-      : seededRandom(`${seed}-delay`) * 3 - 1.5;
+      : seededRandom(`${reactId}-delay`) * 3 - 1.5;
   const duration =
     typeof swayDuration === "number"
       ? swayDuration
-      : 2.6 + seededRandom(`${seed}-duration`) * 1.8;
+      : 2.6 + seededRandom(`${reactId}-duration`) * 1.8;
 
   // Precompute petals once per (size,color) so DOM is stable
   const petals = useMemo(() => {
@@ -52,7 +51,7 @@ function GardenFlower({
       height={size * 1.9}
       viewBox="0 0 32 60"
       xmlns="http://www.w3.org/2000/svg"
-      aria-hidden={true}
+      aria-hidden
       style={{ display: "block", transform: `rotate(${tilt}deg)` }}
     >
       {/* stem */}
@@ -85,6 +84,7 @@ function GardenFlower({
           transform-origin: 16px 22px; /* pivot at top of stem */
           transform-box: fill-box;
           animation: gf-sway 3s ease-in-out infinite;
+          will-change: transform;
         }
         @keyframes gf-sway {
           0%,
