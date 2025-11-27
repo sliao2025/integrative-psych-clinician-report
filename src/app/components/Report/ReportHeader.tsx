@@ -7,8 +7,10 @@ import { ArrowLeft, Loader2, RefreshCw, Check } from "lucide-react";
 import { intPsychTheme } from "../theme";
 import { useWeather } from "@/app/lib/hooks/useWeather";
 import WeatherWidget from "../WeatherWidget";
+import { useSession } from "next-auth/react";
 
 export default function ReportHeader({ patientId }: { patientId?: string }) {
+  const { data: session } = useSession();
   const { weather } = useWeather();
   const router = useRouter();
   const [loadingSentiment, setLoadingSentiment] = useState(false);
@@ -76,7 +78,7 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
 
         {/* Right: Actions & Weather */}
         <div className="flex items-center gap-6">
-          {patientId && (
+          {patientId && session?.user?.email === "sliao@psych-nyc.com" && (
             <div className="flex items-center gap-2 border-r border-slate-200 pr-6 mr-2">
               <button
                 onClick={handleRefreshSentiment}

@@ -240,7 +240,7 @@ export default function PatientLayout({
                   <p className="text-sm font-bold text-[#1c1917] truncate">
                     {session?.user?.name || "Clinician"}
                   </p>
-                  <p className="text-xs text-stone-500">View Profile</p>
+                  <p className="text-xs text-stone-500">Clinician</p>
                 </div>
               )}
             </MenuButton>
