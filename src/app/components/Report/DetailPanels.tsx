@@ -2000,6 +2000,31 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
     { key: "4", label: "Very often", bg: "bg-rose-100", text: "text-rose-800" },
   ];
 
+  const reversePssLikertValue = (value: any) => {
+    if (value === undefined || value === null || value === "") return value;
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return value;
+    return String(4 - numeric);
+  };
+
+  const pssValueTransformers: Record<string, (value: any) => any> = {
+    pss2: reversePssLikertValue,
+    pss3: reversePssLikertValue,
+  };
+
+  const preferRawValue = (raw: any, fallback: any) =>
+    raw === undefined || raw === null || raw === "" ? fallback : raw;
+
+  const pssColorValueTransformers: Record<
+    string,
+    (rawValue: any, transformedValue: any) => any
+  > = {
+    pss2: (rawValue, transformedValue) =>
+      preferRawValue(rawValue, transformedValue),
+    pss3: (rawValue, transformedValue) =>
+      preferRawValue(rawValue, transformedValue),
+  };
+
   const yesNo: readonly Opt[] = [
     { key: "yes", label: "Yes", bg: "bg-rose-100", text: "text-rose-800" },
     { key: "no", label: "No", bg: "bg-slate-100", text: "text-slate-700" },
@@ -2058,6 +2083,8 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
     answers,
     options,
     headerNote,
+    valueTransformers,
+    colorValueTransformers,
   }: {
     label: string;
     score: number;
@@ -2067,6 +2094,11 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
     answers: Record<string, any> | undefined;
     options: readonly Opt[];
     headerNote?: string;
+    valueTransformers?: Record<string, (value: any) => any>;
+    colorValueTransformers?: Record<
+      string,
+      (rawValue: any, transformedValue: any) => any
+    >;
   }) {
     const scrollRef = React.useRef<HTMLDivElement>(null);
     const [showTopArrow, setShowTopArrow] = React.useState(false);
@@ -2135,8 +2167,15 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
           >
             <ul className="text-[12px] sm:text-[13px] text-slate-800 divide-y divide-slate-200 break-words">
               {Object.entries(questions).map(([k, q]) => {
-                const ans = (answers as any)?.[k];
-                const opt = optFor(options, ans);
+                const rawValue = (answers as any)?.[k];
+                const adjustedValue = valueTransformers?.[k]
+                  ? valueTransformers[k](rawValue)
+                  : rawValue;
+                const colorValue = colorValueTransformers?.[k]
+                  ? colorValueTransformers[k](rawValue, adjustedValue)
+                  : adjustedValue;
+                const labelOpt = optFor(options, adjustedValue);
+                const colorOpt = optFor(options, colorValue);
                 return (
                   <li
                     key={k}
@@ -2149,10 +2188,10 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
                     <div className="shrink-0">
                       <span
                         className={`ml-2 rounded-full px-2 py-0.5 text-[11px] sm:text-[12px] ${
-                          opt?.bg ?? "bg-slate-100"
-                        } ${opt?.text ?? "text-slate-700"}`}
+                          colorOpt?.bg ?? "bg-slate-100"
+                        } ${colorOpt?.text ?? "text-slate-700"}`}
                       >
-                        {opt?.label ?? "—"}
+                        {labelOpt?.label ?? "—"}
                       </span>
                     </div>
                   </li>
@@ -2300,6 +2339,8 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
           questions={PSS4_QUESTIONS}
           answers={A.stress}
           options={pss0to4}
+          valueTransformers={pssValueTransformers}
+          colorValueTransformers={pssColorValueTransformers}
         />
         <Block
           label="ASRS-5"
@@ -2461,6 +2502,8 @@ export function AssessmentsDetail({ data }: { data: ProfileJson }) {
           questions={PSS4_QUESTIONS}
           answers={A?.stress}
           options={pss0to4}
+          valueTransformers={pssValueTransformers}
+          colorValueTransformers={pssColorValueTransformers}
         />
         <Block
           label="ASRS-5"
