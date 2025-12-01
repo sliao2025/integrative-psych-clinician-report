@@ -431,7 +431,7 @@ export default function PatientReportClient({ id }: { id: string }) {
             </div>
 
             <div className="columns-1 md:columns-2 gap-5 [column-fill:_balance]">
-              <div className="mb-4 break-inside-avoid">
+              <div className="mb-4 break-inside-avoid inline-block w-full">
                 <SafetyCard
                   data={data}
                   onOpen={() =>
@@ -445,7 +445,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                   }
                 />
               </div>
-              <div className="mb-4 break-inside-avoid">
+              <div className="mb-4 break-inside-avoid inline-block w-full">
                 <GoalsCard
                   data={data}
                   onOpen={() =>
@@ -459,7 +459,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                   }
                 />
               </div>
-              <div className="mb-4 break-inside-avoid">
+              <div className="mb-4 break-inside-avoid inline-block w-full">
                 <AssessmentsCard
                   data={data}
                   onOpen={() =>
@@ -474,7 +474,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                   }
                 />
               </div>
-              <div className="mb-4 break-inside-avoid">
+              <div className="mb-4 break-inside-avoid inline-block w-full">
                 <StoryCard
                   data={data}
                   onOpen={() =>
@@ -491,7 +491,7 @@ export default function PatientReportClient({ id }: { id: string }) {
               </div>
               {!data.isChild && (
                 <>
-                  <div className="mb-4 break-inside-avoid">
+                  <div className="mb-4 break-inside-avoid inline-block w-full">
                     <PrevTreatmentCard
                       data={data}
                       onOpen={() =>
@@ -508,7 +508,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                 </>
               )}
 
-              <div className="mb-4 break-inside-avoid">
+              <div className="mb-4 break-inside-avoid inline-block w-full">
                 <GlanceCard
                   data={data}
                   onOpen={() =>
@@ -523,7 +523,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                 />
               </div>
               {data.isChild && (
-                <div className="mb-4 break-inside-avoid">
+                <div className="mb-4 break-inside-avoid inline-block w-full">
                   <MedicalHistoryCard
                     data={data}
                     onOpen={() =>
@@ -540,7 +540,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                 </div>
               )}
 
-              <div className="mb-4 break-inside-avoid">
+              <div className="mb-4 break-inside-avoid inline-block w-full">
                 <RelationshipsCard
                   data={data}
                   onOpen={() =>
@@ -555,7 +555,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                 />
               </div>
 
-              <div className="mb-4 break-inside-avoid">
+              <div className="mb-4 break-inside-avoid inline-block w-full">
                 <MedsCard
                   data={data}
                   onOpen={() =>
@@ -569,7 +569,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                   }
                 />
               </div>
-              <div className="mb-4 break-inside-avoid">
+              <div className="mb-4 break-inside-avoid inline-block w-full">
                 <AllergiesCard
                   data={data}
                   onOpen={() =>
@@ -583,7 +583,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                   }
                 />
               </div>
-              <div className="mb-4 break-inside-avoid">
+              <div className="mb-4 break-inside-avoid inline-block w-full">
                 <HospitalizationsCard
                   data={data}
                   onOpen={() =>

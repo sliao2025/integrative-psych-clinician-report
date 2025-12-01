@@ -28,6 +28,7 @@ import React, { useEffect, useState } from "react";
 import { DM_Serif_Text } from "next/font/google";
 import { intPsychTheme } from "../theme";
 import { genderOptions } from "../text";
+import GradientText from "../GradientText";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 
@@ -67,24 +68,32 @@ export function DemographicsHeader({
             <img
               src={patientDbData.image}
               alt={`${data.firstName}'s Profile Photo`}
-              className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover flex-none"
+              className="h-11 w-11 sm:h-12 sm:w-12 border-3 border-slate-200 rounded-full object-cover flex-none"
               referrerPolicy="no-referrer"
             />
           ) : (
             <div
               style={{ background: intPsychTheme.secondary }}
-              className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full text-white sm:text-xl font-medium flex-none"
+              className="flex h-11 w-11 sm:h-12 sm:w-12  border-3 border-slate-200  items-center justify-center rounded-full text-white sm:text-xl font-medium flex-none"
             >
               {data.firstName?.[0] || "P"}
             </div>
           )}
           <div className="min-w-0">
-            <div
+            {/* <div
               className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl ${dm_serif.className} font-semibold tracking-tight text-slate-900 truncate`}
               style={{ color: intPsychTheme.primary }}
             >
               {data.firstName} {data.lastName}
-            </div>
+            </div> */}
+            <GradientText
+              colors={["#0072ce", "#113e60", "#0072ce", "#113e60", "#0072ce"]}
+              animationSpeed={6}
+              showBorder={false}
+              className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl ${dm_serif.className} font-semibold tracking-tight text-slate-900 truncate`}
+            >
+              {data.firstName} {data.lastName}
+            </GradientText>
             <div className="mt-0.5 text-[12px] sm:text-[13px] text-slate-600 truncate">
               Age {data.age} • {data.pronouns?.[0]?.label}
             </div>
