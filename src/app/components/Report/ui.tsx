@@ -846,3 +846,27 @@ export function SentimentChart({
     </div>
   );
 }
+
+export function HealthBar({
+  level,
+  max = 4,
+  className,
+}: {
+  level: number;
+  max?: number;
+  className?: string;
+}) {
+  return (
+    <div className={cx("flex gap-1", className)}>
+      {Array.from({ length: max }).map((_, i) => (
+        <div
+          key={i}
+          className={cx(
+            "h-1.5 w-6 rounded-full transition-colors",
+            i < level ? "bg-emerald-500" : "bg-slate-200"
+          )}
+        />
+      ))}
+    </div>
+  );
+}

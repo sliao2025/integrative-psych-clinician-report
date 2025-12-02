@@ -1,7 +1,15 @@
 // app/report/components/DetailPanels.tsx
 "use client";
 import React from "react";
-import { KV, Gauge, Pill, AudioPlayer, ScrollableBox, CopyButton } from "./ui";
+import {
+  KV,
+  Gauge,
+  Pill,
+  AudioPlayer,
+  ScrollableBox,
+  CopyButton,
+  HealthBar,
+} from "./ui";
 import { ProfileJson } from "../types";
 import {
   ACE_RESILIENCE_QUESTIONS,
@@ -1594,6 +1602,22 @@ export function HospitalizationsDetail({ data }: { data: ProfileJson }) {
 
 export function RelationshipsDetail({ data }: { data: ProfileJson }) {
   type Strength = "really_bad" | "not_great" | "pretty_good" | "really_good";
+
+  const strengthLevel = (s: Strength): number => {
+    switch (s) {
+      case "really_good":
+        return 4;
+      case "pretty_good":
+        return 3;
+      case "not_great":
+        return 2;
+      case "really_bad":
+        return 1;
+      default:
+        return 0;
+    }
+  };
+
   const strengthLabel = (s: Strength) =>
     s === "really_good"
       ? "Really good"
@@ -1606,13 +1630,13 @@ export function RelationshipsDetail({ data }: { data: ProfileJson }) {
   const strengthStyles = (s: Strength) => {
     switch (s) {
       case "really_good":
-        return "border-emerald-200 bg-emerald-100/50";
+        return "border-emerald-200 bg-emerald-50";
       case "pretty_good":
-        return "border-green-200 bg-green-50";
+        return "border-green-200 bg-green-50/50";
       case "not_great":
-        return "border-amber-200 bg-amber-50";
+        return "border-amber-200 bg-amber-50/50";
       default:
-        return "border-rose-200 bg-rose-50";
+        return "border-rose-200 bg-rose-50/50";
     }
   };
 
@@ -1627,28 +1651,58 @@ export function RelationshipsDetail({ data }: { data: ProfileJson }) {
     return <p className="text-[13px] text-slate-500">None reported</p>;
   }
 
-  return (
-    <div className="space-y-3">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((r: any) => (
-          <div
-            key={r.id}
-            className={`rounded-xl border p-3 ${strengthStyles(r.strength)}`}
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className="text-[13px] font-medium text-slate-900 truncate">
-                  {r.name} • {r.role}
-                </p>
-                <p className="text-[12px] italic text-slate-700">
-                  {strengthLabel(r.strength)} relationship
-                </p>
+  // Group items
+  const strong = items.filter((r: any) => r.strength === "really_good");
+  const moderate = items.filter((r: any) => r.strength === "pretty_good");
+  const strained = items.filter(
+    (r: any) => r.strength === "not_great" || r.strength === "really_bad"
+  );
+
+  const renderSection = (title: string, relationships: any[]) => {
+    if (!relationships.length) return null;
+    return (
+      <div className="space-y-3">
+        <h4 className="text-sm font-semibold text-slate-800 border-b border-slate-200 pb-2">
+          {title}
+        </h4>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {relationships.map((r: any) => (
+            <div
+              key={r.id}
+              className={`rounded-xl border p-4 transition-all hover:shadow-sm ${strengthStyles(
+                r.strength
+              )}`}
+            >
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="min-w-0">
+                  <p className="text-[14px] font-semibold text-slate-900 truncate">
+                    {r.name}
+                  </p>
+                  <p className="text-[12px] font-medium text-slate-600">
+                    {r.role}
+                  </p>
+                </div>
+                <div className="shrink-0">{moodBadge(Boolean(r.happy))}</div>
               </div>
-              <div className="shrink-0">{moodBadge(Boolean(r.happy))}</div>
+
+              <div className="flex items-center justify-between gap-2 pt-2 border-t border-black/5">
+                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">
+                  Connection
+                </span>
+                <HealthBar level={strengthLevel(r.strength)} />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
+    );
+  };
+
+  return (
+    <div className="space-y-8">
+      {renderSection("Strong Connections", strong)}
+      {renderSection("Moderate Connections", moderate)}
+      {renderSection("Strained / Difficult", strained)}
     </div>
   );
 }
