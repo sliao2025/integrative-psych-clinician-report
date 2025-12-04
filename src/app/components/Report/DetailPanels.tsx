@@ -1924,7 +1924,7 @@ export function GlanceDetail({ data }: { data: ProfileJson }) {
   );
 }
 
-export function AssessmentsDetail({ data }: { data: ProfileJson }) {
+export function ScalesDetail({ data }: { data: ProfileJson }) {
   const assessments = data.assessments;
   const isNewSchema =
     assessments?.kind === "adult" || assessments?.kind === "child";

@@ -12,8 +12,8 @@ import {
   ACE_RESILIENCE_QUESTIONS,
 } from "./text";
 
-interface AssessmentDetailDrawerProps {
-  assessment: {
+interface ScaleDetailDrawerProps {
+  scale: {
     assessmentType: string;
     totalScore: number | null;
     severity: string | null;
@@ -145,16 +145,14 @@ const optFor = (
   return opts.find((o) => o.key === s);
 };
 
-export default function AssessmentDetailDrawer({
-  assessment,
-}: AssessmentDetailDrawerProps) {
-  const { assessmentType, totalScore, severity, responses } = assessment;
+export default function ScaleDetailDrawer({ scale }: ScaleDetailDrawerProps) {
+  const { assessmentType, totalScore, severity, responses } = scale;
 
   const getAssessmentInfo = () => {
     // Handle both nested and flat response structures
     // Nested: { phq9: { phq1: "0", ... } }
     // Flat: { phq1: "0", phq2: "1", ... }
-    
+
     switch (assessmentType.toLowerCase()) {
       case "phq9":
         return {
@@ -224,7 +222,7 @@ export default function AssessmentDetailDrawer({
   if (!info) {
     return (
       <div className="p-6">
-        <p className="text-gray-600">Assessment type not recognized.</p>
+        <p className="text-gray-600">Scale type not recognized.</p>
       </div>
     );
   }
@@ -376,4 +374,3 @@ export default function AssessmentDetailDrawer({
     </div>
   );
 }
-

@@ -245,9 +245,9 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
 
   return (
     <div
-      className={`mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 pt-8 pb-20 ${dm_sans.className}`}
+      className={`mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 pb-20 ${dm_sans.className}`}
     >
-      <div className="mt-10 space-y-8">
+      <div className="mt-6 space-y-8">
         {/* Header */}
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center">

@@ -25,6 +25,7 @@ import {
 import { DM_Serif_Text, DM_Sans } from "next/font/google";
 import { intPsychTheme } from "@/app/components/theme";
 import ReportHeader from "@/app/components/Report/ReportHeader";
+import PatientTopBar from "@/app/components/Report/PatientTopBar";
 import logo from "@/assets/IP_Logo.png";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
@@ -95,8 +96,8 @@ export default function PatientLayout({
     //   color: `text-[#f43f5e]`,
     // },
     {
-      name: "Assessments",
-      href: `/report/${patientId}/assessments`,
+      name: "Scales",
+      href: `/report/${patientId}/scales`,
       icon: ChartCandlestick,
       color: `text-[${intPsychTheme.accent}]`,
     },
@@ -303,6 +304,12 @@ export default function PatientLayout({
           className="flex-1 overflow-y-auto scroll-smooth"
           style={{ backgroundColor: "#f8fafc" }}
         >
+          {/* Patient Top Bar - shown on all pages */}
+          <div className="mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 pt-8">
+            <PatientTopBar patientId={patientId} />
+          </div>
+
+          {/* Page Content */}
           {children}
         </main>
       </div>

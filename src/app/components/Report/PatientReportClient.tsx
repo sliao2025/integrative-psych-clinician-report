@@ -15,16 +15,15 @@ import {
   HeartPulse,
   Pencil,
   BrainCircuit,
-  User,
 } from "lucide-react";
 import { DM_Serif_Text, DM_Sans } from "next/font/google";
 import { CenterModal, AudioPlayer } from "./ui";
-import { DemographicsHeader, InsightsBlock } from "./TopBlocks";
+import { InsightsBlock } from "./TopBlocks";
 import {
   GoalsCard,
   StoryCard,
   SafetyCard,
-  AssessmentsCard,
+  ScalesCard,
   MedsCard,
   AllergiesCard,
   RelationshipsCard,
@@ -40,10 +39,9 @@ import {
   HospitalizationsDetail,
   RelationshipsDetail,
   GlanceDetail,
-  AssessmentsDetail,
+  ScalesDetail,
   PrevTreatmentDetail,
   StoryDetail,
-  DemographicsDetail,
   MedicalHistoryDetail,
   GoalsDetail,
 } from "./DetailPanels";
@@ -172,25 +170,10 @@ export default function PatientReportClient({ id }: { id: string }) {
   return (
     <>
       <div
-        className={`mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 pt-8 pb-20 ${dm_sans.className}`}
+        className={`mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 pb-20 ${dm_sans.className}`}
         aria-hidden={modal ? true : false}
         inert={modal ? "" : (undefined as any)}
       >
-        <DemographicsHeader
-          data={data}
-          patientDbData={patient}
-          onOpen={() =>
-            open(
-              <>
-                <User className="h-4 w-4 inline-block mr-2" />
-                Demographics
-              </>,
-              <DemographicsDetail data={data} />,
-              "max-w-3xl"
-            )
-          }
-        />
-
         <div className="mt-8 grid grid-cols-1 2xl:grid-cols-12 gap-6 items-start">
           {/* Left Column: Clinical Insights (2XL: col-span-4) */}
           <div className="2xl:col-span-4 space-y-6">
@@ -460,15 +443,15 @@ export default function PatientReportClient({ id }: { id: string }) {
                 />
               </div>
               <div className="mb-4 break-inside-avoid inline-block w-full">
-                <AssessmentsCard
+                <ScalesCard
                   data={data}
                   onOpen={() =>
                     open(
                       <>
                         <Activity className="h-4 w-4 inline-block mr-2" />
-                        Assessment Details
+                        Scale Details
                       </>,
-                      <AssessmentsDetail data={data} />,
+                      <ScalesDetail data={data} />,
                       "max-w-7xl"
                     )
                   }

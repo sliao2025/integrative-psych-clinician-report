@@ -298,7 +298,7 @@ export function SafetyCard({
   );
 }
 
-export function AssessmentsCard({
+export function ScalesCard({
   data,
   onOpen,
   className,
@@ -421,7 +421,7 @@ export function AssessmentsCard({
         title={
           <>
             <Activity className="h-4 w-4" />
-            Assessments
+            Scales
           </>
         }
         onExpand={onOpen}
@@ -581,7 +581,7 @@ export function AssessmentsCard({
         title={
           <>
             <Activity className="h-4 w-4" />
-            Assessments
+            Scales
           </>
         }
         onExpand={onOpen}
@@ -775,7 +775,7 @@ export function AssessmentsCard({
         title={
           <>
             <Activity className="h-4 w-4" />
-            Assessments
+            Scales
           </>
         }
         onExpand={onOpen}
@@ -865,7 +865,7 @@ export function AssessmentsCard({
       title={
         <>
           <Activity className="h-4 w-4" />
-          Assessments
+          Scales
         </>
       }
       onExpand={onOpen}

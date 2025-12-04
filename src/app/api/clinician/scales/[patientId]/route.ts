@@ -56,8 +56,8 @@ export async function GET(
     });
 
     return NextResponse.json({
-      assessments: completedAssessments,
-      pendingAssessments: pendingAssessments,
+      scales: completedAssessments,
+      pendingScales: pendingAssessments,
     });
   } catch (error: any) {
     console.error("Error fetching assessments:", error);
