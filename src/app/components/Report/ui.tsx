@@ -177,7 +177,6 @@ export function Card({
     <div
       className={cx(
         "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl bg-white p-4 sm:p-6 text-left transition-all duration-300",
-        "shadow-sm hover:shadow-md",
         "border border-slate-200 border-b-4",
         className
       )}
@@ -358,6 +357,8 @@ export function AudioPlayer({
   const [error, setError] = React.useState<string | null>(null);
   const [isSeeking, setIsSeeking] = React.useState(false);
   const audioRef = React.useRef<HTMLAudioElement>(null);
+  const isSeekingRef = React.useRef(false); // Use ref to avoid stale closure issues
+  const currentTimeRef = React.useRef(0); // Track desired playback position
 
   // Extract data from the fieldName
   const audioData = data[fieldName]?.audio;
@@ -379,26 +380,32 @@ export function AudioPlayer({
     audio.load();
   }, [fileName]);
 
-  // Handle play/pause state changes
+  // Set up event listeners (separate from play/pause logic)
   React.useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const updateCurrentTime = () => {
-      if (!isSeeking) {
+      // Use ref to check seeking state to avoid stale closure
+      if (!isSeekingRef.current) {
         setCurrentTime(audio.currentTime);
+        currentTimeRef.current = audio.currentTime;
       }
     };
 
     const setAudioData = () => {
       setDuration(audio.duration);
-      setCurrentTime(audio.currentTime);
+      // Only set currentTime from audio if we haven't seeked
+      if (currentTimeRef.current === 0) {
+        setCurrentTime(audio.currentTime);
+      }
       setIsLoading(false);
     };
 
     const handleEnded = () => {
       setIsPlaying(false);
       setCurrentTime(0);
+      currentTimeRef.current = 0;
     };
 
     const handleError = () => {
@@ -412,7 +419,24 @@ export function AudioPlayer({
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("error", handleError);
 
+    return () => {
+      audio.removeEventListener("timeupdate", updateCurrentTime);
+      audio.removeEventListener("loadedmetadata", setAudioData);
+      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
+    };
+  }, [fileName]); // Only re-run when fileName changes
+
+  // Handle play/pause separately
+  React.useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !audio.src) return;
+
     if (isPlaying) {
+      // Sync audio position to desired time before playing
+      if (Math.abs(audio.currentTime - currentTimeRef.current) > 0.1) {
+        audio.currentTime = currentTimeRef.current;
+      }
       audio.play().catch((err) => {
         console.error("Error playing audio:", err);
         setError("Failed to play audio");
@@ -422,14 +446,7 @@ export function AudioPlayer({
     } else {
       audio.pause();
     }
-
-    return () => {
-      audio.removeEventListener("timeupdate", updateCurrentTime);
-      audio.removeEventListener("loadedmetadata", setAudioData);
-      audio.removeEventListener("ended", handleEnded);
-      audio.removeEventListener("error", handleError);
-    };
-  }, [isPlaying, isSeeking]);
+  }, [isPlaying]);
 
   const formatTime = (seconds: number) => {
     if (!isFinite(seconds)) return "0:00";
@@ -443,6 +460,7 @@ export function AudioPlayer({
   };
 
   const handleSeekStart = () => {
+    isSeekingRef.current = true;
     setIsSeeking(true);
   };
 
@@ -450,12 +468,17 @@ export function AudioPlayer({
     const audio = audioRef.current;
     if (audio && duration) {
       const newTime = parseFloat(e.target.value);
-      audio.currentTime = newTime;
+      // Update UI immediately
       setCurrentTime(newTime);
+      // Track desired position in ref
+      currentTimeRef.current = newTime;
+      // Set audio position
+      audio.currentTime = newTime;
     }
   };
 
   const handleSeekEnd = () => {
+    isSeekingRef.current = false;
     setIsSeeking(false);
   };
 
@@ -520,7 +543,7 @@ export function AudioPlayer({
           <div className="flex-1 relative">
             <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full transition-all"
+                className="h-full rounded-full"
                 style={{
                   width: `${progress}%`,
                   background:
@@ -530,7 +553,7 @@ export function AudioPlayer({
             </div>
             {/* Draggable thumb */}
             <div
-              className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white shadow-md pointer-events-none transition-opacity border border-slate-300"
+              className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white shadow-md pointer-events-none border border-slate-300"
               style={{
                 left: `calc(${progress}% - 5px)`,
                 opacity: duration ? 1 : 0,

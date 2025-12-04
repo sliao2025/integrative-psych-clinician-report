@@ -12,6 +12,8 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Brain,
+  Route,
+  ChartCandlestick,
 } from "lucide-react";
 import {
   Menu,
@@ -86,10 +88,16 @@ export default function PatientLayout({
       icon: FileText,
       color: `text-[${intPsychTheme.primary}]`,
     },
+    // {
+    //   name: "Treatment Plan",
+    //   href: `/report/${patientId}/treatment-plan`,
+    //   icon: Route,
+    //   color: `text-[#f43f5e]`,
+    // },
     {
       name: "Assessments",
       href: `/report/${patientId}/assessments`,
-      icon: ClipboardList,
+      icon: ChartCandlestick,
       color: `text-[${intPsychTheme.accent}]`,
     },
     {

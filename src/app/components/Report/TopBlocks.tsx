@@ -60,7 +60,7 @@ export function DemographicsHeader({
   ) =>
     value ? options.find((o) => o.value === value)?.label ?? value : undefined;
   return (
-    <div className="relative rounded-2xl bg-white p-4 sm:p-6 shadow-sm border border-slate-200 border-b-4">
+    <div className="relative rounded-2xl bg-white p-4 sm:p-6 border border-slate-200 border-b-4">
       <div className="grid grid-cols-12 gap-3 sm:gap-4 md:gap-5 items-start">
         {/* Left: Avatar + Name */}
         <div className="col-span-12 md:col-span-4 lg:col-span-7 flex items-center gap-3 min-w-0">
@@ -327,7 +327,7 @@ export function InsightsBlock({
 
   if (loading) {
     return (
-      <div className="relative rounded-2xl bg-white p-4 sm:p-6 shadow-sm border border-slate-200 border-b-4">
+      <div className="relative rounded-2xl bg-white p-4 sm:p-6 border border-slate-200 border-b-4">
         <div className="flex items-center gap-3 mb-4">
           <BrainCircuit
             className="h-5 w-5"
@@ -378,7 +378,7 @@ export function InsightsBlock({
 
   if (error || !sentimentData) {
     return (
-      <div className="relative rounded-2xl bg-white p-4 sm:p-6 shadow-sm border border-slate-200 border-b-4">
+      <div className="relative rounded-2xl bg-white p-4 sm:p-6 border border-slate-200 border-b-4">
         <div className="flex items-center gap-3 mb-4">
           <BrainCircuit
             className="h-5 w-5"
@@ -529,7 +529,7 @@ export function InsightsBlock({
       {summaryData && (
         <div className="flex flex-col gap-4 mb-4">
           {/* Patient Bio */}
-          <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200 border-b-4">
+          <div className="rounded-2xl bg-white p-6 border border-slate-200 border-b-4">
             <h3
               className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold mb-2 flex items-center gap-2`}
               style={{ color: intPsychTheme.primary }}
@@ -546,7 +546,7 @@ export function InsightsBlock({
           </div>
 
           {/* Chief Complaint */}
-          <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200 border-b-4">
+          <div className="rounded-2xl bg-white p-6 border border-slate-200 border-b-4">
             <h3
               className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold mb-2 flex items-center gap-2`}
               style={{ color: intPsychTheme.primary }}
@@ -566,7 +566,7 @@ export function InsightsBlock({
 
       {/* Sentiment Analysis Section */}
       {sentimentData && (
-        <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200 border-b-4">
+        <div className="rounded-2xl bg-white p-6 border border-slate-200 border-b-4">
           {/* Section Title */}
           <div className="mb-3">
             <h3
