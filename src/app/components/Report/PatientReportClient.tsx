@@ -109,8 +109,10 @@ export default function PatientReportClient({ id }: { id: string }) {
           cache: "no-store",
           credentials: "include",
         });
+        console.log(res);
         if (!res.ok) {
           const text = await res.text();
+          console.log(text);
           throw new Error(`${res.status} ${text}`);
         }
         const data = (await res.json()) as { patient: Patient };

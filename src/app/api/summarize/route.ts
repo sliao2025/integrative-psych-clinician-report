@@ -35,16 +35,38 @@ export async function POST(request: NextRequest) {
     // }
 
     // Forward the request to the summarization service
-    const response = await fetch(
-      "https://summarization-b5ikba4x4q-uk.a.run.app/summarize",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId }),
-      }
+    const baseUrl = process.env.INTAKE_ANALYSIS_URL;
+
+    // If baseUrl doesn't end with /api/summarize, append it
+    const summarizationServiceUrl = baseUrl.includes("/api/summarize")
+      ? baseUrl
+      : baseUrl.includes("/api")
+      ? `${baseUrl}/summarize`
+      : `${baseUrl}/api/summarize`;
+
+    console.log(
+      `[Summarize] Calling summarization service at: ${summarizationServiceUrl}`
     );
+
+    // Get API key from environment
+    const apiKey = process.env.INTAKE_ANALYSIS_API_KEY?.trim() || "";
+
+    if (!apiKey) {
+      console.error("[Summarize] INTAKE_ANALYSIS_API_KEY not configured");
+      return NextResponse.json(
+        { success: false, error: "INTAKE_ANALYSIS_API_KEY not configured" },
+        { status: 500 }
+      );
+    }
+
+    const response = await fetch(summarizationServiceUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": apiKey,
+      },
+      body: JSON.stringify({ userId }),
+    });
 
     if (!response.ok) {
       const errorText = await response.text();

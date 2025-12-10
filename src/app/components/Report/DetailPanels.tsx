@@ -32,6 +32,7 @@ import {
   DISC_PARENT_QUESTIONS,
   SCARED_CHILD_QUESTIONS,
   SNAP_QUESTIONS,
+  getFamilyHistoryLabel,
 } from "../text";
 import {
   ChevronDown,
@@ -868,7 +869,7 @@ export function StoryDetail({
                 <div className="flex flex-wrap gap-2">
                   {famHistoryList.map((d, i) => (
                     <Pill key={i} tone="info">
-                      {d}
+                      {getFamilyHistoryLabel(d)}
                     </Pill>
                   ))}
                 </div>

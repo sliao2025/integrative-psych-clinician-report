@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import {
   Lightbulb,
   FileText,
@@ -24,9 +24,9 @@ const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 const dm_sans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"] });
 
 interface TreatmentPlanPageProps {
-  params: {
+  params: Promise<{
     patientId: string;
-  };
+  }>;
 }
 
 interface Recommendation {
@@ -51,6 +51,13 @@ interface ClinicalInsights {
   digital_and_passive_monitoring: Recommendation[];
 }
 
+interface Diagnosis {
+  diagnosis: string;
+  rule_in_criteria: string;
+  rule_out_criteria: string;
+  reasoning: string;
+}
+
 type SortMode = "category";
 
 const LOADING_PHRASES = [
@@ -62,11 +69,18 @@ const LOADING_PHRASES = [
 ];
 
 const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
-  const { patientId } = params;
+  // Unwrap the params Promise using React.use()
+  const { patientId } = use(params);
   const [insights, setInsights] = useState<ClinicalInsights | null>(null);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [loading, setLoading] = useState(true);
+  const [diagnosesLoading, setDiagnosesLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<
+    Record<string, boolean>
+  >({});
+  // Track expanded sections for each diagnosis: { "0-ruleIn": true, "0-ruleOut": false, ... }
+  const [expandedDiagnosisSections, setExpandedDiagnosisSections] = useState<
     Record<string, boolean>
   >({});
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
@@ -87,6 +101,7 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
   const fetchInsights = async () => {
     try {
       setLoading(true);
+      setDiagnosesLoading(true);
       const res = await fetch("/api/clinician/insights", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -95,8 +110,10 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
 
       if (res.ok) {
         const data = await res.json();
-        setInsights(data.insights);
-        console.log(data.insights);
+        setInsights(data.actionItems);
+        setDiagnoses(data.diagnoses?.diagnoses || data.diagnoses || []);
+        console.log("Action Items:", data.actionItems);
+        console.log("Diagnoses:", data.diagnoses);
       } else {
         setError("Failed to load clinical insights");
       }
@@ -105,6 +122,7 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
       setError("Failed to load clinical insights");
     } finally {
       setLoading(false);
+      setDiagnosesLoading(false);
     }
   };
 
@@ -361,36 +379,185 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
               </div>
             </div>
 
-            {/* Section B: Potential Diagnoses (Placeholder) */}
-            <div className="rounded-2xl bg-white border border-slate-200 border-b-4 overflow-hidden opacity-60">
+            {/* Section B: Potential Diagnoses */}
+            <div className="rounded-2xl bg-white border border-slate-200 border-b-4 overflow-hidden">
               <div className="p-6 border-b border-slate-100 bg-slate-50/50">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-purple-50">
-                    <FileText className="w-5 h-5 text-purple-600" />
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-purple-50">
+                      <FileText className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <h3
+                        className={`${dm_serif.className} text-xl`}
+                        style={{ color: intPsychTheme.primary }}
+                      >
+                        Potential Diagnoses
+                      </h3>
+                      <p className="text-sm text-slate-500 mt-0.5">
+                        Differential diagnosis with rule-in/rule-out criteria
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3
-                      className={`${dm_serif.className} text-xl text-slate-700`}
-                    >
-                      Potential Diagnoses
-                    </h3>
-                    <p className="text-sm text-slate-500 mt-0.5">
-                      Differential diagnosis with rule-in/rule-out criteria
-                    </p>
-                  </div>
+                  {diagnoses.length > 0 && (
+                    <span className="text-xs font-medium text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200">
+                      {diagnoses.length}{" "}
+                      {diagnoses.length === 1 ? "diagnosis" : "diagnoses"}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              <div className="p-12 text-center">
-                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                  <FileText className="w-8 h-8 text-slate-400" />
-                </div>
-                <h4 className="text-lg font-medium text-slate-700 mb-1">
-                  Coming Soon
-                </h4>
-                <p className="text-slate-500">
-                  This feature is currently under development.
-                </p>
+              <div className="p-4">
+                {diagnosesLoading ? (
+                  <div className="py-16 flex flex-col items-center justify-center gap-4">
+                    <div
+                      style={{ borderTopColor: intPsychTheme.secondary }}
+                      className="rounded-full h-10 w-10 border-4 border-gray-300 border-t-4 border-t-transparent animate-spin"
+                    ></div>
+                    <p className="text-sm text-slate-500">
+                      Analyzing differential diagnoses...
+                    </p>
+                  </div>
+                ) : diagnoses.length === 0 ? (
+                  <div className="py-12 text-center">
+                    <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                      <FileText className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <h4 className="text-lg font-medium text-slate-900 mb-1">
+                      No diagnoses available
+                    </h4>
+                    <p className="text-slate-500">
+                      Potential diagnoses will appear here once analyzed.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {diagnoses.map((diag, index) => {
+                      const ruleInKey = `${index}-ruleIn`;
+                      const ruleOutKey = `${index}-ruleOut`;
+                      const reasoningKey = `${index}-reasoning`;
+
+                      const toggleSection = (key: string) => {
+                        setExpandedDiagnosisSections((prev) => ({
+                          ...prev,
+                          [key]: !prev[key],
+                        }));
+                      };
+
+                      return (
+                        <div
+                          key={index}
+                          className="rounded-xl border border-slate-200 bg-gradient-to-br from-white to-slate-50/50 overflow-hidden"
+                        >
+                          {/* Diagnosis Header */}
+                          <div className="px-5 py-4 border-b border-slate-100 bg-gradient-to-r from-purple-50/80 to-transparent">
+                            <div className="flex items-start gap-3">
+                              <span className="flex-shrink-0 w-7 h-7 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-sm font-bold">
+                                {index + 1}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="text-lg font-semibold text-slate-900 leading-tight">
+                                  {diag.diagnosis}
+                                </h4>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Diagnosis Content - Expandable Sections */}
+                          <div className="divide-y divide-slate-100">
+                            {/* Rule In Criteria */}
+                            <div>
+                              <button
+                                onClick={() => toggleSection(ruleInKey)}
+                                className="w-full px-5 py-3 flex items-center justify-between gap-2 hover:bg-slate-50 transition-colors cursor-pointer"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 rounded-full bg-slate-400"></div>
+                                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                                    Rule-In Criteria
+                                  </span>
+                                </div>
+                                <ChevronDown
+                                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                                    expandedDiagnosisSections[ruleInKey]
+                                      ? "rotate-180"
+                                      : ""
+                                  }`}
+                                />
+                              </button>
+                              {expandedDiagnosisSections[ruleInKey] && (
+                                <div className="px-5 pb-4">
+                                  <p className="text-sm text-slate-600 leading-relaxed pl-4 border-l-2 border-slate-200 bg-slate-50 py-2 pr-3 rounded-r-lg">
+                                    {diag.rule_in_criteria}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Rule Out Criteria */}
+                            <div>
+                              <button
+                                onClick={() => toggleSection(ruleOutKey)}
+                                className="w-full px-5 py-3 flex items-center justify-between gap-2 hover:bg-slate-50 transition-colors cursor-pointer"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 rounded-full bg-slate-400"></div>
+                                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                                    Rule-Out Criteria
+                                  </span>
+                                </div>
+                                <ChevronDown
+                                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                                    expandedDiagnosisSections[ruleOutKey]
+                                      ? "rotate-180"
+                                      : ""
+                                  }`}
+                                />
+                              </button>
+                              {expandedDiagnosisSections[ruleOutKey] && (
+                                <div className="px-5 pb-4">
+                                  <p className="text-sm text-slate-600 leading-relaxed pl-4 border-l-2 border-slate-200 bg-slate-50 py-2 pr-3 rounded-r-lg">
+                                    {diag.rule_out_criteria}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Reasoning */}
+                            <div>
+                              <button
+                                onClick={() => toggleSection(reasoningKey)}
+                                className="w-full px-5 py-3 flex items-center justify-between gap-2 hover:bg-slate-50 transition-colors cursor-pointer"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <div className="w-2 h-2 rounded-full bg-slate-400"></div>
+                                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                                    Clinical Reasoning
+                                  </span>
+                                </div>
+                                <ChevronDown
+                                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                                    expandedDiagnosisSections[reasoningKey]
+                                      ? "rotate-180"
+                                      : ""
+                                  }`}
+                                />
+                              </button>
+                              {expandedDiagnosisSections[reasoningKey] && (
+                                <div className="px-5 pb-4">
+                                  <p className="text-sm text-slate-600 leading-relaxed pl-4 border-l-2 border-slate-200 bg-slate-50 py-2 pr-3 rounded-r-lg">
+                                    {diag.reasoning}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           </div>

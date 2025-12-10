@@ -1,13 +1,6 @@
 // src/app/lib/cloudrun-client.ts
-import { GoogleAuth } from "google-auth-library";
-
 // Base URL of your PRIVATE Cloud Run service (e.g., https://api-xyz-uc.a.run.app)
 const CLOUD_RUN_URL = process.env.CLOUD_RUN_API_URL;
-
-// Reuse a single auth client instance
-const auth = new GoogleAuth();
-let idTokenClient: Awaited<ReturnType<typeof auth.getIdTokenClient>> | null =
-  null;
 
 /**
  * Call a PRIVATE Cloud Run endpoint with an identity token.
@@ -30,21 +23,20 @@ export async function fetchFromCloudRun(
     "/" +
     endpointPathAndQuery.replace(/^\/+/, "");
 
-  if (!idTokenClient) {
-    idTokenClient = await auth.getIdTokenClient(targetUrl);
-  }
-
   const method = init?.method ?? "GET";
   const hasBody = init?.body !== undefined && init?.body !== null;
 
-  const res = await idTokenClient.request({
-    url: targetUrl,
+  const res = await fetch(targetUrl, {
     method,
-    data: hasBody ? init!.body : undefined,
     headers: {
-      "Content-Type": hasBody ? "application/json" : undefined,
+      "Content-Type": hasBody ? "application/json" : "",
     },
+    body: hasBody ? JSON.stringify(init!.body) : undefined,
   });
 
-  return res.data;
+  if (!res.ok) {
+    throw new Error(`API call failed: ${res.status} ${res.statusText}`);
+  }
+
+  return res.json();
 }

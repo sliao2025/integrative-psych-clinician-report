@@ -35,16 +35,39 @@ export async function POST(request: NextRequest) {
     // }
 
     // Forward the request to the sentiment analysis service
-    const response = await fetch(
-      "https://sentiment-analysis-b5ikba4x4q-uk.a.run.app/analyze",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId }),
-      }
+    // Use SENTIMENT_SERVICE_URL if set, otherwise fall back to INTAKE_ANALYSIS_URL
+    const baseUrl = process.env.INTAKE_ANALYSIS_URL;
+
+    // If baseUrl doesn't end with /api/sentiment, append it
+    const sentimentServiceUrl = baseUrl.includes("/api/sentiment")
+      ? baseUrl
+      : baseUrl.includes("/api")
+      ? `${baseUrl}/sentiment`
+      : `${baseUrl}/api/sentiment`;
+
+    console.log(
+      `[Sentiment] Calling sentiment service at: ${sentimentServiceUrl}`
     );
+
+    // Get API key from environment
+    const apiKey = process.env.INTAKE_ANALYSIS_API_KEY?.trim() || "";
+
+    if (!apiKey) {
+      console.error("[Sentiment] INTAKE_ANALYSIS_API_KEY not configured");
+      return NextResponse.json(
+        { success: false, error: "INTAKE_ANALYSIS_API_KEY not configured" },
+        { status: 500 }
+      );
+    }
+
+    const response = await fetch(sentimentServiceUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": apiKey,
+      },
+      body: JSON.stringify({ userId }),
+    });
 
     if (!response.ok) {
       const errorText = await response.text();

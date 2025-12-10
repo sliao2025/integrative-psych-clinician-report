@@ -89,12 +89,12 @@ export default function PatientLayout({
       icon: FileText,
       color: `text-[${intPsychTheme.primary}]`,
     },
-    // {
-    //   name: "Treatment Plan",
-    //   href: `/report/${patientId}/treatment-plan`,
-    //   icon: Route,
-    //   color: `text-[#f43f5e]`,
-    // },
+    {
+      name: "Treatment Plan",
+      href: `/report/${patientId}/treatment-plan`,
+      icon: Route,
+      color: `text-[#f43f5e]`,
+    },
     {
       name: "Scales",
       href: `/report/${patientId}/scales`,
@@ -107,12 +107,12 @@ export default function PatientLayout({
       icon: BookOpen,
       color: `text-[#ffa440]`,
     },
-    // {
-    //   name: "Learn",
-    //   href: `/report/${patientId}/learn`,
-    //   icon: Brain,
-    //   color: `text-[#f43f5e]`,
-    // },
+    {
+      name: "Learn",
+      href: `/report/${patientId}/learn`,
+      icon: Brain,
+      color: `text-[#f43f5e]`,
+    },
   ];
 
   const isActive = (href: string) => {

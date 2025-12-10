@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 /// --- Clinic (Multi-Tenant) ---
@@ -40,7 +41,7 @@ model User {
   passwordHash       String?
   guest              Boolean?             @default(false)
   intakeFinished     Boolean              @default(false)
-  clinicId           String
+  clinicId           String?
   clinician          String               @default("")
   accounts           Account[]
   AssessmentResponse AssessmentResponse[]
@@ -48,7 +49,7 @@ model User {
   ModuleProgress     ModuleProgress[]
   profile            Profile?
   sessions           Session[]
-  clinic             Clinic               @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  clinic             Clinic?              @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 
   @@unique([email, clinicId])
   @@index([clinicId])
@@ -109,8 +110,8 @@ model Profile {
   sexualOrientation String?
   contactNumber     String?
   isChild           Boolean?
-  clinicId          String
-  clinic            Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  clinicId          String?
+  clinic            Clinic?    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([clinicId])
@@ -124,10 +125,10 @@ model AssessmentResponse {
   assessmentType String
   responses      Json
   totalScore     Int?
+  assignedAt     DateTime?
   completedAt    DateTime?
   requestedBy    String?
   dueDate        DateTime?
-  assignedAt     DateTime?
   Clinic         Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   User           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 

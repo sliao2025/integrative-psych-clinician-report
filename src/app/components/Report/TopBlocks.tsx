@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { KV, Gauge, SentimentChart } from "./ui";
 import { ProfileJson } from "../types";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { DM_Serif_Text } from "next/font/google";
 import { intPsychTheme } from "../theme";
 import { genderOptions } from "../text";
@@ -244,9 +244,25 @@ export function InsightsBlock({
     "Generating comprehensive analysis...",
   ];
 
+  // Use refs to track if we've already fetched to prevent infinite loops
+  const hasFetchedRef = useRef(false);
+  const lastUserIdRef = useRef<string | null>(null);
+
   useEffect(() => {
+    // Reset fetch flag if userId changes
+    if (lastUserIdRef.current !== userId) {
+      hasFetchedRef.current = false;
+      lastUserIdRef.current = userId || null;
+    }
+
     const fetchData = async () => {
+      // Prevent multiple simultaneous fetches
+      if (hasFetchedRef.current || !userId) {
+        return;
+      }
+
       try {
+        hasFetchedRef.current = true;
         setLoading(true);
 
         // Check if sentiment and summary already exist in profile data
@@ -304,15 +320,16 @@ export function InsightsBlock({
       } catch (err: any) {
         console.error("Insights error:", err);
         setError(err.message || "Failed to load insights");
+        hasFetchedRef.current = false; // Reset on error so we can retry
       } finally {
         setLoading(false);
       }
     };
 
-    if (userId) {
-      fetchData();
-    }
-  }, [userId, data]);
+    fetchData();
+    // Only depend on userId and the specific fields we check, not the whole data object
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, data?.sentimentAnalysis, data?.summary]);
 
   // Rotate loading phrases
   useEffect(() => {

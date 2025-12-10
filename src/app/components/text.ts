@@ -464,3 +464,39 @@ export const CLINICIANS: Clinician[] = [
   { name: "Jordan Arbelaez", email: "jarbelaez@psych-nyc.com" },
   { name: "Jennifer Ray", email: "jray@psych-nyc.com" },
 ];
+
+export const familyHistoryOptions: Option[] = [
+  { value: "depression", label: "Depression" },
+  { value: "bipolar", label: "Mania / Bipolar Disorder" },
+  { value: "suicidality", label: "Suicidal thoughts / urges / behaviors" },
+  { value: "anxiety", label: "Anxiety" },
+  { value: "panic", label: "Panic" },
+  { value: "ocd", label: "Obsessions / Compulsions" },
+  { value: "rituals", label: "Rituals" },
+  { value: "movement_disorders", label: "Movement Disorders" },
+  { value: "tics", label: "Tics" },
+  { value: "unusual_noises", label: "Unusual noises / vocalizations" },
+  { value: "eating_disorder", label: "Eating disorder" },
+  { value: "learning_disability", label: "Learning disability" },
+  { value: "adhd", label: "ADD / ADHD" },
+  { value: "intellectual_disability", label: "Intellectual disability" },
+  { value: "coordination_problems", label: "Coordination problems" },
+  { value: "sleep_disorder", label: "Sleep disorder" },
+  { value: "alcohol_use_disorder", label: "Alcohol use disorder" },
+  { value: "psychosis", label: "Psychosis" },
+  { value: "legal_problems", label: "Legal problems" },
+  { value: "mh_hospitalization", label: "Mental health hospitalization" },
+  {
+    value: "autism_pdd",
+    label: "Autism / Asperger's Disorder / Pervasive Developmental Disorder",
+  },
+  {
+    value: "borderline_personality_disorder",
+    label: "Borderline Personality Disorder",
+  },
+  { value: "none", label: "None of the above" },
+];
+
+// Helper to get label for a family history key
+export const getFamilyHistoryLabel = (key: string): string =>
+  familyHistoryOptions.find((o) => o.value === key)?.label ?? key;
