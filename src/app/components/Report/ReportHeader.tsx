@@ -3,7 +3,14 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Loader2, RefreshCw, Check, PanelLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  Loader2,
+  RefreshCw,
+  Check,
+  PanelLeft,
+  FileDown,
+} from "lucide-react";
 import { intPsychTheme } from "../theme";
 import { useWeather } from "@/app/lib/hooks/useWeather";
 import WeatherWidget from "../WeatherWidget";
@@ -19,6 +26,14 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [successSentiment, setSuccessSentiment] = useState(false);
   const [successSummary, setSuccessSummary] = useState(false);
+  const [loadingPdf, setLoadingPdf] = useState(false);
+  const [successPdf, setSuccessPdf] = useState(false);
+
+  const userEmail = session?.user?.email || "";
+  const isSliao = userEmail === "sliao@psych-nyc.com";
+  const isDgrayOrYherbst =
+    userEmail === "dgray@psych-nyc.com" ||
+    userEmail === "yherbst@psych-nyc.com";
 
   const handleRefreshSentiment = async () => {
     if (!patientId || loadingSentiment) return;
@@ -62,6 +77,78 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
     }
   };
 
+  const handleDownloadPdf = async () => {
+    if (!patientId || loadingPdf) return;
+    setLoadingPdf(true);
+    setSuccessPdf(false);
+    try {
+      const res = await fetch(`/api/pdf/download?userId=${patientId}`);
+      if (!res.ok) throw new Error("Failed to download PDF");
+
+      // Extract filename from Content-Disposition header
+      const contentDisposition = res.headers.get("Content-Disposition");
+      let filename = "Intake_Report.pdf";
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (match && match[1]) {
+          filename = match[1];
+        }
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      setSuccessPdf(true);
+      setTimeout(() => setSuccessPdf(false), 3000);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingPdf(false);
+    }
+  };
+
+  const DownloadButton = ({ showLabel = true }: { showLabel?: boolean }) => (
+    <div className="relative group">
+      <button
+        onClick={handleDownloadPdf}
+        disabled={loadingPdf || successPdf}
+        className={`group flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-all disabled:opacity-100 ${
+          successPdf
+            ? "bg-green-50 text-green-600"
+            : "text-slate-600 hover:bg-slate-50 hover:text-[#0072ce]"
+        }`}
+        title="Download Intake PDF"
+      >
+        {loadingPdf ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : successPdf ? (
+          <Check className="h-4 w-4" />
+        ) : (
+          <FileDown className="h-4 w-4" />
+        )}
+        {showLabel && (
+          <span className="hidden sm:inline">
+            {successPdf ? "Downloaded" : "Download Intake"}
+          </span>
+        )}
+      </button>
+      {/* Tooltip - only show on small screens when label is hidden */}
+      {!showLabel && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-slate-800 rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap pointer-events-none sm:hidden">
+          Download Intake
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <header className="sticky top-0 z-10 border-b border-slate-200 bg-white">
       <div className="px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -93,7 +180,8 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
 
         {/* Right: Actions & Weather */}
         <div className="flex items-center gap-3 sm:gap-6">
-          {patientId && session?.user?.email === "sliao@psych-nyc.com" && (
+          {/* For sliao@psych-nyc.com - show refresh buttons and download after Refresh Summary (desktop only) */}
+          {patientId && isSliao && (
             <div className="hidden sm:flex items-center gap-2 border-r border-slate-200 pr-6 mr-2">
               <button
                 onClick={handleRefreshSentiment}
@@ -137,6 +225,21 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
                   {successSummary ? "Updated" : "Refresh Summary"}
                 </span>
               </button>
+              <DownloadButton showLabel={true} />
+            </div>
+          )}
+
+          {/* For sliao - mobile only download button */}
+          {patientId && isSliao && (
+            <div className="flex sm:hidden items-center">
+              <DownloadButton showLabel={false} />
+            </div>
+          )}
+
+          {/* For dgray@psych-nyc.com and yherbst@psych-nyc.com - show download button to the left of weather */}
+          {patientId && isDgrayOrYherbst && (
+            <div className="flex items-center">
+              <DownloadButton showLabel={true} />
             </div>
           )}
 

@@ -18,6 +18,8 @@ import {
   ArrowDown,
   ChevronDown,
   Check,
+  FileDown,
+  Loader2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DM_Sans } from "next/font/google";
@@ -60,6 +62,13 @@ export default function ClinicianHome() {
   const isRestrictedClinician =
     !!currentClinician && email !== "rsultan@psych-nyc.com";
 
+  // Only these users can download PDFs
+  const canDownloadPdf = [
+    "sliao@psych-nyc.com",
+    "dgray@psych-nyc.com",
+    "yherbst@psych-nyc.com",
+  ].includes(email);
+
   const [patientName, setPatientName] = useState("");
   const [allPatients, setAllPatients] = useState<Patient[]>([]);
   const [loadingPatients, setLoadingPatients] = useState(true);
@@ -72,6 +81,45 @@ export default function ClinicianHome() {
   const [filterClinician, setFilterClinician] = useState<string>("all");
   const [showTopArrow, setShowTopArrow] = useState(false);
   const [showBottomArrow, setShowBottomArrow] = useState(false);
+  const [downloadingPatientId, setDownloadingPatientId] = useState<
+    string | null
+  >(null);
+
+  // Handle PDF download
+  const handleDownloadPdf = async (e: React.MouseEvent, patientId: string) => {
+    e.stopPropagation(); // Prevent navigation to patient page
+    if (downloadingPatientId) return;
+
+    setDownloadingPatientId(patientId);
+    try {
+      const res = await fetch(`/api/pdf/download?userId=${patientId}`);
+      if (!res.ok) throw new Error("Failed to download PDF");
+
+      // Extract filename from Content-Disposition header
+      const contentDisposition = res.headers.get("Content-Disposition");
+      let filename = "Intake_Report.pdf";
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (match && match[1]) {
+          filename = match[1];
+        }
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Error downloading PDF:", err);
+    } finally {
+      setDownloadingPatientId(null);
+    }
+  };
 
   // Fetch all patients on mount
   useEffect(() => {
@@ -441,7 +489,7 @@ export default function ClinicianHome() {
                         <button
                           key={patient.id}
                           onClick={() => router.push(`/report/${patient.id}`)}
-                          className="w-full p-4 rounded-2xl cursor-pointer border border-slate-200 border-b-4 hover:bg-slate-50 active:border-b-0 active:translate-y-1 transition-all text-left group relative overflow-hidden"
+                          className="w-full p-4 rounded-2xl cursor-pointer border border-slate-200 border-b-4 hover:bg-slate-50 active:border-b-0 active:translate-y-1 transition-all text-left group relative"
                         >
                           <div className="flex items-start gap-4">
                             {/* Profile Picture */}
@@ -512,6 +560,38 @@ export default function ClinicianHome() {
                                 </span>
                               </div>
                             </div>
+
+                            {/* Download PDF Button - only for authorized users */}
+                            {canDownloadPdf && (
+                              <div className="flex-none self-center relative group/download">
+                                <button
+                                  onClick={(e) =>
+                                    handleDownloadPdf(e, patient.id)
+                                  }
+                                  disabled={downloadingPatientId === patient.id}
+                                  className="p-2 rounded-lg hover:bg-slate-100 transition-all disabled:opacity-50"
+                                  aria-label="Download Intake PDF"
+                                >
+                                  {downloadingPatientId === patient.id ? (
+                                    <Loader2
+                                      className="h-5 w-5 animate-spin"
+                                      style={{ color: intPsychTheme.primary }}
+                                    />
+                                  ) : (
+                                    <FileDown
+                                      className="h-5 w-5"
+                                      style={{ color: intPsychTheme.primary }}
+                                    />
+                                  )}
+                                </button>
+                                {/* Tooltip - positioned to the left */}
+                                <div className="absolute text-right right-full top-1/2 -translate-y-1/2 mr-2 px-2 py-1 text-xs font-medium text-white bg-slate-800 rounded-md opacity-0 invisible group-hover/download:opacity-100 group-hover/download:visible transition-all whitespace-nowrap pointer-events-none z-50">
+                                  <p>Download</p>
+                                  <p>Intake</p>
+                                  <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-slate-800"></div>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </button>
                       );
