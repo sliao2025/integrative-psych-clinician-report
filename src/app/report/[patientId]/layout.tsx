@@ -14,6 +14,8 @@ import {
   Brain,
   Route,
   ChartCandlestick,
+  X,
+  PanelLeftClose,
 } from "lucide-react";
 import {
   Menu,
@@ -26,6 +28,7 @@ import { DM_Serif_Text, DM_Sans } from "next/font/google";
 import { intPsychTheme } from "@/app/components/theme";
 import ReportHeader from "@/app/components/Report/ReportHeader";
 import PatientTopBar from "@/app/components/Report/PatientTopBar";
+import { SidebarProvider, useSidebar } from "@/app/contexts/SidebarContext";
 import logo from "@/assets/IP_Logo.png";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
@@ -34,16 +37,16 @@ const dm_sans = DM_Sans({
   weight: ["400", "500", "700"],
 });
 
-export default function PatientLayout({
+function PatientLayoutInner({
   children,
-  params,
+  patientId,
 }: {
   children: React.ReactNode;
-  params: Promise<{ patientId: string }>;
+  patientId: string;
 }) {
   const pathname = usePathname();
-  const { patientId } = React.use(params);
   const { data: session } = useSession();
+  const { isMobileOpen, setMobileOpen } = useSidebar();
 
   // Initialize state from localStorage synchronously to prevent flash
   const [isExpanded, setIsExpanded] = useState(() => {
@@ -95,18 +98,18 @@ export default function PatientLayout({
     //   icon: Route,
     //   color: `text-[#f43f5e]`,
     // },
-    {
-      name: "Scales",
-      href: `/report/${patientId}/scales`,
-      icon: ChartCandlestick,
-      color: `text-[${intPsychTheme.accent}]`,
-    },
-    {
-      name: "Journals",
-      href: `/report/${patientId}/journals`,
-      icon: BookOpen,
-      color: `text-[#ffa440]`,
-    },
+    // {
+    //   name: "Scales",
+    //   href: `/report/${patientId}/scales`,
+    //   icon: ChartCandlestick,
+    //   color: `text-[${intPsychTheme.accent}]`,
+    // },
+    // {
+    //   name: "Journals",
+    //   href: `/report/${patientId}/journals`,
+    //   icon: BookOpen,
+    //   color: `text-[#ffa440]`,
+    // },
     // {
     //   name: "Learn",
     //   href: `/report/${patientId}/learn`,
@@ -122,37 +125,48 @@ export default function PatientLayout({
     return pathname?.startsWith(href);
   };
 
-  return (
-    <div
-      className={`flex h-screen overflow-hidden bg-slate-50 ${dm_sans.className}`}
-    >
-      {/* Sidebar */}
-      <aside
-        className={`${sidebarWidth} bg-white border-r-2 border-[#e7e5e4] flex flex-col transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-20 `}
-      >
-        {/* Logo/Title - Header */}
-        <div className="relative p-6 flex items-center gap-3 justify-center border-b-2 border-[#e7e5e4]">
+  const SidebarContent = ({ isMobile = false }: { isMobile?: boolean }) => (
+    <>
+      {/* Logo/Title - Header */}
+      <div className="relative p-6 flex items-center gap-3 justify-between border-b-2 border-[#e7e5e4]">
+        <div className="flex items-center gap-3">
           <div className="relative group cursor-pointer">
             <div className="absolute inset-0 bg-[#e0f2fe] rounded-full transform scale-0 group-hover:scale-110 transition-transform duration-200" />
             <Image
               src={logo}
               alt="Integrative Psych logo"
               className={`relative object-contain transition-all duration-300 ${
-                isExpanded ? "h-14 w-14" : "h-10 w-10"
+                isExpanded || isMobile ? "h-14 w-14" : "h-10 w-10"
               }`}
             />
           </div>
 
-          {isExpanded && (
+          {(isExpanded || isMobile) && (
             <h1
               className={`${dm_serif.className} text-2xl text-[#1c1917] tracking-tight leading-none`}
               style={{ color: intPsychTheme.primary }}
             >
-              Clinician <br /> Portal
+              Clinician <br />
+              Portal
             </h1>
           )}
+        </div>
 
-          {/* Toggle Button */}
+        {/* {isMobile && (
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center p-2 rounded-lg hover:bg-slate-100 transition-colors"
+            aria-label="Close sidebar"
+          >
+            <PanelLeftClose
+              style={{ color: intPsychTheme.primary }}
+              className="w-6 h-6"
+            />
+          </button>
+        )} */}
+
+        {/* Toggle Button - only on desktop */}
+        {!isMobile && (
           <button
             type="button"
             onClick={toggleSidebar}
@@ -161,140 +175,188 @@ export default function PatientLayout({
           >
             {toggleIcon}
           </button>
-        </div>
+        )}
+      </div>
 
-        {/* Navigation */}
-        <nav
-          className={`flex-1 px-4 py-6 space-y-2 scrollbar-hide ${
-            isExpanded ? "overflow-y-auto" : "overflow-visible"
-          }`}
-        >
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const active = isActive(tab.href);
+      {/* Navigation */}
+      <nav
+        className={`flex-1 px-4 py-6 space-y-2 scrollbar-hide ${
+          isExpanded || isMobile ? "overflow-y-auto" : "overflow-visible"
+        }`}
+      >
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const active = isActive(tab.href);
 
-            return (
-              <div key={tab.href} className="relative group">
-                <Link
-                  href={tab.href}
-                  className={`flex items-center ${
-                    isExpanded ? "gap-4 px-4" : "justify-center px-0"
-                  } py-4 rounded-xl text-base font-medium transition-all duration-200 relative overflow-hidden group ${
-                    active
-                      ? "bg-[#f0f9ff] text-[#113e60] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border-2 border-[#e7e5e4]"
-                      : "text-stone-500 hover:bg-stone-100 hover:text-[#113e60] border border-transparent"
-                  }`}
-                >
-                  {/* Active Indicator Pill */}
-                  {active && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#113e60] rounded-r-full" />
-                  )}
-
-                  <Icon
-                    className={`w-6 h-6 transition-transform duration-300 group-hover:scale-110 ${
-                      active
-                        ? tab.color
-                        : "text-stone group-hover:text-[#113e60]"
-                    }`}
-                    strokeWidth={2}
-                  />
-                  {isExpanded && (
-                    <span className="tracking-wide">{tab.name}</span>
-                  )}
-                </Link>
-
-                {/* Tooltip for collapsed state */}
-                {!isExpanded && (
-                  <div
-                    style={{ backgroundColor: intPsychTheme.primary }}
-                    className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-4 py-2 text-white text-sm font-medium rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-[9999] shadow-xl pointer-events-none"
-                  >
-                    {tab.name}
-                    <div
-                      style={{ borderRightColor: intPsychTheme.primary }}
-                      className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-white"
-                    ></div>
-                  </div>
+          return (
+            <div key={tab.href} className="relative group">
+              <Link
+                href={tab.href}
+                onClick={() => isMobile && setMobileOpen(false)}
+                className={`flex items-center ${
+                  isExpanded || isMobile ? "gap-4 px-4" : "justify-center px-0"
+                } py-4 rounded-xl text-base font-medium transition-all duration-200 relative overflow-hidden group ${
+                  active
+                    ? "bg-[#f0f9ff] text-[#113e60] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border-2 border-[#e7e5e4]"
+                    : "text-stone-500 hover:bg-stone-100 hover:text-[#113e60] border border-transparent"
+                }`}
+              >
+                {/* Active Indicator Pill */}
+                {active && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#113e60] rounded-r-full" />
                 )}
-              </div>
-            );
-          })}
-        </nav>
 
-        {/* User Profile */}
-        <div className="p-3 border-t-2 border-[#e7e5e4]">
-          <Menu as="div" className="relative">
-            <MenuButton
-              className={`w-full ${
-                isExpanded ? "px-3 py-3" : "justify-center py-2"
-              } flex items-center gap-3 rounded-xl hover:bg-[#f5f5f4] border border-transparent hover:border-[#e7e5e4] transition-all group outline-none`}
-            >
-              <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-[#e0f2fe] border border-[#bae6fd] flex items-center justify-center text-[#0369a1] font-bold text-lg overflow-hidden">
-                  {session?.user?.image ? (
-                    <img
-                      src={session.user.image}
-                      alt={session?.user?.name ?? "Profile"}
-                      className="h-full w-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                  ) : (
-                    getInitials(session?.user?.name)
-                  )}
-                </div>
-              </div>
+                <Icon
+                  className={`w-6 h-6 transition-transform duration-300 group-hover:scale-110 ${
+                    active ? tab.color : "text-stone group-hover:text-[#113e60]"
+                  }`}
+                  strokeWidth={2}
+                />
+                {(isExpanded || isMobile) && (
+                  <span className="tracking-wide">{tab.name}</span>
+                )}
+              </Link>
 
-              {isExpanded && (
-                <div className="flex-1 min-w-0 text-left">
-                  <p className="text-sm font-bold text-[#1c1917] truncate">
-                    {session?.user?.name || "Clinician"}
-                  </p>
-                  <p className="text-xs text-stone-500">Clinician</p>
+              {/* Tooltip for collapsed state - only on desktop */}
+              {!isExpanded && !isMobile && (
+                <div
+                  style={{ backgroundColor: intPsychTheme.primary }}
+                  className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-4 py-2 text-white text-sm font-medium rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-[9999] shadow-xl pointer-events-none"
+                >
+                  {tab.name}
+                  <div
+                    style={{ borderRightColor: intPsychTheme.primary }}
+                    className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-white"
+                  ></div>
                 </div>
               )}
-            </MenuButton>
+            </div>
+          );
+        })}
+      </nav>
 
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-200"
-              enterFrom="transform opacity-0 scale-95 translate-y-2"
-              enterTo="transform opacity-100 scale-100 translate-y-0"
-              leave="transition ease-in duration-150"
-              leaveFrom="transform opacity-100 scale-100 translate-y-0"
-              leaveTo="transform opacity-0 scale-95 translate-y-2"
+      {/* User Profile */}
+      <div className="p-3 border-t-2 border-[#e7e5e4]">
+        <Menu as="div" className="relative">
+          <MenuButton
+            className={`w-full ${
+              isExpanded || isMobile ? "px-3 py-3" : "justify-center py-2"
+            } flex items-center gap-3 rounded-xl hover:bg-[#f5f5f4] border border-transparent hover:border-[#e7e5e4] transition-all group outline-none`}
+          >
+            <div className="relative">
+              <div className="w-10 h-10 rounded-full bg-[#e0f2fe] border border-[#bae6fd] flex items-center justify-center text-[#0369a1] font-bold text-lg overflow-hidden">
+                {session?.user?.image ? (
+                  <img
+                    src={session.user.image}
+                    alt={session?.user?.name ?? "Profile"}
+                    className="h-full w-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  getInitials(session?.user?.name)
+                )}
+              </div>
+            </div>
+
+            {(isExpanded || isMobile) && (
+              <div className="flex-1 min-w-0 text-left">
+                <p className="text-sm font-bold text-[#1c1917] truncate">
+                  {session?.user?.name || "Clinician"}
+                </p>
+                <p className="text-xs text-stone-500">Clinician</p>
+              </div>
+            )}
+          </MenuButton>
+
+          <Transition
+            as={Fragment}
+            enter="transition ease-out duration-200"
+            enterFrom="transform opacity-0 scale-95 translate-y-2"
+            enterTo="transform opacity-100 scale-100 translate-y-0"
+            leave="transition ease-in duration-150"
+            leaveFrom="transform opacity-100 scale-100 translate-y-0"
+            leaveTo="transform opacity-0 scale-95 translate-y-2"
+          >
+            <MenuItems
+              className={`absolute ${
+                isExpanded || isMobile
+                  ? "left-0 bottom-full mb-4 w-full"
+                  : "left-full bottom-0 ml-4 w-56"
+              } rounded-xl border border-[#e7e5e4] bg-white shadow-xl focus:outline-none z-[9999] overflow-hidden p-1`}
             >
-              <MenuItems
-                className={`absolute ${
-                  isExpanded
-                    ? "left-0 bottom-full mb-4 w-full"
-                    : "left-full bottom-0 ml-4 w-56"
-                } rounded-xl border border-[#e7e5e4] bg-white shadow-xl focus:outline-none z-[9999] overflow-hidden p-1`}
-              >
-                <div className="px-4 py-3 bg-[#fafaf9] border-b border-[#e7e5e4] mb-1">
-                  <p className="text-xs font-bold text-stone-400 uppercase">
-                    Signed in as
-                  </p>
-                  <p className="text-sm font-medium text-stone-700 truncate">
-                    {session?.user?.email}
-                  </p>
-                </div>
+              <div className="px-4 py-3 bg-[#fafaf9] border-b border-[#e7e5e4] mb-1">
+                <p className="text-xs font-bold text-stone-400 uppercase">
+                  Signed in as
+                </p>
+                <p className="text-sm font-medium text-stone-700 truncate">
+                  {session?.user?.email}
+                </p>
+              </div>
 
-                <MenuItem>
-                  {({ active }) => (
-                    <button
-                      onClick={() => signOut({ callbackUrl: "/auth/signin" })}
-                      className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                        active ? "bg-red-50 text-red-700" : "text-stone-600"
-                      }`}
-                    >
-                      Log Out
-                    </button>
-                  )}
-                </MenuItem>
-              </MenuItems>
-            </Transition>
-          </Menu>
+              <MenuItem>
+                {({ active }) => (
+                  <button
+                    onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+                    className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                      active ? "bg-red-50 text-red-700" : "text-stone-600"
+                    }`}
+                  >
+                    Log Out
+                  </button>
+                )}
+              </MenuItem>
+            </MenuItems>
+          </Transition>
+        </Menu>
+      </div>
+    </>
+  );
+
+  return (
+    <div
+      className={`flex h-screen overflow-hidden bg-slate-50 ${dm_sans.className}`}
+    >
+      {/* Mobile Overlay */}
+      <Transition show={isMobileOpen} as={Fragment}>
+        <div className="fixed inset-0 z-40 sm:hidden">
+          {/* Backdrop */}
+          <Transition.Child
+            as={Fragment}
+            enter="transition-opacity ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div
+              className="fixed inset-0 bg-black/50"
+              onClick={() => setMobileOpen(false)}
+            />
+          </Transition.Child>
+
+          {/* Mobile Sidebar */}
+          <Transition.Child
+            as={Fragment}
+            enter="transition-transform ease-out duration-300"
+            enterFrom="-translate-x-full"
+            enterTo="translate-x-0"
+            leave="transition-transform ease-in duration-200"
+            leaveFrom="translate-x-0"
+            leaveTo="-translate-x-full"
+          >
+            <aside className="fixed inset-y-0 left-0 w-72 bg-white border-r-2 border-[#e7e5e4] flex flex-col z-50 shadow-xl">
+              <SidebarContent isMobile={true} />
+            </aside>
+          </Transition.Child>
         </div>
+      </Transition>
+
+      {/* Desktop Sidebar - hidden on mobile */}
+      <aside
+        className={`${sidebarWidth} hidden sm:flex bg-white border-r-2 border-[#e7e5e4] flex-col transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-20`}
+      >
+        <SidebarContent isMobile={false} />
       </aside>
 
       {/* Main Content */}
@@ -305,7 +367,7 @@ export default function PatientLayout({
           style={{ backgroundColor: "#f8fafc" }}
         >
           {/* Patient Top Bar - shown on all pages */}
-          <div className="mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 pt-8">
+          <div className="mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 sm:pt-6 pt-4">
             <PatientTopBar patientId={patientId} />
           </div>
 
@@ -314,5 +376,21 @@ export default function PatientLayout({
         </main>
       </div>
     </div>
+  );
+}
+
+export default function PatientLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ patientId: string }>;
+}) {
+  const { patientId } = React.use(params);
+
+  return (
+    <SidebarProvider>
+      <PatientLayoutInner patientId={patientId}>{children}</PatientLayoutInner>
+    </SidebarProvider>
   );
 }

@@ -3,16 +3,18 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Loader2, RefreshCw, Check } from "lucide-react";
+import { ArrowLeft, Loader2, RefreshCw, Check, PanelLeft } from "lucide-react";
 import { intPsychTheme } from "../theme";
 import { useWeather } from "@/app/lib/hooks/useWeather";
 import WeatherWidget from "../WeatherWidget";
 import { useSession } from "next-auth/react";
+import { useSidebar } from "@/app/contexts/SidebarContext";
 
 export default function ReportHeader({ patientId }: { patientId?: string }) {
   const { data: session } = useSession();
   const { weather } = useWeather();
   const router = useRouter();
+  const { toggleMobile } = useSidebar();
   const [loadingSentiment, setLoadingSentiment] = useState(false);
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [successSentiment, setSuccessSentiment] = useState(false);
@@ -62,24 +64,37 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
 
   return (
     <header className="sticky top-0 z-10 border-b border-slate-200 bg-white">
-      <div className="px-6 h-16 flex items-center justify-between">
-        {/* Left: Back Button */}
-        <div className="flex items-center gap-4">
+      <div className="px-4 sm:px-6 h-16 flex items-center justify-between">
+        {/* Left: Mobile Menu Toggle + Back Button */}
+        <div className="flex items-center gap-1 sm:gap-4">
+          {/* Mobile sidebar toggle - only visible below sm breakpoint */}
+          <button
+            onClick={toggleMobile}
+            className="sm:hidden p-2 -ml-2 rounded-lg hover:bg-slate-100 transition-colors"
+            aria-label="Open sidebar"
+          >
+            <PanelLeft
+              className="h-5 cursor-pointer w-5"
+              style={{ color: intPsychTheme.primary }}
+            />
+          </button>
+
           <Link href="/search" className="group z-10 shrink-0">
             <span
               className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all hover:bg-slate-50"
               style={{ color: intPsychTheme.primary }}
             >
               <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-              Back to Search
+              <span className="hidden sm:inline">Back to Search</span>
+              <span className="sm:hidden">Search</span>
             </span>
           </Link>
         </div>
 
         {/* Right: Actions & Weather */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 sm:gap-6">
           {patientId && session?.user?.email === "sliao@psych-nyc.com" && (
-            <div className="flex items-center gap-2 border-r border-slate-200 pr-6 mr-2">
+            <div className="hidden sm:flex items-center gap-2 border-r border-slate-200 pr-6 mr-2">
               <button
                 onClick={handleRefreshSentiment}
                 disabled={loadingSentiment || successSentiment}

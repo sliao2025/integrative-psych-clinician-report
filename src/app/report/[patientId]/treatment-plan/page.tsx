@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import {
   Lightbulb,
   FileText,
@@ -24,9 +24,9 @@ const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 const dm_sans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"] });
 
 interface TreatmentPlanPageProps {
-  params: {
+  params: Promise<{
     patientId: string;
-  };
+  }>;
 }
 
 interface Recommendation {
@@ -62,7 +62,7 @@ const LOADING_PHRASES = [
 ];
 
 const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
-  const { patientId } = params;
+  const { patientId } = use(params);
   const [insights, setInsights] = useState<ClinicalInsights | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

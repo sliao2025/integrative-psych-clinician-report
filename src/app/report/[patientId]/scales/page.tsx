@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import {
   ClipboardList,
   Plus,
@@ -53,9 +53,9 @@ const SCALE_TYPES = [
 export default function ScalesPage({
   params,
 }: {
-  params: { patientId: string };
+  params: Promise<{ patientId: string }>;
 }) {
-  const { patientId } = params;
+  const { patientId } = use(params);
   const [scales, setScales] = useState<Scale[]>([]);
   const [pendingScales, setPendingScales] = useState<Scale[]>([]);
   const [loading, setLoading] = useState(true);
