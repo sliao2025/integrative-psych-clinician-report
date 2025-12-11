@@ -67,6 +67,7 @@ export default function ClinicianHome() {
     "sliao@psych-nyc.com",
     "dgray@psych-nyc.com",
     "yherbst@psych-nyc.com",
+    "emacmanus@psych-nyc.com",
   ].includes(email);
 
   const [patientName, setPatientName] = useState("");

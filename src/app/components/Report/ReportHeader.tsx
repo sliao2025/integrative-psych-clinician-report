@@ -34,6 +34,7 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
   const isDgrayOrYherbst =
     userEmail === "dgray@psych-nyc.com" ||
     userEmail === "yherbst@psych-nyc.com";
+  const isEmacmanus = userEmail === "emacmanus@psych-nyc.com";
 
   const handleRefreshSentiment = async () => {
     if (!patientId || loadingSentiment) return;
@@ -238,6 +239,13 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
 
           {/* For dgray@psych-nyc.com and yherbst@psych-nyc.com - show download button to the left of weather */}
           {patientId && isDgrayOrYherbst && (
+            <div className="flex items-center">
+              <DownloadButton showLabel={true} />
+            </div>
+          )}
+
+          {/* For emacmanus@psych-nyc.com - show download button to the left of weather */}
+          {patientId && isEmacmanus && (
             <div className="flex items-center">
               <DownloadButton showLabel={true} />
             </div>
