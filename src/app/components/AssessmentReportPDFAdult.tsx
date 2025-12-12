@@ -18,14 +18,31 @@ import path from "path";
 import fs from "fs";
 
 // Load logo as base64 for server-side PDF rendering
+// Try multiple paths to support both local dev and production deployments
 const getLogoBase64 = () => {
-  try {
-    const logoPath = path.join(process.cwd(), "src/assets/IP_Logo.png");
-    const logoBuffer = fs.readFileSync(logoPath);
-    return `data:image/png;base64,${logoBuffer.toString("base64")}`;
-  } catch {
-    return "";
+  const possiblePaths = [
+    // Production: public folder is copied to root
+    path.join(process.cwd(), "public/IP_Logo.png"),
+    // Local dev: src/assets folder
+    path.join(process.cwd(), "src/assets/IP_Logo.png"),
+    // Alternative production paths
+    path.join(process.cwd(), "IP_Logo.png"),
+    path.join(process.cwd(), ".next/static/media/IP_Logo.png"),
+  ];
+
+  for (const logoPath of possiblePaths) {
+    try {
+      if (fs.existsSync(logoPath)) {
+        const logoBuffer = fs.readFileSync(logoPath);
+        return `data:image/png;base64,${logoBuffer.toString("base64")}`;
+      }
+    } catch {
+      // Try next path
+    }
   }
+
+  console.warn("Logo not found in any expected location");
+  return "";
 };
 const LOGO_SRC = getLogoBase64();
 

@@ -85,6 +85,9 @@ export default function ClinicianHome() {
   const [downloadingPatientId, setDownloadingPatientId] = useState<
     string | null
   >(null);
+  const [successPdfPatientId, setSuccessPdfPatientId] = useState<string | null>(
+    null
+  );
 
   // Handle PDF download
   const handleDownloadPdf = async (e: React.MouseEvent, patientId: string) => {
@@ -92,6 +95,7 @@ export default function ClinicianHome() {
     if (downloadingPatientId) return;
 
     setDownloadingPatientId(patientId);
+    setSuccessPdfPatientId(null); // Clear any previous success state
     try {
       const res = await fetch(`/api/pdf/download?userId=${patientId}`);
       if (!res.ok) throw new Error("Failed to download PDF");
@@ -115,6 +119,9 @@ export default function ClinicianHome() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+
+      setSuccessPdfPatientId(patientId);
+      setTimeout(() => setSuccessPdfPatientId(null), 3000);
     } catch (err) {
       console.error("Error downloading PDF:", err);
     } finally {
@@ -570,10 +577,16 @@ export default function ClinicianHome() {
                                     handleDownloadPdf(e, patient.id)
                                   }
                                   disabled={downloadingPatientId === patient.id}
-                                  className="p-2 rounded-lg hover:bg-slate-100 transition-all disabled:opacity-50"
+                                  className={
+                                    successPdfPatientId === patient.id
+                                      ? "bg-green-50 text-green-600 p-2 rounded-lg hover:bg-slate-100 transition-all disabled:opacity-50"
+                                      : "p-2 rounded-lg hover:bg-slate-100 transition-all disabled:opacity-50"
+                                  }
                                   aria-label="Download Intake PDF"
                                 >
-                                  {downloadingPatientId === patient.id ? (
+                                  {successPdfPatientId === patient.id ? (
+                                    <Check className="h-5 w-5" />
+                                  ) : downloadingPatientId === patient.id ? (
                                     <Loader2
                                       className="h-5 w-5 animate-spin"
                                       style={{ color: intPsychTheme.primary }}
@@ -586,8 +599,18 @@ export default function ClinicianHome() {
                                   )}
                                 </button>
                                 {/* Tooltip - positioned to the left */}
-                                <div className="absolute text-right right-full top-1/2 -translate-y-1/2 mr-2 px-2 py-1 text-xs font-medium text-white bg-slate-800 rounded-md opacity-0 invisible group-hover/download:opacity-100 group-hover/download:visible transition-all whitespace-nowrap pointer-events-none z-50">
-                                  <p>Download</p>
+                                <div
+                                  className={`absolute text-right right-full top-1/2 -translate-y-1/2 mr-2 px-2 py-1 text-xs font-medium ${
+                                    successPdfPatientId === patient.id
+                                      ? "bg-green-50 text-green-600"
+                                      : "bg-slate-800 text-white"
+                                  } rounded-md opacity-0 invisible group-hover/download:opacity-100 group-hover/download:visible transition-all whitespace-nowrap pointer-events-none z-50`}
+                                >
+                                  {successPdfPatientId === patient.id ? (
+                                    <p>Downloaded</p>
+                                  ) : (
+                                    <p>Download</p>
+                                  )}
                                   <p>Intake</p>
                                   <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-slate-800"></div>
                                 </div>
