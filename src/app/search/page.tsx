@@ -612,7 +612,13 @@ export default function ClinicianHome() {
                                     <p>Download</p>
                                   )}
                                   <p>Intake</p>
-                                  <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-slate-800"></div>
+                                  <div
+                                    className={`${
+                                      successPdfPatientId
+                                        ? "border-l-green-50"
+                                        : "border-l-slate-800"
+                                    } absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent`}
+                                  ></div>
                                 </div>
                               </div>
                             )}
