@@ -1,6 +1,51 @@
 // app/api/clinician/insights/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/app/lib/prisma";
+
+// ============================================
+// Types
+// ============================================
+
+interface Diagnosis {
+  diagnosis: string;
+  rule_in_criteria: string;
+  rule_out_criteria: string;
+  reasoning: string;
+}
+
+interface ActionItemsResponse {
+  success: boolean;
+  userId: string;
+  actionItems: {
+    interview_questions: any[];
+    collateral_interviews: any[];
+    labs_imaging: any[];
+    vitals_and_physical_exam: any[];
+    standardized_diagnostic_testing: any[];
+    scales: any[];
+    records_and_documents: any[];
+    behavioral_monitoring_and_diaries: any[];
+    specialist_consultations: any[];
+    digital_and_passive_monitoring: any[];
+  };
+}
+
+interface DiagnosesResponse {
+  success: boolean;
+  userId: string;
+  diagnoses: Diagnosis[];
+}
+
+// ============================================
+// Configuration
+// ============================================
+
+// Use environment variable for service URL, fallback to localhost for development
+const CLINICAL_INSIGHTS_SERVICE_URL =
+  process.env.CLINICAL_INSIGHTS_SERVICE_URL || "http://localhost:8080";
+
+// ============================================
+// API Route Handler
+// ============================================
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,73 +59,72 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if insights already exist in database
-    const existingProfile = await prisma.profile.findUnique({
-      where: { userId },
-      select: { json: true },
-    });
+    console.log(
+      `[Clinical Insights API] Fetching insights for userId: ${userId}`
+    );
 
-    if (existingProfile) {
-      const profileJson = existingProfile.json as any;
+    // Fetch action items and diagnoses in parallel from the Cloud Run service
+    const [actionItemsResult, diagnosesResult] = await Promise.allSettled([
+      fetch(`${CLINICAL_INSIGHTS_SERVICE_URL}/action-items`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      }),
+      fetch(`${CLINICAL_INSIGHTS_SERVICE_URL}/diagnoses`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      }),
+    ]);
 
-      // If insights already exist, return them
-      if (profileJson.clinical_insights) {
-        return NextResponse.json({
-          success: true,
-          insights: profileJson.clinical_insights,
-          cached: true,
-        });
-      }
+    // Process action items response
+    let actionItems = null;
+    if (
+      actionItemsResult.status === "fulfilled" &&
+      actionItemsResult.value.ok
+    ) {
+      const data: ActionItemsResponse = await actionItemsResult.value.json();
+      actionItems = data.actionItems;
+      console.log(`[Clinical Insights API] Action items fetched successfully`);
+    } else {
+      const errorMsg =
+        actionItemsResult.status === "rejected"
+          ? actionItemsResult.reason?.message
+          : await actionItemsResult.value.text();
+      console.error(`[Clinical Insights API] Action items error:`, errorMsg);
     }
 
-    // Forward the userId to the insights service
-    // The service will fetch the profile data itself from the database
-    const response = await fetch("http://localhost:8080/insights", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId }),
-    });
+    // Process diagnoses response
+    let diagnoses: Diagnosis[] = [];
+    if (diagnosesResult.status === "fulfilled" && diagnosesResult.value.ok) {
+      const data: DiagnosesResponse = await diagnosesResult.value.json();
+      diagnoses = data.diagnoses;
+      console.log(
+        `[Clinical Insights API] Diagnoses fetched successfully: ${diagnoses.length} diagnoses`
+      );
+    } else {
+      const errorMsg =
+        diagnosesResult.status === "rejected"
+          ? diagnosesResult.reason?.message
+          : await diagnosesResult.value.text();
+      console.error(`[Clinical Insights API] Diagnoses error:`, errorMsg);
+    }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Insights API error:", errorText);
+    // Return error if both requests failed
+    if (!actionItems && diagnoses.length === 0) {
       return NextResponse.json(
-        { success: false, error: "Failed to fetch insights data" },
-        { status: response.status }
+        { success: false, error: "Failed to fetch clinical insights" },
+        { status: 500 }
       );
     }
 
-    const data = await response.json();
-
-    // Extract the actual insights from the response
-    // Server returns: { success: true, userId: "...", insights: {...} }
-    const insights = data.insights || data;
-
-    // Save the insights to the database
-    // (Commented out for now as per user's changes)
-    // if (insights && existingProfile) {
-    //   const profileJson = existingProfile.json as any;
-
-    //   // Add insights to the profile JSON
-    //   const updatedJson = {
-    //     ...profileJson,
-    //     clinical_insights: insights,
-    //   };
-
-    //   // Update the database
-    //   await prisma.profile.update({
-    //     where: { userId },
-    //     data: { json: updatedJson },
-    //   });
-
-    //   console.log(`Clinical insights saved for user ${userId}`);
-    // }
-
-    return NextResponse.json({ success: true, insights });
+    return NextResponse.json({
+      success: true,
+      actionItems,
+      diagnoses,
+    });
   } catch (error: any) {
-    console.error("Clinical insights error:", error);
+    console.error("[Clinical Insights API] Error:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Internal server error" },
       { status: 500 }

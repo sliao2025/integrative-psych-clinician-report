@@ -477,8 +477,18 @@ export default function ClinicianHome() {
                   >
                     {filteredPatients.map((patient) => {
                       const profileData = patient.profile?.json || {};
-                      const firstName = patient.profile?.firstName || "";
-                      const lastName = patient.profile?.lastName || "";
+                      const rawFirstName =
+                        patient.profile?.firstName?.trim() || "";
+                      const firstName = rawFirstName
+                        ? rawFirstName.charAt(0).toUpperCase() +
+                          rawFirstName.slice(1)
+                        : "";
+                      const rawLastName =
+                        patient.profile?.lastName?.trim() || "";
+                      const lastName = rawLastName
+                        ? rawLastName.charAt(0).toUpperCase() +
+                          rawLastName.slice(1)
+                        : "";
                       const age = patient.profile?.age || "—";
                       const dob = profileData.dob || "—";
                       const pronouns = profileData.pronouns?.[0]?.label || "—";

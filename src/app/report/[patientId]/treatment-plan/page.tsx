@@ -9,6 +9,11 @@ import {
   ChevronDown,
   ChevronRight,
   ClipboardCheck,
+  CheckCircle,
+  XCircle,
+  MessageSquare,
+  Sparkle,
+  Sparkles,
 } from "lucide-react";
 import { intPsychTheme } from "@/app/components/theme";
 import { DM_Serif_Text, DM_Sans } from "next/font/google";
@@ -51,6 +56,13 @@ interface ClinicalInsights {
   digital_and_passive_monitoring: Recommendation[];
 }
 
+interface Diagnosis {
+  diagnosis: string;
+  rule_in_criteria: string;
+  rule_out_criteria: string;
+  reasoning: string;
+}
+
 type SortMode = "category";
 
 const LOADING_PHRASES = [
@@ -63,11 +75,15 @@ const LOADING_PHRASES = [
 
 const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
   const { patientId } = use(params);
-  const [insights, setInsights] = useState<ClinicalInsights | null>(null);
+  const [actionItems, setActionItems] = useState<ClinicalInsights | null>(null);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
+  >({});
+  const [expandedDiagnoses, setExpandedDiagnoses] = useState<
+    Record<number, boolean>
   >({});
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
 
@@ -95,8 +111,11 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
 
       if (res.ok) {
         const data = await res.json();
-        setInsights(data.insights);
-        console.log(data.insights);
+        // Handle the new response structure with separate actionItems and diagnoses
+        setActionItems(data.actionItems);
+        setDiagnoses(data.diagnoses || []);
+        console.log("Action Items:", data.actionItems);
+        console.log("Diagnoses:", data.diagnoses);
       } else {
         setError("Failed to load clinical insights");
       }
@@ -223,7 +242,7 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
             {categoryLabels[key] || key}
           </h4>
           <div className="flex items-center gap-2">
-            <span className="text-xs bg-[#ffa44033] h-5 w-5 items-center justify-center flex font-medium text-slate-600 rounded-full">
+            <span className="text-sm font-bold bg-blue-100 h-6 w-6 items-center justify-center flex font-medium text-[#0072ce] rounded-full">
               {items.length}
             </span>
             {isExpanded ? (
@@ -270,9 +289,9 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
         </div>
 
         {/* Grid Layout: Action Items & Diagnoses on left, Treatment Plans on right */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
           {/* Left Column */}
-          <div className="space-y-4">
+          <div className="space-y-4 lg:row-span-2">
             {/* Section A: Action Items */}
             <div className="rounded-2xl bg-white border border-slate-200 border-b-4 overflow-hidden">
               <div className="p-6 border-b border-slate-200 bg-slate-50/50">
@@ -339,10 +358,10 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
                     </h4>
                     <p className="text-slate-500">{error}</p>
                   </div>
-                ) : insights ? (
+                ) : actionItems ? (
                   <div className="divide-y divide-slate-200">
-                    {Object.entries(insights).map(([key, items]) =>
-                      renderCategory(key, items)
+                    {Object.entries(actionItems).map(([key, items]) =>
+                      renderCategory(key, items as Recommendation[])
                     )}
                   </div>
                 ) : (
@@ -351,26 +370,31 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
                       <Lightbulb className="w-8 h-8 text-slate-400" />
                     </div>
                     <h4 className="text-lg font-medium text-slate-900 mb-1">
-                      No insights available
+                      No action items available
                     </h4>
                     <p className="text-slate-500">
-                      Clinical insights will appear here.
+                      Clinical action items will appear here.
                     </p>
                   </div>
                 )}
               </div>
             </div>
-
-            {/* Section B: Potential Diagnoses (Placeholder) */}
-            <div className="rounded-2xl bg-white border border-slate-200 border-b-4 overflow-hidden opacity-60">
+          </div>
+          <div>
+            {/* Section B: Potential Diagnoses */}
+            <div className="rounded-2xl bg-white border border-slate-200 border-b-4 overflow-hidden">
               <div className="p-6 border-b border-slate-100 bg-slate-50/50">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-purple-50">
-                    <FileText className="w-5 h-5 text-purple-600" />
+                  <div className="p-2 rounded-lg bg-blue-50">
+                    <FileText
+                      className="w-5 h-5"
+                      style={{ color: intPsychTheme.accent }}
+                    />
                   </div>
                   <div>
                     <h3
-                      className={`${dm_serif.className} text-xl text-slate-700`}
+                      className={`${dm_serif.className} text-xl`}
+                      style={{ color: intPsychTheme.primary }}
                     >
                       Potential Diagnoses
                     </h3>
@@ -381,22 +405,134 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
                 </div>
               </div>
 
-              <div className="p-12 text-center">
-                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                  <FileText className="w-8 h-8 text-slate-400" />
-                </div>
-                <h4 className="text-lg font-medium text-slate-700 mb-1">
-                  Coming Soon
-                </h4>
-                <p className="text-slate-500">
-                  This feature is currently under development.
-                </p>
+              <div className="p-4 max-h-[50vh] overflow-y-auto">
+                {loading ? (
+                  <div className="py-20 flex flex-col items-center justify-center gap-6">
+                    {/* Spinner */}
+                    <div
+                      style={{ borderTopColor: intPsychTheme.secondary }}
+                      className="rounded-full h-12 w-12 border-4 border-gray-300 border-t-4 border-t-transparent animate-spin"
+                    ></div>
+
+                    {/* Shiny Text with Transition */}
+                    <div className="h-8 relative flex items-center justify-center w-full">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={currentPhraseIndex}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.5 }}
+                          className="absolute"
+                        >
+                          <ShinyText
+                            text={LOADING_PHRASES[currentPhraseIndex]}
+                            disabled={false}
+                            speed={3}
+                            className="text-lg font-medium"
+                          />
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                ) : diagnoses.length > 0 ? (
+                  <div className="space-y-3">
+                    {diagnoses.map((diagnosis, idx) => {
+                      const isExpanded = expandedDiagnoses[idx];
+                      return (
+                        <div
+                          key={idx}
+                          className="bg-white rounded-lg border border-slate-200 overflow-hidden hover:border-slate-300 transition-colors"
+                        >
+                          <button
+                            onClick={() =>
+                              setExpandedDiagnoses((prev) => ({
+                                ...prev,
+                                [idx]: !prev[idx],
+                              }))
+                            }
+                            className="w-full cursor-pointer flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-blue-100 text-[#0072ce] font-bold text-sm flex-shrink-0">
+                                {idx + 1}
+                              </div>
+                              <h4 className="text-base text-slate-800 text-left">
+                                {diagnosis.diagnosis}
+                              </h4>
+                            </div>
+                            {isExpanded ? (
+                              <ChevronDown className="w-5 h-5 text-slate-500 flex-shrink-0" />
+                            ) : (
+                              <ChevronRight className="w-5 h-5 text-slate-500 flex-shrink-0" />
+                            )}
+                          </button>
+
+                          {isExpanded && (
+                            <div className="border-t border-slate-200 p-4 space-y-4 bg-slate-50/50">
+                              {/* Rule-In Criteria */}
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="w-4 h-4 text-green-600" />
+                                  <span className="text-xs font-bold text-green-800 uppercase tracking-wide">
+                                    Rule-In Criteria
+                                  </span>
+                                </div>
+                                <p className="text-sm text-slate-700 leading-relaxed ml-1.5 pl-4 border-l-2 border-green-200">
+                                  {diagnosis.rule_in_criteria}
+                                </p>
+                              </div>
+
+                              {/* Rule-Out Criteria */}
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <XCircle className="w-4 h-4 text-red-600" />
+                                  <span className="text-xs font-bold text-red-700 uppercase tracking-wide">
+                                    Rule-Out Criteria
+                                  </span>
+                                </div>
+                                <p className="text-sm text-slate-700 leading-relaxed ml-1.5 pl-4 border-l-2 border-red-200">
+                                  {diagnosis.rule_out_criteria}
+                                </p>
+                              </div>
+
+                              {/* Reasoning */}
+                              <div className="space-y-2 pt-2 border-t border-slate-200">
+                                <div className="flex items-center gap-2">
+                                  <Sparkles className="w-4 h-4 text-[#0072ce]" />
+                                  <span className="text-xs font-bold text-[#004684] uppercase tracking-wide">
+                                    Clinical Reasoning
+                                  </span>
+                                </div>
+                                <p className="text-sm text-slate-600 leading-relaxed ml-1.5 pl-4 border-l-2 border-blue-200 italic">
+                                  {diagnosis.reasoning}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="py-8 text-center">
+                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+                      <FileText className="w-6 h-6 text-slate-400" />
+                    </div>
+                    <h4 className="text-base font-medium text-slate-700 mb-1">
+                      No diagnoses available
+                    </h4>
+                    <p className="text-sm text-slate-500">
+                      Potential diagnoses will appear here.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
           {/* Right Column - Treatment Plans (spans 2 rows) */}
-          <div className="xl:row-span-2">
+          <div className="xl:row-span-3">
             <div className="rounded-2xl bg-white border border-slate-200 border-b-4 overflow-hidden opacity-60 h-full">
               <div className="p-6 border-b border-slate-100 bg-slate-50/50">
                 <div className="flex items-center gap-3">
