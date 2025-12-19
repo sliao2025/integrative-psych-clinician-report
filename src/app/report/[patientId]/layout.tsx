@@ -92,30 +92,30 @@ function PatientLayoutInner({
       icon: FileText,
       color: `text-[${intPsychTheme.primary}]`,
     },
-    // {
-    //   name: "Treatment Plan",
-    //   href: `/report/${patientId}/treatment-plan`,
-    //   icon: Route,
-    //   color: `text-[#f43f5e]`,
-    // },
-    // {
-    //   name: "Scales",
-    //   href: `/report/${patientId}/scales`,
-    //   icon: ChartCandlestick,
-    //   color: `text-[${intPsychTheme.accent}]`,
-    // },
-    // {
-    //   name: "Journals",
-    //   href: `/report/${patientId}/journals`,
-    //   icon: BookOpen,
-    //   color: `text-[#ffa440]`,
-    // },
-    // {
-    //   name: "Learn",
-    //   href: `/report/${patientId}/learn`,
-    //   icon: Brain,
-    //   color: `text-[#f43f5e]`,
-    // },
+    {
+      name: "Treatment Plan",
+      href: `/report/${patientId}/treatment-plan`,
+      icon: Route,
+      color: `text-[#f43f5e]`,
+    },
+    {
+      name: "Scales",
+      href: `/report/${patientId}/scales`,
+      icon: ChartCandlestick,
+      color: `text-[${intPsychTheme.accent}]`,
+    },
+    {
+      name: "Journals",
+      href: `/report/${patientId}/journals`,
+      icon: BookOpen,
+      color: `text-[#ffa440]`,
+    },
+    {
+      name: "Learn",
+      href: `/report/${patientId}/learn`,
+      icon: Brain,
+      color: `text-[#f43f5e]`,
+    },
   ];
 
   const isActive = (href: string) => {

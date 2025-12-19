@@ -1,14 +1,17 @@
-import { PrismaClient } from "@prisma/client";
+/**
+ * Prisma Client Export
+ *
+ * This file re-exports the prisma client from db-router.ts
+ * to enable dual-write and failover capabilities while
+ * maintaining backward compatibility with existing imports.
+ *
+ * For new code, prefer importing directly from @/lib/db-router:
+ *   import { prisma, dualWrite, db } from "@/lib/db-router";
+ */
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
-
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
-  });
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+export {
+  prisma,
+  db,
+  dualWrite,
+  getDatabaseHealthStatus,
+} from "@/lib/db-router";
