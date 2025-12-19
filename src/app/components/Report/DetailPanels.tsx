@@ -1857,6 +1857,24 @@ export function GlanceDetail({ data }: { data: ProfileJson }) {
             }
           />
         </div>
+        <div className="rounded-xl border border-slate-200 p-3">
+          <KV
+            label="Has a Firearm"
+            value={
+              typeof data.hasFirearm === "boolean"
+                ? data.hasFirearm
+                  ? "Yes"
+                  : "No"
+                : "—"
+            }
+          />
+        </div>
+        <div className="rounded-xl border border-slate-200 p-3">
+          <KV
+            label="Daily Mobile Screen Time"
+            value={data.dailyMobileScreenTime || "—"}
+          />
+        </div>
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white p-4">

@@ -1103,12 +1103,18 @@ export function GlanceCard({
         <>
           <div className="grid grid-cols-2 gap-3 text-[13px]">
             <KV
-              label="Diet"
-              value={data.dietType?.map((d: any) => d.label).join(", ") || "—"}
+              label="Daily Mobile Screen Time"
+              value={data.dailyMobileScreenTime || "—"}
             />
             <KV
-              label="Occupation"
-              value={<span title={data.jobDetails}>{data.jobDetails}</span>}
+              label="Has a Firearm"
+              value={
+                typeof data.hasFirearm === "boolean"
+                  ? data.hasFirearm
+                    ? "Yes"
+                    : "No"
+                  : "—"
+              }
             />
           </div>
 
