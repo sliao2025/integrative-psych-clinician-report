@@ -1116,11 +1116,6 @@ export function GlanceCard({
                   : "—"
               }
             />
-            <KV
-              label="Sexually Active"
-              value={data.isSexuallyActive ? "Yes" : "No"}
-            />
-            <KV label="Education" value={educationLabel} />
           </div>
 
           {/* Two-Week Screener for Adults */}
