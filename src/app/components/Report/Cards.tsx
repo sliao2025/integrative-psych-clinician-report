@@ -1104,7 +1104,7 @@ export function GlanceCard({
           <div className="grid grid-cols-2 gap-3 text-[13px]">
             <KV
               label="Daily Mobile Screen Time"
-              value={data.dailyMobileScreenTime || "—"}
+              value={data.dailyMobileScreenTime + " hrs" || "—"}
             />
             <KV
               label="Has a Firearm"
