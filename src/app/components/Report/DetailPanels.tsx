@@ -1872,7 +1872,7 @@ export function GlanceDetail({ data }: { data: ProfileJson }) {
         <div className="rounded-xl border border-slate-200 p-3">
           <KV
             label="Daily Mobile Screen Time"
-            value={data.dailyMobileScreenTime || "—"}
+            value={data.dailyMobileScreenTime + " hrs" || "—"}
           />
         </div>
       </div>
