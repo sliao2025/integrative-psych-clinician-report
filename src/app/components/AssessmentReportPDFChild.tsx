@@ -527,6 +527,28 @@ const scoreSum = (obj: Record<string, any> = {}) =>
     0
   );
 
+/**
+ * Helper to extract text content from fields that may have:
+ * - .text (typed text)
+ * - .audio?.transcription (audio transcription)
+ * - Both .text AND .audio?.transcription
+ * Returns combined text or undefined if neither exists.
+ */
+const getTextOrTranscription = (
+  field: { text?: string; audio?: { transcription?: string } } | undefined
+): string | undefined => {
+  if (!field) return undefined;
+  const text = field.text?.trim();
+  const transcription = field.audio?.transcription?.trim();
+
+  if (text && transcription) {
+    // If both exist, combine them with a separator
+    return `${text}\n\n[Audio Transcription]:\n${transcription}`;
+  }
+  // Return whichever one exists
+  return text || transcription || undefined;
+};
+
 // PDF Gauge Component with SVG gradient bar
 const PdfGauge = ({
   label,
@@ -1093,8 +1115,8 @@ export const AssessmentReportPDFChild = ({
         {/* Goals */}
         <View style={styles.section}>
           <SectionHeader title="Presenting Goals" />
-          <RichTextBlock text={profile.goals?.text} />
-          {!profile.goals?.text && (
+          <RichTextBlock text={getTextOrTranscription(profile.goals)} />
+          {!getTextOrTranscription(profile.goals) && (
             <Text
               style={{
                 fontStyle: "italic",
@@ -1102,25 +1124,55 @@ export const AssessmentReportPDFChild = ({
                 fontSize: 9,
               }}
             >
-              No written goals provided.
+              No goals provided.
             </Text>
           )}
         </View>
 
+        {/* Follow-up Questions */}
+        {profile.followupQuestions && (
+          <View style={styles.section}>
+            <SectionHeader title="Follow-up Questions" />
+            {profile.followupQuestions.question1?.question && (
+              <RichTextBlock
+                label={profile.followupQuestions.question1.question}
+                text={getTextOrTranscription(
+                  profile.followupQuestions.question1.answer
+                )}
+              />
+            )}
+            {profile.followupQuestions.question2?.question && (
+              <RichTextBlock
+                label={profile.followupQuestions.question2.question}
+                text={getTextOrTranscription(
+                  profile.followupQuestions.question2.answer
+                )}
+              />
+            )}
+            {profile.followupQuestions.question3?.question && (
+              <RichTextBlock
+                label={profile.followupQuestions.question3.question}
+                text={getTextOrTranscription(
+                  profile.followupQuestions.question3.answer
+                )}
+              />
+            )}
+          </View>
+        )}
         {/* Story */}
         <View style={styles.section}>
           <SectionHeader title="Story & History" />
           <RichTextBlock
             label="Story Narrative"
-            text={profile.storyNarrative?.text}
+            text={getTextOrTranscription(profile.storyNarrative)}
           />
           <RichTextBlock
             label="Living Situation"
-            text={profile.livingSituation?.text}
+            text={getTextOrTranscription(profile.livingSituation)}
           />
           <RichTextBlock
             label="Cultural Context"
-            text={profile.cultureContext?.text}
+            text={getTextOrTranscription(profile.cultureContext)}
           />
           <RichTextBlock
             label="Family History"

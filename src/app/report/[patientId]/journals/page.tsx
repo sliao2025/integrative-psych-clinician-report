@@ -121,7 +121,7 @@ export default function JournalsPage({
 
   return (
     <div
-      className={`mx-auto max-w-[1400px] px-4 sm:px-6 pb-20 ${dm_sans.className}`}
+      className={`mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 pb-20 ${dm_sans.className}`}
     >
       <div className="mt-6">
         <div className="flex items-center gap-4 mb-6">
