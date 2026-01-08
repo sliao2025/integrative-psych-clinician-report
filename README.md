@@ -17,11 +17,11 @@
 
 ## Overview
 
-**Clinician Report** is a secure, feature-rich dashboard designed for mental health clinicians to review, analyze, and manage patient intake assessments. The platform provides comprehensive patient profiles, AI-generated clinical insights, interactive data visualizations, and PDF report generation capabilities.
+**Clinician Report** is a secure, feature-rich dashboard designed for mental health clinicians to review, analyze, and manage patients. The platform provides comprehensive patient profiles, AI-generated clinical insights, interactive data visualizations, and PDF report generation capabilities.
 
 This application is part of the Integrative Psych Assessment Platform and works in conjunction with:
 
-- **`intake-assessment-v2`** - Patient-facing intake portal where assessments are completed
+- **`intake-assessment-v2`** - Patient-facing intake portal where assessments are completed and patient activities are logged
 - **`intake-analysis`** - Backend AI services for transcription, sentiment analysis, and clinical insights
 
 ### Key Features
