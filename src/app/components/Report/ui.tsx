@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
-import { intPsychTheme, theme } from "../theme";
-import { FaExpand, FaExpandAlt } from "react-icons/fa";
+import { intPsychTheme } from "../theme";
 import { DM_Serif_Text } from "next/font/google";
 import {
   Pause,
@@ -14,6 +13,8 @@ import {
   Eye,
   Copy,
   Check,
+  Loader2,
+  Pencil,
 } from "lucide-react";
 import {
   PieChart,
@@ -345,289 +346,309 @@ export function AudioPlayer({
   data,
   fieldName,
   label,
+  src,
+  className,
 }: {
-  data: any;
-  fieldName: string;
+  data?: any;
+  fieldName?: string;
   label?: string;
+  src?: string;
+  className?: string;
 }) {
+  const audioRef = React.useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [currentTime, setCurrentTime] = React.useState(0);
   const [duration, setDuration] = React.useState(0);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [isSeeking, setIsSeeking] = React.useState(false);
-  const audioRef = React.useRef<HTMLAudioElement>(null);
-  const isSeekingRef = React.useRef(false); // Use ref to avoid stale closure issues
-  const currentTimeRef = React.useRef(0); // Track desired playback position
+  const [playbackRate, setPlaybackRate] = React.useState(1);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isBuffering, setIsBuffering] = React.useState(false);
+  const [isDragging, setIsDragging] = React.useState(false);
 
-  // Extract data from the fieldName
-  const audioData = data[fieldName]?.audio;
-  const fileName = audioData?.fileName;
-  const transcription = audioData?.transcription;
-  const translation = audioData?.translation;
+  // Determine source
+  const finalSrc = React.useMemo(() => {
+    if (src) return src;
+    if (data && fieldName) {
+      const fileName = data[fieldName]?.audio?.fileName;
+      if (fileName) {
+        return `/api/audio?fileName=${encodeURIComponent(fileName)}`;
+      }
+    }
+    return "";
+  }, [src, data, fieldName]);
 
-  // Don't render if no file
-  if (!fileName) return null;
+  // Determine transcription
+  const transcription = React.useMemo(() => {
+    if (!data || !fieldName) return null;
+    const field = data[fieldName];
+    // Check likely paths for transcription
+    if (typeof field?.audio?.transcription === "string")
+      return field.audio.transcription;
+    if (typeof field?.audio?.transcription?.text === "string")
+      return field.audio.transcription.text;
+    if (typeof field?.transcription === "string") return field.transcription;
+    return null;
+  }, [data, fieldName]);
 
-  // Load audio metadata on mount to get duration
+  // Handle full download for seeking support
   React.useEffect(() => {
+    if (!finalSrc) return;
+
+    let active = true;
+    let objUrl: string | null = null;
     const audio = audioRef.current;
-    if (!audio || audio.src) return;
 
-    setIsLoading(true);
-    const url = `/api/audio?fileName=${encodeURIComponent(fileName)}`;
-    audio.src = url;
-    audio.load();
-  }, [fileName]);
+    const fetchAudio = async () => {
+      try {
+        setIsLoading(true);
+        // Reset state
+        setCurrentTime(0);
+        setDuration(0);
 
-  // Set up event listeners (separate from play/pause logic)
+        const res = await fetch(finalSrc);
+        if (!res.ok) throw new Error("Failed to load audio");
+
+        const blob = await res.blob();
+        if (!active) return;
+
+        objUrl = URL.createObjectURL(blob);
+        if (audio) {
+          audio.src = objUrl;
+          audio.load();
+        }
+      } catch (err) {
+        console.error("Error loading audio:", err);
+        setIsLoading(false);
+      }
+    };
+
+    fetchAudio();
+
+    return () => {
+      active = false;
+      if (objUrl) {
+        URL.revokeObjectURL(objUrl);
+      }
+      if (audio) {
+        audio.src = "";
+      }
+    };
+  }, [finalSrc]);
+
   React.useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const updateCurrentTime = () => {
-      // Use ref to check seeking state to avoid stale closure
-      if (!isSeekingRef.current) {
-        setCurrentTime(audio.currentTime);
-        currentTimeRef.current = audio.currentTime;
-      }
-    };
-
     const setAudioData = () => {
-      setDuration(audio.duration);
-      // Only set currentTime from audio if we haven't seeked
-      if (currentTimeRef.current === 0) {
-        setCurrentTime(audio.currentTime);
+      const d = audio.duration;
+      // If duration is Infinity (common with webm), we can try to fix strictly if we used a library,
+      // but usually full download helps browser determine it, or we treat it as unknown.
+      if (Number.isFinite(d)) {
+        setDuration(d);
+      } else {
+        // Fallback: we might be able to get it from the blob size if CBR, but for VBR it's hard.
+        // We'll leave it as 0 or Infinity for now, handled by validDuration check.
+        // Sometimes setting currentTime to a huge number and back triggers calculation, but that causes playback glitches.
+        setDuration(0);
       }
       setIsLoading(false);
     };
 
-    const handleEnded = () => {
-      setIsPlaying(false);
-      setCurrentTime(0);
-      currentTimeRef.current = 0;
+    const setAudioTime = () => {
+      if (!isDragging) {
+        setCurrentTime(audio.currentTime);
+      }
     };
 
-    const handleError = () => {
-      setError("Failed to load audio");
+    const onWaiting = () => setIsBuffering(true);
+    const onPlaying = () => {
       setIsLoading(false);
-      setIsPlaying(false);
+      setIsBuffering(false);
     };
+    const onEnded = () => setIsPlaying(false);
 
-    audio.addEventListener("timeupdate", updateCurrentTime);
     audio.addEventListener("loadedmetadata", setAudioData);
-    audio.addEventListener("ended", handleEnded);
-    audio.addEventListener("error", handleError);
+    audio.addEventListener("durationchange", setAudioData);
+    audio.addEventListener("timeupdate", setAudioTime);
+    audio.addEventListener("waiting", onWaiting);
+    audio.addEventListener("playing", onPlaying);
+    audio.addEventListener("ended", onEnded);
 
     return () => {
-      audio.removeEventListener("timeupdate", updateCurrentTime);
       audio.removeEventListener("loadedmetadata", setAudioData);
-      audio.removeEventListener("ended", handleEnded);
-      audio.removeEventListener("error", handleError);
+      audio.removeEventListener("durationchange", setAudioData);
+      audio.removeEventListener("timeupdate", setAudioTime);
+      audio.removeEventListener("waiting", onWaiting);
+      audio.removeEventListener("playing", onPlaying);
+      audio.removeEventListener("ended", onEnded);
     };
-  }, [fileName]); // Only re-run when fileName changes
+  }, [isDragging]);
 
-  // Handle play/pause separately
-  React.useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !audio.src) return;
+  if (!finalSrc) return null;
 
-    if (isPlaying) {
-      // Sync audio position to desired time before playing
-      if (Math.abs(audio.currentTime - currentTimeRef.current) > 0.1) {
-        audio.currentTime = currentTimeRef.current;
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
       }
-      audio.play().catch((err) => {
-        console.error("Error playing audio:", err);
-        setError("Failed to play audio");
-        setIsLoading(false);
-        setIsPlaying(false);
-      });
-    } else {
-      audio.pause();
+      setIsPlaying(!isPlaying);
     }
-  }, [isPlaying]);
-
-  const formatTime = (seconds: number) => {
-    if (!isFinite(seconds)) return "0:00";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const handlePlayPause = () => {
-    setIsPlaying((prev) => !prev);
+  const handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const time = Number(e.target.value);
+    setCurrentTime(time);
   };
 
   const handleSeekStart = () => {
-    isSeekingRef.current = true;
-    setIsSeeking(true);
+    setIsDragging(true);
   };
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const audio = audioRef.current;
-    if (audio && duration) {
-      const newTime = parseFloat(e.target.value);
-      // Update UI immediately
-      setCurrentTime(newTime);
-      // Track desired position in ref
-      currentTimeRef.current = newTime;
-      // Set audio position
-      audio.currentTime = newTime;
+  const handleSeekEnd = (
+    e: React.MouseEvent<HTMLInputElement> | React.TouchEvent<HTMLInputElement>
+  ) => {
+    setIsDragging(false);
+    const time = Number((e.currentTarget as HTMLInputElement).value);
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
     }
   };
 
-  const handleSeekEnd = () => {
-    isSeekingRef.current = false;
-    setIsSeeking(false);
+  // Specific handler for mouse up / touch end to commit the change
+  const onCommitMove = (e: any) => {
+    setIsDragging(false);
+    const time = Number(e.target.value);
+    if (audioRef.current && Number.isFinite(time)) {
+      audioRef.current.currentTime = time;
+    }
   };
 
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const cycleSpeed = () => {
+    const rates = [1, 1.25, 1.5, 1.75, 2];
+    const nextIdx = (rates.indexOf(playbackRate) + 1) % rates.length;
+    const nextRate = rates[nextIdx];
+    setPlaybackRate(nextRate);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = nextRate;
+    }
+  };
 
-  // Check if transcription is being processed
-  const isProcessing = !transcription || transcription.trim() === "";
-  const hasTranslation = translation && translation.trim() !== "";
+  const formatTime = (time: number) => {
+    if (!Number.isFinite(time) || time === 0) return "--:--";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
+
+  const showLoading = isLoading || isBuffering;
+  const validDuration = Number.isFinite(duration) ? duration : 0;
 
   return (
-    <div className="space-y-3">
-      <audio ref={audioRef} />
+    <div className={cx("flex flex-col gap-2 rounded-2xl bg-white", className)}>
+      <audio
+        ref={audioRef}
+        // src removed here as it is managed by useEffect
+        preload="metadata"
+        onLoadStart={() => setIsLoading(true)}
+      />
 
-      {/* Compact Audio Controls */}
-      <div className="flex items-center gap-3 py-2 px-3 rounded-lg bg-slate-50 border border-slate-200">
-        {/* Play/Pause Button */}
+      <div className="flex items-center gap-4">
+        {/* Play Button */}
         <button
-          onClick={handlePlayPause}
+          onClick={togglePlay}
+          // Only disable if we are strictly loading the file (duration might still be 0 if unknown)
           disabled={isLoading}
-          className={cx(
-            "flex-shrink-0 rounded-full p-2 transition-all",
-            "border border-slate-300 bg-white shadow-sm",
-            "hover:bg-slate-50 hover:shadow-md active:scale-95",
-            "disabled:opacity-50 disabled:cursor-not-allowed"
-          )}
-          style={{ color: intPsychTheme.primary }}
-          aria-label={isPlaying ? "Pause" : "Play"}
+          className="group relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-b-4 text-white hover:translate-y-[1px] active:translate-y-[2px] active:border-b-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{
+            backgroundColor: intPsychTheme.secondary,
+            borderColor: intPsychTheme.secondaryDark,
+          }}
         >
-          {isLoading ? (
-            <svg
-              className="animate-spin h-4 w-4"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
+          {showLoading ? (
+            <Loader2 className="h-6 w-6 animate-spin" />
           ) : isPlaying ? (
-            <Pause className="h-4 w-4" />
+            <Pause className="h-6 w-6 fill-current" />
           ) : (
-            <Play className="h-4 w-4" />
+            <Play className="h-6 w-6 fill-current ml-1" />
           )}
         </button>
 
-        {/* Progress and Time */}
-        <div className="flex-1 min-w-0 flex items-center gap-2">
-          <span className="text-[10px] text-slate-500 font-mono tabular-nums">
-            {formatTime(currentTime)}
-          </span>
-          <div className="flex-1 relative">
-            <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+        {/* Controls */}
+        <div className="flex flex-1 flex-col gap-1.5">
+          <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+            <span>
+              {formatTime(currentTime)} / {formatTime(validDuration)}
+            </span>
+            <button
+              onClick={cycleSpeed}
+              className="rounded-md px-1.5 py-0.5 hover:bg-slate-100 transition-colors text-slate-500 hover:text-slate-700"
+            >
+              {playbackRate}x
+            </button>
+          </div>
+
+          <div className="group relative flex h-5 items-center">
+            {/* Background Track */}
+            <div className="absolute h-2 w-full overflow-hidden rounded-full bg-slate-100">
               <div
-                className="h-full rounded-full"
+                className="h-full transition-all duration-100 ease-linear"
                 style={{
-                  width: `${progress}%`,
-                  background:
-                    "linear-gradient(90deg, #b8e7f8ff 0%, #3a9ce2ff 50%, #05539cff 100%)",
+                  width: `${
+                    validDuration > 0 ? (currentTime / validDuration) * 100 : 0
+                  }%`,
+                  backgroundColor: intPsychTheme.secondary,
                 }}
               />
             </div>
-            {/* Draggable thumb */}
-            <div
-              className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white shadow-md pointer-events-none border border-slate-300"
-              style={{
-                left: `calc(${progress}% - 5px)`,
-                opacity: duration ? 1 : 0,
-                background: intPsychTheme.secondary,
-              }}
-            />
+
+            {/* Input Range */}
             <input
               type="range"
-              min="0"
-              max={duration || 0}
-              step="0.0001"
+              min={0}
+              max={validDuration || 100}
+              step={0.1}
               value={currentTime}
+              onChange={handleSeekChange}
               onMouseDown={handleSeekStart}
+              onMouseUp={onCommitMove}
               onTouchStart={handleSeekStart}
-              onChange={handleSeek}
-              onMouseUp={handleSeekEnd}
-              onTouchEnd={handleSeekEnd}
-              disabled={!duration}
-              className="absolute inset-0 w-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-              style={{ cursor: duration ? "pointer" : "not-allowed" }}
+              onTouchEnd={onCommitMove}
+              disabled={validDuration === 0 && !isLoading}
+              className="absolute z-20 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+            />
+
+            {/* Visible Thumb */}
+            <div
+              className="pointer-events-none absolute z-10 h-4 w-4 rounded-full border-2 bg-white shadow transition-transform duration-100 ease-linear group-hover:scale-110"
+              style={{
+                left: `${
+                  validDuration > 0 ? (currentTime / validDuration) * 100 : 0
+                }%`,
+                borderColor: intPsychTheme.secondary,
+                transform: `translateX(-50%)`,
+                opacity: validDuration > 0 ? 1 : 0,
+              }}
             />
           </div>
-          <span className="text-[10px] text-slate-500 font-mono tabular-nums">
-            {formatTime(duration)}
-          </span>
         </div>
       </div>
 
-      {error && <p className="text-[11px] text-rose-600 px-1">{error}</p>}
-
-      {/* Transcript Display - Simplified */}
-      {isProcessing ? (
-        <div className="flex items-start gap-2 py-2 px-3 bg-amber-50/50 border border-amber-200/60 rounded-lg">
-          <MessageSquareText className="w-3.5 h-3.5 text-amber-600 mt-0.5 flex-shrink-0" />
-          <p className="text-[11px] text-amber-700">
-            Transcription processing...
+      {transcription && (
+        <div className="relative mt-2 py-2 px-3 bg-slate-50 border border-slate-100 rounded-xl">
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <div className="flex items-center gap-1.5">
+              <Pencil className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+              <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+                Transcription
+              </h4>
+            </div>
+            <CopyButton text={transcription} />
+          </div>
+          <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+            {transcription}
           </p>
         </div>
-      ) : (
-        <>
-          {/* Transcription */}
-          <div className="relative py-2 px-3 bg-slate-50/50 border border-slate-200/60 rounded-lg">
-            <div className="flex items-center justify-between gap-2 mb-1.5">
-              <div className="flex items-center gap-1.5">
-                <MessageSquareText className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-                <h4 className="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                  {hasTranslation ? "Original" : "Transcript"}
-                </h4>
-              </div>
-              <CopyButton text={transcription} />
-            </div>
-            <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
-              {transcription}
-            </p>
-          </div>
-
-          {/* Translation (if exists) */}
-          {hasTranslation && (
-            <div className="relative py-2 px-3 bg-blue-50/50 border border-blue-200/60 rounded-lg">
-              <div className="flex items-center justify-between gap-2 mb-1.5">
-                <div className="flex items-center gap-1.5">
-                  <Languages className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
-                  <h4 className="text-[10px] font-semibold text-blue-600 uppercase tracking-wide">
-                    English Translation
-                  </h4>
-                </div>
-                <CopyButton text={translation} />
-              </div>
-              <p className="text-[13px] text-blue-900 leading-relaxed whitespace-pre-wrap break-words">
-                {translation}
-              </p>
-            </div>
-          )}
-        </>
       )}
     </div>
   );
