@@ -144,6 +144,7 @@ model JournalEntry {
   content         String   @db.Text
   mood            Int
   sentimentResult Json?
+  emotions        Json?    // Array of extracted emotions: [{emotion: string, class: string, field?: string}]
   createdAt       DateTime @default(now())
   updatedAt       DateTime
   Clinic          Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
