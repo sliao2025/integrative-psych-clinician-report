@@ -1162,7 +1162,7 @@ export function StoryDetail({
             </div>
 
             {/* Narrative fields */}
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2 md:col-span-2">
               <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
                 <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
                   <h4 className="text-sm font-semibold text-slate-900">
