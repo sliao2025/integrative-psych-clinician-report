@@ -46,7 +46,7 @@ import {
   GoalsDetail,
 } from "./DetailPanels";
 import type { ModalState, Patient, ProfileJson } from "../types";
-import { intPsychTheme, theme } from "../theme";
+import { intPsychTheme, theme, sigmundTheme } from "../theme";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 const dm_sans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"] });
@@ -181,13 +181,13 @@ export default function PatientReportClient({ id }: { id: string }) {
               <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center">
                 <BrainCircuit
                   className="w-6 h-6"
-                  style={{ color: intPsychTheme.primary }}
+                  style={{ color: sigmundTheme.accent }}
                 />
               </div>
               <div>
                 <h2
                   className={`${dm_serif.className} text-3xl font-normal`}
-                  style={{ color: intPsychTheme.primary }}
+                  style={{ color: sigmundTheme.accent }}
                 >
                   Clinical Insights
                 </h2>
@@ -399,13 +399,13 @@ export default function PatientReportClient({ id }: { id: string }) {
               <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center">
                 <FileText
                   className="w-6 h-6"
-                  style={{ color: intPsychTheme.primary }}
+                  style={{ color: sigmundTheme.accent }}
                 />
               </div>
               <div>
                 <h2
                   className={`${dm_serif.className} text-3xl font-normal`}
-                  style={{ color: intPsychTheme.primary }}
+                  style={{ color: sigmundTheme.accent }}
                 >
                   Patient Details
                 </h2>

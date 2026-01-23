@@ -13,7 +13,7 @@ import {
   Stop,
 } from "@react-pdf/renderer";
 import type { ProfileJson } from "@/app/components/types";
-import { intPsychTheme } from "./theme";
+import { intPsychTheme, sigmundTheme } from "./theme";
 import path from "path";
 import fs from "fs";
 
@@ -388,9 +388,9 @@ const styles = StyleSheet.create({
     backgroundColor: intPsychTheme.card,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: sigmundTheme.border,
     borderBottomWidth: 4,
-    borderBottomColor: "#e2e8f0",
+    borderBottomColor: sigmundTheme.border,
   },
   sectionTitle: {
     fontSize: 13,
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     paddingBottom: 4,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#f1f5f9",
+    borderBottomColor: sigmundTheme.border,
   },
   label: {
     width: "38%",
@@ -447,7 +447,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     paddingBottom: 3,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#f1f5f9",
+    borderBottomColor: sigmundTheme.border,
   },
   relationshipCard: {
     padding: 10,
@@ -593,7 +593,7 @@ const PdfGauge = ({
               <LinearGradient id="barGrad" x1="0" y1="0" x2="1" y2="0">
                 <Stop offset="0%" stopColor="#B8E4DA" />
                 <Stop offset="50%" stopColor="#3A9CE2" />
-                <Stop offset="100%" stopColor="#05539C" />
+                <Stop offset="100%" stopColor={intPsychTheme.accentDark} />
               </LinearGradient>
             </Defs>
             <Rect
@@ -603,7 +603,7 @@ const PdfGauge = ({
               height={H}
               rx={corner}
               ry={corner}
-              fill="#e5e7eb"
+              fill={sigmundTheme.border}
             />
             <Rect
               x={0}
@@ -621,7 +621,7 @@ const PdfGauge = ({
               height={TICK_H}
               rx={TICK_RX}
               ry={TICK_RX}
-              fill="#0f172a"
+              fill={intPsychTheme.text}
               opacity={0.18}
             />
             <Rect
@@ -631,7 +631,7 @@ const PdfGauge = ({
               height={TICK_H}
               rx={TICK_RX}
               ry={TICK_RX}
-              fill="#ffffff"
+              fill={intPsychTheme.card}
             />
             <Rect
               x={tickerX - TICK_W / 2}
@@ -640,7 +640,7 @@ const PdfGauge = ({
               height={TICK_H}
               rx={TICK_RX}
               ry={TICK_RX}
-              stroke="#94a3b8"
+              stroke={intPsychTheme.textMuted}
               strokeWidth={0.75}
             />
           </Svg>
@@ -650,7 +650,7 @@ const PdfGauge = ({
             style={{
               fontSize: 24,
               fontFamily: "Helvetica-Bold",
-              color: "#05539C",
+              color: intPsychTheme.accentDark,
               lineHeight: 1.0,
             }}
           >
@@ -674,8 +674,8 @@ const QuestionResponse = ({
   options?: { key: string; label: string; bg: string; text: string }[];
 }) => {
   let displayLabel = "—";
-  let bg = "#f1f5f9";
-  let textColor = "#334155";
+  let bg = intPsychTheme.background;
+  let textColor = intPsychTheme.text;
 
   if (options) {
     const opt = options.find((o) => o.key === String(answer));
@@ -1084,7 +1084,7 @@ export const AssessmentReportPDFChild = ({
                 <View
                   key={i}
                   style={{
-                    backgroundColor: "#e2e8f0",
+                    backgroundColor: sigmundTheme.border,
                     borderRadius: 8,
                     paddingTop: 4,
                     paddingBottom: 2,
@@ -1522,7 +1522,7 @@ export const AssessmentReportPDFChild = ({
                     <View
                       key={i}
                       style={{
-                        backgroundColor: "#e2e8f0",
+                        backgroundColor: sigmundTheme.border,
                         borderRadius: 8,
                         paddingTop: 4,
                         paddingBottom: 2,
@@ -1547,7 +1547,7 @@ export const AssessmentReportPDFChild = ({
                     <View
                       key={i}
                       style={{
-                        backgroundColor: "#e2e8f0",
+                        backgroundColor: sigmundTheme.border,
                         borderRadius: 8,
                         paddingTop: 4,
                         paddingBottom: 2,
@@ -1572,7 +1572,7 @@ export const AssessmentReportPDFChild = ({
                     <View
                       key={i}
                       style={{
-                        backgroundColor: "#e2e8f0",
+                        backgroundColor: sigmundTheme.border,
                         borderRadius: 8,
                         paddingTop: 4,
                         paddingBottom: 2,

@@ -242,7 +242,9 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
             {categoryLabels[key] || key}
           </h4>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold bg-blue-100 h-6 w-6 items-center justify-center flex font-medium text-[#0072ce] rounded-full">
+            <span
+              className={`text-sm font-bold bg-blue-100 h-6 w-6 items-center justify-center flex font-medium text-[${intPsychTheme.accent}] rounded-full`}
+            >
               {items.length}
             </span>
             {isExpanded ? (
@@ -454,7 +456,9 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
                             className="w-full cursor-pointer flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
                           >
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-blue-100 text-[#0072ce] font-bold text-sm flex-shrink-0">
+                              <div
+                                className={`w-8 h-8 rounded-full flex items-center justify-center bg-blue-100 text-[${intPsychTheme.accent}] font-bold text-sm flex-shrink-0`}
+                              >
                                 {idx + 1}
                               </div>
                               <h4 className="text-base text-slate-800 text-left">
@@ -499,8 +503,12 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
                               {/* Reasoning */}
                               <div className="space-y-2 pt-2 border-t border-slate-200">
                                 <div className="flex items-center gap-2">
-                                  <Sparkles className="w-4 h-4 text-[#0072ce]" />
-                                  <span className="text-xs font-bold text-[#004684] uppercase tracking-wide">
+                                  <Sparkles
+                                    className={`w-4 h-4 text-[${intPsychTheme.accent}]`}
+                                  />
+                                  <span
+                                    className={`text-xs font-bold text-[${intPsychTheme.accentDark}] uppercase tracking-wide`}
+                                  >
                                     Clinical Reasoning
                                   </span>
                                 </div>

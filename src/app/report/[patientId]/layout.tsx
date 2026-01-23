@@ -5,18 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import {
-  FileText,
-  ClipboardList,
-  BookOpen,
-  ChevronsLeft,
-  ChevronsRight,
-  Brain,
-  Route,
-  ChartCandlestick,
-  X,
-  PanelLeftClose,
-} from "lucide-react";
+import { FileText, BookOpen, ChevronsLeft, ChevronsRight } from "lucide-react";
 import {
   Menu,
   MenuButton,
@@ -25,11 +14,12 @@ import {
   Transition,
 } from "@headlessui/react";
 import { DM_Serif_Text, DM_Sans } from "next/font/google";
-import { intPsychTheme } from "@/app/components/theme";
+import { intPsychTheme, sigmundTheme } from "@/app/components/theme";
 import ReportHeader from "@/app/components/Report/ReportHeader";
 import PatientTopBar from "@/app/components/Report/PatientTopBar";
 import { SidebarProvider, useSidebar } from "@/app/contexts/SidebarContext";
 import logo from "@/assets/IP_Logo.png";
+import sigmund_logo from "@/assets/Sigmund Window.png";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 const dm_sans = DM_Sans({
@@ -90,13 +80,13 @@ function PatientLayoutInner({
       name: "Intake",
       href: `/report/${patientId}`,
       icon: FileText,
-      color: `text-[${intPsychTheme.primary}]`,
+      color: `text-[${sigmundTheme.accent}]`,
     },
     // {
     //   name: "Treatment Plan",
     //   href: `/report/${patientId}/treatment-plan`,
     //   icon: Route,
-    //   color: `text-[#f43f5e]`,
+    //   color: `text-[${intPsychTheme.alternate}]`,
     // },
     // {
     //   name: "Scales",
@@ -104,17 +94,17 @@ function PatientLayoutInner({
     //   icon: ChartCandlestick,
     //   color: `text-[${intPsychTheme.accent}]`,
     // },
-    // {
-    //   name: "Journals",
-    //   href: `/report/${patientId}/journals`,
-    //   icon: BookOpen,
-    //   color: `text-[#ffa440]`,
-    // },
+    {
+      name: "Journals",
+      href: `/report/${patientId}/journals`,
+      icon: BookOpen,
+      color: `text-[${sigmundTheme.accent}]`,
+    },
     // {
     //   name: "Learn",
     //   href: `/report/${patientId}/learn`,
     //   icon: Brain,
-    //   color: `text-[#f43f5e]`,
+    //   color: `text-[${intPsychTheme.alternate}]`,
     // },
   ];
 
@@ -128,13 +118,15 @@ function PatientLayoutInner({
   const SidebarContent = ({ isMobile = false }: { isMobile?: boolean }) => (
     <>
       {/* Logo/Title - Header */}
-      <div className="relative p-6 flex items-center gap-3 justify-between border-b-2 border-[#e7e5e4]">
+      <div
+        className={`relative p-6 flex items-center gap-3 justify-between border-b-2 border-[${sigmundTheme.border}]`}
+      >
         <div className="flex items-center gap-3">
           <div className="relative group cursor-pointer">
             <div className="absolute inset-0 bg-[#e0f2fe] rounded-full transform scale-0 group-hover:scale-110 transition-transform duration-200" />
             <Image
-              src={logo}
-              alt="Integrative Psych logo"
+              src={sigmund_logo}
+              alt="Sigmund logo"
               className={`relative object-contain transition-all duration-300 ${
                 isExpanded || isMobile ? "h-14 w-14" : "h-10 w-10"
               }`}
@@ -143,11 +135,10 @@ function PatientLayoutInner({
 
           {(isExpanded || isMobile) && (
             <h1
-              className={`${dm_serif.className} text-2xl text-[#1c1917] tracking-tight leading-none`}
-              style={{ color: intPsychTheme.primary }}
+              className={`${dm_serif.className} text-4xl tracking-tight leading-none`}
+              style={{ color: sigmundTheme.accent }}
             >
-              Clinician <br />
-              Portal
+              Sigmund
             </h1>
           )}
         </div>
@@ -170,7 +161,7 @@ function PatientLayoutInner({
           <button
             type="button"
             onClick={toggleSidebar}
-            className="absolute right-[-2px] top-full translate-x-1/2 -translate-y-1/2 bg-[#ffa440] border-[#e7e5e4] p-1.5 rounded-full shadow-sm hover:shadow-md hover:scale-105 transition-all z-50 text-white hover:text-white"
+            className={`absolute right-[-2px] top-full translate-x-1/2 -translate-y-1/2 bg-[${sigmundTheme.secondary}] border-[${sigmundTheme.border}] p-1.5 rounded-full shadow-sm hover:shadow-md hover:scale-105 transition-all z-50 text-white hover:text-white`}
             aria-label={isExpanded ? "Shrink sidebar" : "Expand sidebar"}
           >
             {toggleIcon}
@@ -197,18 +188,22 @@ function PatientLayoutInner({
                   isExpanded || isMobile ? "gap-4 px-4" : "justify-center px-0"
                 } py-4 rounded-xl text-base font-medium transition-all duration-200 relative overflow-hidden group ${
                   active
-                    ? "bg-[#f0f9ff] text-[#113e60] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border-2 border-[#e7e5e4]"
-                    : "text-stone-500 hover:bg-stone-100 hover:text-[#113e60] border border-transparent"
+                    ? `bg-[#e9eee1] text-[#426459] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border-2 border-[${sigmundTheme.border}]`
+                    : `text-stone-500 hover:bg-stone-100 hover:text-[#426459] border border-transparent`
                 }`}
               >
                 {/* Active Indicator Pill */}
                 {active && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#113e60] rounded-r-full" />
+                  <div
+                    className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#91654f] rounded-r-full`}
+                  />
                 )}
 
                 <Icon
                   className={`w-6 h-6 transition-transform duration-300 group-hover:scale-110 ${
-                    active ? tab.color : "text-stone group-hover:text-[#113e60]"
+                    active
+                      ? tab.color
+                      : `text-stone-500 group-hover:text-[#426459]`
                   }`}
                   strokeWidth={2}
                 />
@@ -220,12 +215,12 @@ function PatientLayoutInner({
               {/* Tooltip for collapsed state - only on desktop */}
               {!isExpanded && !isMobile && (
                 <div
-                  style={{ backgroundColor: intPsychTheme.primary }}
+                  style={{ backgroundColor: sigmundTheme.secondaryDark }}
                   className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-4 py-2 text-white text-sm font-medium rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-[9999] shadow-xl pointer-events-none"
                 >
                   {tab.name}
                   <div
-                    style={{ borderRightColor: intPsychTheme.primary }}
+                    style={{ borderRightColor: sigmundTheme.secondaryDark }}
                     className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-white"
                   ></div>
                 </div>
@@ -236,12 +231,14 @@ function PatientLayoutInner({
       </nav>
 
       {/* User Profile */}
-      <div className="p-3 border-t-2 border-[#e7e5e4]">
+      <div className={`p-3 border-t-2 border-[${sigmundTheme.border}]`}>
         <Menu as="div" className="relative">
           <MenuButton
             className={`w-full ${
               isExpanded || isMobile ? "px-3 py-3" : "justify-center py-2"
-            } flex items-center gap-3 rounded-xl hover:bg-[#f5f5f4] border border-transparent hover:border-[#e7e5e4] transition-all group outline-none`}
+            } flex items-center gap-3 rounded-xl hover:bg-[#f5f5f4] border border-transparent hover:border-[${
+              sigmundTheme.border
+            }] transition-all group outline-none`}
           >
             <div className="relative">
               <div className="w-10 h-10 rounded-full bg-[#e0f2fe] border border-[#bae6fd] flex items-center justify-center text-[#0369a1] font-bold text-lg overflow-hidden">
@@ -282,9 +279,13 @@ function PatientLayoutInner({
                 isExpanded || isMobile
                   ? "left-0 bottom-full mb-4 w-full"
                   : "left-full bottom-0 ml-4 w-56"
-              } rounded-xl border border-[#e7e5e4] bg-white shadow-xl focus:outline-none z-[9999] overflow-hidden p-1`}
+              } rounded-xl border border-[${
+                sigmundTheme.border
+              }] bg-white shadow-xl focus:outline-none z-[9999] overflow-hidden p-1`}
             >
-              <div className="px-4 py-3 bg-[#fafaf9] border-b border-[#e7e5e4] mb-1">
+              <div
+                className={`px-4 py-3 bg-[${sigmundTheme.background}] border-b border-[${sigmundTheme.border}] mb-1`}
+              >
                 <p className="text-xs font-bold text-stone-400 uppercase">
                   Signed in as
                 </p>
@@ -314,7 +315,7 @@ function PatientLayoutInner({
 
   return (
     <div
-      className={`flex h-screen overflow-hidden bg-slate-50 ${dm_sans.className}`}
+      className={`flex h-screen overflow-hidden bg-stone-50 ${dm_sans.className}`}
     >
       {/* Mobile Overlay */}
       <Transition show={isMobileOpen} as={Fragment}>
@@ -345,7 +346,9 @@ function PatientLayoutInner({
             leaveFrom="translate-x-0"
             leaveTo="-translate-x-full"
           >
-            <aside className="fixed inset-y-0 left-0 w-72 bg-white border-r-2 border-[#e7e5e4] flex flex-col z-50 shadow-xl">
+            <aside
+              className={`fixed inset-y-0 left-0 w-72 bg-white border-r-2 border-[${sigmundTheme.border}] flex flex-col z-50 shadow-xl`}
+            >
               <SidebarContent isMobile={true} />
             </aside>
           </Transition.Child>
@@ -354,7 +357,7 @@ function PatientLayoutInner({
 
       {/* Desktop Sidebar - hidden on mobile */}
       <aside
-        className={`${sidebarWidth} hidden sm:flex bg-white border-r-2 border-[#e7e5e4] flex-col transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-20`}
+        className={`${sidebarWidth} hidden sm:flex bg-white border-r-2 border-[${sigmundTheme.border}] flex-col transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-20`}
       >
         <SidebarContent isMobile={false} />
       </aside>
@@ -363,8 +366,7 @@ function PatientLayoutInner({
       <div className="flex-1 flex flex-col overflow-hidden">
         <ReportHeader patientId={patientId} />
         <main
-          className="flex-1 overflow-y-auto scroll-smooth"
-          style={{ backgroundColor: "#f8fafc" }}
+          className={`bg-[${sigmundTheme.background}] flex-1 overflow-y-auto scroll-smooth`}
         >
           {/* Patient Top Bar - shown on all pages */}
           <div className="mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 sm:pt-6 pt-4">

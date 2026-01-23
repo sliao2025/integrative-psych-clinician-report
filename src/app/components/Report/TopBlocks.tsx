@@ -26,9 +26,9 @@ import { KV, Gauge, SentimentChart } from "./ui";
 import { ProfileJson } from "../types";
 import React, { useEffect, useState } from "react";
 import { DM_Serif_Text } from "next/font/google";
-import { intPsychTheme } from "../theme";
 import { genderOptions } from "../text";
 import GradientText from "../GradientText";
+import { intPsychTheme, sigmundTheme } from "../theme";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 
@@ -60,7 +60,10 @@ export function DemographicsHeader({
   ) =>
     value ? options.find((o) => o.value === value)?.label ?? value : undefined;
   return (
-    <div className="relative rounded-2xl bg-white p-4 sm:p-6 border border-slate-200 border-b-4">
+    <div
+      className="relative rounded-2xl bg-white p-4 sm:p-6 border border-b-4"
+      style={{ borderColor: sigmundTheme.border }}
+    >
       <div className="grid grid-cols-12 gap-3 sm:gap-4 md:gap-5 items-start">
         {/* Left: Avatar + Name */}
         <div className="col-span-12 md:col-span-4 lg:col-span-7 flex items-center gap-3 min-w-0">
@@ -73,7 +76,7 @@ export function DemographicsHeader({
             />
           ) : (
             <div
-              style={{ background: intPsychTheme.secondary }}
+              style={{ background: sigmundTheme.secondary }}
               className="flex h-11 w-11 sm:h-12 sm:w-12  border-3 border-slate-200  items-center justify-center rounded-full text-white sm:text-xl font-medium flex-none"
             >
               {data.firstName?.[0] || "P"}
@@ -87,7 +90,13 @@ export function DemographicsHeader({
               {data.firstName} {data.lastName}
             </div> */}
             <GradientText
-              colors={["#0072ce", "#113e60", "#0072ce", "#113e60", "#0072ce"]}
+              colors={[
+                sigmundTheme.accent,
+                sigmundTheme.primary,
+                sigmundTheme.accent,
+                sigmundTheme.primary,
+                sigmundTheme.accent,
+              ]}
               animationSpeed={6}
               showBorder={false}
               className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl ${dm_serif.className} font-semibold tracking-tight text-slate-900 truncate`}
@@ -106,7 +115,7 @@ export function DemographicsHeader({
             <div className="flex items-center gap-2 min-w-0">
               <User
                 className="h-4 w-4 flex-none"
-                style={{ color: intPsychTheme.primary }}
+                style={{ color: sigmundTheme.primary }}
               />
               <KV
                 label="Gender Identity"
@@ -119,7 +128,7 @@ export function DemographicsHeader({
             <div className="flex items-center gap-2 min-w-0">
               <CalendarDays
                 className="h-4 w-4 flex-none"
-                style={{ color: intPsychTheme.primary }}
+                style={{ color: sigmundTheme.primary }}
               />
               <KV
                 label="DOB"
@@ -132,7 +141,7 @@ export function DemographicsHeader({
             <div className="flex items-center gap-2 min-w-0">
               <PhoneIcon
                 className="h-4 w-4 flex-none"
-                style={{ color: intPsychTheme.primary }}
+                style={{ color: sigmundTheme.primary }}
               />
               <KV
                 label={data.isChild ? "Parent/Guardian Phone" : "Phone"}
@@ -145,7 +154,7 @@ export function DemographicsHeader({
             <div className="flex items-center gap-2 min-w-0">
               <MailIcon
                 className="h-4 w-4 flex-none"
-                style={{ color: intPsychTheme.primary }}
+                style={{ color: sigmundTheme.primary }}
               />
               <KV
                 label={data.isChild ? "Parent/Guardian Email" : "Email"}
@@ -327,7 +336,10 @@ export function InsightsBlock({
 
   if (loading) {
     return (
-      <div className="relative rounded-2xl bg-white p-4 sm:p-6 border border-slate-200 border-b-4">
+      <div
+        className="relative rounded-2xl bg-white p-4 sm:p-6 border border-b-4"
+        style={{ borderColor: sigmundTheme.border }}
+      >
         <div className="flex items-center gap-3 mb-4">
           <BrainCircuit
             className="h-5 w-5"
@@ -378,7 +390,10 @@ export function InsightsBlock({
 
   if (error || !sentimentData) {
     return (
-      <div className="relative rounded-2xl bg-white p-4 sm:p-6 border border-slate-200 border-b-4">
+      <div
+        className="relative rounded-2xl bg-white p-4 sm:p-6 border border-b-4"
+        style={{ borderColor: sigmundTheme.border }}
+      >
         <div className="flex items-center gap-3 mb-4">
           <BrainCircuit
             className="h-5 w-5"
@@ -529,14 +544,17 @@ export function InsightsBlock({
       {summaryData && (
         <div className="flex flex-col gap-4 mb-4">
           {/* Patient Bio */}
-          <div className="rounded-2xl bg-white p-6 border border-slate-200 border-b-4">
+          <div
+            className="rounded-2xl bg-white p-6 border border-b-4"
+            style={{ borderColor: sigmundTheme.border }}
+          >
             <h3
               className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold mb-2 flex items-center gap-2`}
-              style={{ color: intPsychTheme.primary }}
+              style={{ color: sigmundTheme.secondaryDark }}
             >
               <UserRound
                 className="h-5 w-5"
-                style={{ color: intPsychTheme.primary }}
+                style={{ color: sigmundTheme.secondaryDark }}
               />
               Patient Bio
             </h3>
@@ -546,14 +564,17 @@ export function InsightsBlock({
           </div>
 
           {/* Chief Complaint */}
-          <div className="rounded-2xl bg-white p-6 border border-slate-200 border-b-4">
+          <div
+            className="rounded-2xl bg-white p-6 border border-b-4"
+            style={{ borderColor: sigmundTheme.border }}
+          >
             <h3
               className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold mb-2 flex items-center gap-2`}
-              style={{ color: intPsychTheme.primary }}
+              style={{ color: sigmundTheme.secondaryDark }}
             >
               <MessageCircleMore
                 className="h-5 w-5"
-                style={{ color: intPsychTheme.primary }}
+                style={{ color: sigmundTheme.secondaryDark }}
               />
               Chief Complaint
             </h3>
@@ -566,14 +587,17 @@ export function InsightsBlock({
 
       {/* Sentiment Analysis Section */}
       {sentimentData && (
-        <div className="rounded-2xl bg-white p-6 border border-slate-200 border-b-4">
+        <div
+          className="rounded-2xl bg-white p-6 border border-b-4"
+          style={{ borderColor: sigmundTheme.border }}
+        >
           {/* Section Title */}
           <div className="mb-3">
             <h3
               className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold flex items-center gap-2`}
-              style={{ color: intPsychTheme.primary }}
+              style={{ color: sigmundTheme.secondaryDark }}
             >
-              <TrendingUp className="h-4 w-4 text-slate-600" />
+              <TrendingUp className="h-4 w-4 text-[${sigmundTheme.secondaryDark}]" />
               Emotional Tone Analysis
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">

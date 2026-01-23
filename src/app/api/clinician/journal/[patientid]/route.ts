@@ -29,6 +29,7 @@ export async function GET(
         id: true,
         content: true,
         mood: true,
+        emotions: true,
         sentimentResult: true,
         createdAt: true,
         updatedAt: true,

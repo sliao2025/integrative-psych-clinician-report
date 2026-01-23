@@ -1,5 +1,7 @@
 import React, { ReactNode } from "react";
 
+import { intPsychTheme } from "./theme";
+
 interface GradientTextProps {
   children: ReactNode;
   className?: string;
@@ -11,7 +13,7 @@ interface GradientTextProps {
 export default function GradientText({
   children,
   className = "",
-  colors = ["#ffaa40", "#9c40ff", "#ffaa40"],
+  colors = [intPsychTheme.secondary, "#9c40ff", intPsychTheme.secondary],
   animationSpeed = 8,
   showBorder = false,
 }: GradientTextProps) {

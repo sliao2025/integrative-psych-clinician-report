@@ -4,16 +4,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import type { Metadata } from "next";
 import Providers from "./providers";
-import IPLogo from "@/assets/IP_Logo.png";
+import sigmund_logo from "@/assets/Sigmund Window.png";
 
 export const metadata: Metadata = {
-  title: "Clinician Portal — Integrative Psych",
-  description:
-    "Secure access to patient reports for Integrative Psych clinicians.",
+  title: "Sigmund",
+  description: "Mental Health Platform by Integrative Psych",
   icons: {
-    icon: [{ url: IPLogo.src, type: "image/png" }],
-    shortcut: [{ url: IPLogo.src, type: "image/png" }],
-    apple: [{ url: IPLogo.src }],
+    icon: [{ url: sigmund_logo.src, type: "image/png" }],
+    shortcut: [{ url: sigmund_logo.src, type: "image/png" }],
+    apple: [{ url: sigmund_logo.src }],
   },
 };
 

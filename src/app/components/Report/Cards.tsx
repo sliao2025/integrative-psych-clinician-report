@@ -34,6 +34,7 @@ import {
   ResponsiveContainer,
   Tooltip as ReTooltip,
 } from "recharts";
+import { intPsychTheme, sigmundTheme } from "../theme";
 
 const scoreSum = (obj: Record<string, any> = {}) =>
   Object.values(obj).reduce(
@@ -323,7 +324,7 @@ export function ScalesCard({
           height={H}
           rx="8"
           fill="white"
-          stroke="#e2e8f0"
+          stroke={sigmundTheme.border}
           strokeWidth="1"
         />
         <text
@@ -332,7 +333,7 @@ export function ScalesCard({
           textAnchor="middle"
           dominantBaseline="central"
           fontSize="10"
-          fill="#64748b"
+          fill={intPsychTheme.textMuted}
         >
           {payload?.value}
         </text>
@@ -491,7 +492,7 @@ export function ScalesCard({
                 name="% of max"
                 dataKey="pct"
                 isAnimationActive={false}
-                className="text-[#0072ce]"
+                className={`text-[${sigmundTheme.accent}]`}
                 stroke="currentColor"
                 strokeWidth={2}
                 fill="currentColor"
@@ -651,7 +652,7 @@ export function ScalesCard({
                 name="% of max"
                 dataKey="pct"
                 isAnimationActive={false}
-                className="text-[#0072ce]"
+                className={`text-[${sigmundTheme.accent}]`}
                 stroke="currentColor"
                 strokeWidth={2}
                 fill="currentColor"
@@ -845,7 +846,7 @@ export function ScalesCard({
                 name="% of max"
                 dataKey="pct"
                 isAnimationActive={false}
-                className="text-[#0072ce]"
+                className={`text-[${sigmundTheme.accent}]`}
                 stroke="currentColor"
                 strokeWidth={2}
                 fill="currentColor"

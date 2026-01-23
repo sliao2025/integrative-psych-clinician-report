@@ -4,8 +4,8 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import Garden from "@/app/components/Garden/Garden";
-import logo from "@/assets/IP_Logo.png";
-import { intPsychTheme } from "@/app/components/theme";
+import sigmund_logo from "@/assets/Sigmund Window.png";
+import { intPsychTheme, sigmundTheme } from "@/app/components/theme";
 import { DM_Serif_Text } from "next/font/google";
 import { useState, useEffect, useMemo } from "react";
 import {
@@ -280,27 +280,27 @@ export default function ClinicianHome() {
         className="relative z-10 w-full max-w-3xl px-4 sm:px-5"
       >
         <div
-          className={`rounded-4xl border border-slate-200 border-b-4 bg-white shadow-sm ${dm_sans.className}`}
+          className={`rounded-4xl border border-stone-200 border-b-4 bg-white shadow-sm ${dm_sans.className}`}
         >
           <div className="p-5 sm:p-6 md:p-8">
             {/* Header */}
             <div className="mb-6 flex items-center gap-3">
               <Image
-                src={logo}
-                alt="Integrative Psych Logo"
+                src={sigmund_logo}
+                alt="Sigmund Window"
                 width={64}
                 height={64}
-                className="h-10 w-10 sm:h-12 sm:w-12 object-contain"
+                className="h-12 w-12 sm:h-12 sm:w-12 object-contain"
                 priority
               />
               <div>
                 <h1
-                  className={`${dm_serif.className} text-2xl sm:text-3xl font-semibold tracking-tight text-slate-700`}
+                  className={`${dm_serif.className} text-2xl sm:text-3xl font-semibold tracking-tight text-[#463f3b]`}
                 >
                   {`Welcome, ${name.split(" ")[0]}`}
                 </h1>
                 <p className="mt-1 text-[11px] sm:text-sm text-gray-500">
-                  Integrative Psych Clinician Report
+                  Sigmund's Clinician Report
                 </p>
               </div>
             </div>
@@ -312,13 +312,13 @@ export default function ClinicianHome() {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Search
                     className="h-5 w-5"
-                    style={{ color: intPsychTheme.primary }}
+                    style={{ color: sigmundTheme.accent }}
                   />
                 </div>
                 <input
                   type="text"
                   placeholder="Search patients by name..."
-                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-2xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-slate-200 transition-all"
+                  className="block w-full pl-10 pr-3 py-3 border border-stone-200 rounded-2xl leading-5 bg-stone-50 placeholder-stone-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-stone-200 transition-all"
                   value={patientName}
                   onChange={(e) => setPatientName(e.target.value)}
                 />
@@ -332,7 +332,7 @@ export default function ClinicianHome() {
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                       <Filter
                         className="h-4 w-4"
-                        style={{ color: intPsychTheme.primary }}
+                        style={{ color: sigmundTheme.accent }}
                       />
                     </div>
                     <Listbox
@@ -340,7 +340,7 @@ export default function ClinicianHome() {
                       onChange={setFilterClinician}
                     >
                       <div className="relative">
-                        <ListboxButton className="block w-full pl-10 pr-8 py-2.5 text-left text-sm text-slate-500 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-slate-200 cursor-pointer">
+                        <ListboxButton className="block w-full pl-10 pr-8 py-2.5 text-left text-sm text-stone-500 border border-stone-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-stone-200 cursor-pointer">
                           <span className="block truncate">
                             {
                               clinicianOptions.find(
@@ -350,12 +350,12 @@ export default function ClinicianHome() {
                           </span>
                           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                             <ChevronDown
-                              className="h-4 w-4 text-slate-400"
+                              className="h-4 w-4 text-stone-400"
                               aria-hidden="true"
                             />
                           </span>
                         </ListboxButton>
-                        <ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-base shadow-lg border border-slate-200  ring-opacity-5 focus:outline-none sm:text-sm">
+                        <ListboxOptions className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-base shadow-lg border border-stone-200  ring-opacity-5 focus:outline-none sm:text-sm">
                           {clinicianOptions.map((option) => (
                             <ListboxOption
                               key={option.value}
@@ -364,7 +364,7 @@ export default function ClinicianHome() {
                                 `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
                                   active
                                     ? "bg-blue-50 text-blue-900"
-                                    : "text-slate-900"
+                                    : "text-stone-900"
                                 }`
                               }
                             >
@@ -407,8 +407,8 @@ export default function ClinicianHome() {
                       onClick={() => toggleSort(opt.id as SortOption)}
                       className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-sm font-medium border transition-all whitespace-nowrap ${
                         sortParams.by === opt.id
-                          ? `bg-${intPsychTheme.primary} text-slate-800 border-slate-300 bg-slate-100`
-                          : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                          ? `bg-${sigmundTheme.accent} text-stone-800 border-stone-300 bg-stone-100`
+                          : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50"
                       }`}
                     >
                       {opt.label}
@@ -427,7 +427,7 @@ export default function ClinicianHome() {
               </div>
             </div>
             <div className="flex justify-between items-center px-1 mb-2">
-              <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <span className="text-xs font-medium text-stone-500 uppercase tracking-wider">
                 Patients ({filteredPatients.length})
               </span>
             </div>
@@ -437,24 +437,24 @@ export default function ClinicianHome() {
                 <div className="py-12 text-center">
                   <div
                     style={{ borderTopColor: intPsychTheme.secondary }}
-                    className="inline-block h-8 w-8 animate-spin rounded-full border-3 border-slate-300 border-t-transparent"
+                    className="inline-block h-8 w-8 animate-spin rounded-full border-3 border-stone-300 border-t-transparent"
                   ></div>
-                  <p className="mt-3 text-sm text-slate-600">
+                  <p className="mt-3 text-sm text-stone-600">
                     Loading patients...
                   </p>
                 </div>
               ) : filteredPatients.length === 0 ? (
                 <div className="py-12 text-center">
-                  <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-3">
+                  <div className="w-16 h-16 rounded-full bg-stone-50 flex items-center justify-center mx-auto mb-3">
                     <UserIcon
                       className="h-8 w-8"
                       style={{ color: intPsychTheme.accentLight }}
                     />
                   </div>
-                  <p className="text-slate-500 font-medium">
+                  <p className="text-stone-500 font-medium">
                     No patients found
                   </p>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-stone-400 mt-1">
                     Try adjusting your search or filters
                   </p>
                 </div>
@@ -464,7 +464,9 @@ export default function ClinicianHome() {
                   {showTopArrow && (
                     <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent z-10 flex items-start justify-center pointer-events-none">
                       <div className="animate-bounce bg-white p-[2px] rounded-full shadow-md mt-1">
-                        <ArrowUp className="h-5 w-5 text-[#0072ce]" />
+                        <ArrowUp
+                          className={`h-5 w-5 text-[${intPsychTheme.accent}]`}
+                        />
                       </div>
                     </div>
                   )}
@@ -507,7 +509,7 @@ export default function ClinicianHome() {
                         <button
                           key={patient.id}
                           onClick={() => router.push(`/report/${patient.id}`)}
-                          className="w-full p-4 rounded-2xl cursor-pointer border border-slate-200 border-b-4 hover:bg-slate-50 active:border-b-0 active:translate-y-1 transition-all text-left group relative"
+                          className="w-full p-4 rounded-2xl cursor-pointer border border-stone-200 border-b-4 hover:bg-stone-50 active:border-b-0 active:translate-y-1 transition-all text-left group relative"
                         >
                           <div className="flex items-start gap-4">
                             {/* Profile Picture */}
@@ -522,7 +524,7 @@ export default function ClinicianHome() {
                               ) : (
                                 <div
                                   style={{
-                                    background: intPsychTheme.secondary,
+                                    background: sigmundTheme.secondary,
                                   }}
                                   className="flex h-12 w-12 items-center justify-center rounded-full text-white text-lg font-medium shadow-sm"
                                 >
@@ -536,44 +538,44 @@ export default function ClinicianHome() {
                               <div className="flex justify-between items-start gap-2">
                                 <div>
                                   <h3
-                                    className={`${dm_serif.className} text-lg font-semibold tracking-tight text-slate-800 group-hover:text-slate-900 truncate`}
-                                    style={{ color: intPsychTheme.primary }}
+                                    className={`${dm_serif.className} text-lg font-semibold tracking-tight text-stone-800 group-hover:text-stone-900 truncate`}
+                                    style={{ color: sigmundTheme.accent }}
                                   >
                                     {firstName} {lastName}
                                   </h3>
                                   {/* Clinician Name Display */}
-                                  <div className="text-xs font-medium text-slate-500 mb-1">
+                                  <div className="text-xs font-medium text-stone-500 mb-1">
                                     Patient of:{" "}
-                                    <span className="text-slate-700">
+                                    <span className="text-stone-700">
                                       {clinicianName}
                                     </span>
                                   </div>
                                 </div>
                               </div>
 
-                              <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-600 mt-1">
-                                <span className="flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md">
+                              <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-stone-600 mt-1">
+                                <span className="flex items-center gap-1 bg-stone-100 px-2 py-0.5 rounded-md">
                                   <UserIcon
                                     className="h-3 w-3"
-                                    style={{ color: intPsychTheme.primary }}
+                                    style={{ color: sigmundTheme.accent }}
                                   />
                                   Age {age}
                                 </span>
-                                <span className="flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md">
+                                <span className="flex items-center gap-1 bg-stone-100 px-2 py-0.5 rounded-md">
                                   <CalendarDays
                                     className="h-3 w-3"
-                                    style={{ color: intPsychTheme.primary }}
+                                    style={{ color: sigmundTheme.accent }}
                                   />
                                   Intake: {submittedDate}
                                 </span>
-                                <span className="flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md">
+                                <span className="flex items-center gap-1 bg-stone-100 px-2 py-0.5 rounded-md">
                                   <CalendarDays
                                     className="h-3 w-3"
-                                    style={{ color: intPsychTheme.primary }}
+                                    style={{ color: sigmundTheme.accent }}
                                   />
                                   DOB: {dob}
                                 </span>
-                                <span className="flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md">
+                                <span className="flex items-center gap-1 bg-stone-100 px-2 py-0.5 rounded-md">
                                   {pronouns}
                                 </span>
                               </div>
@@ -589,8 +591,8 @@ export default function ClinicianHome() {
                                   disabled={downloadingPatientId === patient.id}
                                   className={
                                     successPdfPatientId === patient.id
-                                      ? "bg-green-50 text-green-600 p-2 rounded-lg hover:bg-slate-100 transition-all disabled:opacity-50"
-                                      : "p-2 rounded-lg hover:bg-slate-100 transition-all disabled:opacity-50"
+                                      ? "bg-green-50 text-green-600 p-2 rounded-lg hover:bg-stone-100 transition-all disabled:opacity-50"
+                                      : "p-2 rounded-lg hover:bg-stone-100 transition-all disabled:opacity-50"
                                   }
                                   aria-label="Download Intake PDF"
                                 >
@@ -599,12 +601,12 @@ export default function ClinicianHome() {
                                   ) : downloadingPatientId === patient.id ? (
                                     <Loader2
                                       className="h-5 w-5 animate-spin"
-                                      style={{ color: intPsychTheme.primary }}
+                                      style={{ color: sigmundTheme.accent }}
                                     />
                                   ) : (
                                     <FileDown
                                       className="h-5 w-5"
-                                      style={{ color: intPsychTheme.primary }}
+                                      style={{ color: sigmundTheme.accent }}
                                     />
                                   )}
                                 </button>
@@ -613,7 +615,7 @@ export default function ClinicianHome() {
                                   className={`absolute text-right right-full top-1/2 -translate-y-1/2 mr-2 px-2 py-1 text-xs font-medium ${
                                     successPdfPatientId === patient.id
                                       ? "bg-green-50 text-green-600"
-                                      : "bg-slate-800 text-white"
+                                      : "bg-stone-800 text-white"
                                   } rounded-md opacity-0 invisible group-hover/download:opacity-100 group-hover/download:visible transition-all whitespace-nowrap pointer-events-none z-50`}
                                 >
                                   {successPdfPatientId === patient.id ? (
@@ -626,7 +628,7 @@ export default function ClinicianHome() {
                                     className={`${
                                       successPdfPatientId
                                         ? "border-l-green-50"
-                                        : "border-l-slate-800"
+                                        : "border-l-stone-800"
                                     } absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent`}
                                   ></div>
                                 </div>
@@ -642,7 +644,9 @@ export default function ClinicianHome() {
                   {showBottomArrow && (
                     <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent z-10 flex items-end justify-center pointer-events-none">
                       <div className="animate-bounce bg-white p-[2px] rounded-full shadow-md mb-1">
-                        <ArrowDown className="h-5 w-5 text-[#0072ce]" />
+                        <ArrowDown
+                          className={`h-5 w-5 text-[${intPsychTheme.accent}]`}
+                        />
                       </div>
                     </div>
                   )}

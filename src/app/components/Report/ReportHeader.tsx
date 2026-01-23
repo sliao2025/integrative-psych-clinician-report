@@ -11,7 +11,7 @@ import {
   PanelLeft,
   FileDown,
 } from "lucide-react";
-import { intPsychTheme } from "../theme";
+import { intPsychTheme, sigmundTheme } from "../theme";
 import { useWeather } from "@/app/lib/hooks/useWeather";
 import WeatherWidget from "../WeatherWidget";
 import { useSession } from "next-auth/react";
@@ -123,7 +123,7 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
         className={`group flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-all disabled:opacity-100 ${
           successPdf
             ? "bg-green-50 text-green-600"
-            : "text-slate-600 hover:bg-slate-50 hover:text-[#0072ce]"
+            : `text-slate-600 hover:bg-slate-50 hover:text-[${intPsychTheme.accent}]`
         }`}
         title="Download Intake PDF"
       >
@@ -163,14 +163,14 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
           >
             <PanelLeft
               className="h-5 cursor-pointer w-5"
-              style={{ color: intPsychTheme.primary }}
+              style={{ color: sigmundTheme.text }}
             />
           </button>
 
           <Link href="/search" className="group z-10 shrink-0">
             <span
               className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all hover:bg-slate-50"
-              style={{ color: intPsychTheme.primary }}
+              style={{ color: sigmundTheme.text }}
             >
               <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
               <span className="hidden sm:inline">Back to Search</span>
@@ -190,7 +190,7 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
                 className={`group flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-all disabled:opacity-100 ${
                   successSentiment
                     ? "bg-green-50 text-green-600"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-[#0072ce]"
+                    : `text-slate-600 hover:bg-slate-50 hover:text-[${intPsychTheme.accent}]`
                 }`}
                 title="Recompute Sentiment Analysis"
               >
@@ -211,7 +211,7 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
                 className={`group flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-all disabled:opacity-100 ${
                   successSummary
                     ? "bg-green-50 text-green-600"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-[#0072ce]"
+                    : `text-slate-600 hover:bg-slate-50 hover:text-[${intPsychTheme.accent}]`
                 }`}
                 title="Recompute Summary"
               >

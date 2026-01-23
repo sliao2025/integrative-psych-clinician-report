@@ -6,8 +6,8 @@ import { motion } from "framer-motion";
 import { DM_Serif_Text, DM_Sans } from "next/font/google";
 import { useSearchParams } from "next/navigation";
 import Garden from "@/app/components/Garden/Garden";
-import logo from "@/assets/IP_Logo.png";
-import { intPsychTheme } from "@/app/components/theme";
+import sigmund_logo from "@/assets/Sigmund Window.png";
+import { sigmundTheme } from "@/app/components/theme";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 const dm_sans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"] });
@@ -18,15 +18,15 @@ export default function LoginPage() {
   console.log("hi");
   return (
     <main
-      className="relative min-h-dvh grid justify-center overflow-hidden"
-      style={{
-        WebkitTapHighlightColor: "transparent",
-        background:
-          "linear-gradient(to top, rgb(171, 248, 158), rgb(242, 255, 241), rgba(255, 255, 255, 1))",
-      }}
+      className="relative min-h-dvh bg-stone-50 grid justify-center overflow-hidden"
+      // style={{
+      //   WebkitTapHighlightColor: "transparent",
+      //   background:
+      //     "linear-gradient(to top, rgb(171, 248, 158), rgb(242, 255, 241), rgba(255, 255, 255, 1))",
+      // }}
     >
       {/* Background visuals */}
-      <Garden bloom={0.6} />
+      {/* <Garden bloom={0.6} /> */}
 
       {/* Centered modal card */}
       <motion.div
@@ -37,35 +37,30 @@ export default function LoginPage() {
         style={{ marginTop: "35vh" }}
       >
         <div
-          className={`rounded-3xl border border-slate-200 border-b-4 bg-white shadow-sm ${dm_sans.className}`}
+          className={`rounded-3xl border border-stone-200 border-b-4 bg-white ${dm_sans.className}`}
         >
           <div className={`p-6 md:p-8 ${dm_sans.className}`}>
             <div className="mb-6 flex items-center gap-3">
               <Image
-                src={logo}
-                alt="Integrative Psych Logo"
+                src={sigmund_logo}
+                alt="Sigmund Logo"
                 width={100}
                 height={100}
                 className="object-contain"
               />
               <div>
                 <h1
-                  className={`${dm_serif.className} text-3xl font-semibold tracking-tight text-slate-700`}
+                  className={`${dm_serif.className} mb-1 text-6xl font-semibold tracking-tight text-[${sigmundTheme.accent}]`}
                 >
-                  Integrative Psych Clinician Portal
+                  Sigmund
                 </h1>
-                <p className="text-sm text-gray-500">
-                  Sign in with your @psych-nyc.com Google account
-                </p>
+                <p className="text-sm text-stone-500">Clinician Portal</p>
               </div>
             </div>
 
             <button
               onClick={() => signIn("google", { callbackUrl: callbackUrl })}
-              className="w-full cursor-pointer inline-flex items-center justify-center gap-3 rounded-2xl px-6 py-4 font-medium text-white transition-all duration-200 border-b-4 border-blue-900/20 active:border-b-0 active:translate-y-1 hover:brightness-110"
-              style={{
-                background: `linear-gradient(0deg, ${intPsychTheme.primary}, ${intPsychTheme.accent})`,
-              }}
+              className="w-full cursor-pointer inline-flex items-center justify-center gap-3 rounded-full px-6 py-4 font-medium text-white transition-all duration-200 border-b-4 bg-[#463f3b] border-black/20 active:border-b-0 active:translate-y-1 hover:brightness-110"
             >
               <svg
                 width="20"
@@ -94,8 +89,8 @@ export default function LoginPage() {
               <span>Sign in with Google</span>
             </button>
 
-            <p className="mt-4 text-xs text-gray-500 text-center">
-              By continuing, you agree to our Privacy Policy and Terms.
+            <p className="mt-4 text-xs text-stone-500 text-center">
+              Sign in with your @psych-nyc.com Google account
             </p>
           </div>
         </div>

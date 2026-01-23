@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { intPsychTheme } from "../theme";
+import { intPsychTheme, sigmundTheme } from "../theme";
 import { DM_Serif_Text } from "next/font/google";
 import {
   Pause,
@@ -15,6 +15,7 @@ import {
   Check,
   Loader2,
   Pencil,
+  RotateCw,
 } from "lucide-react";
 import {
   PieChart,
@@ -98,19 +99,60 @@ export function CopyButton({ text }: { text: string }) {
             transform: "translateX(-50%)",
           }}
         >
-          <div
-            className="px-2.5 py-1.5 text-white text-[11px] rounded-md whitespace-nowrap shadow-lg relative"
-            style={{ backgroundColor: intPsychTheme.primary }}
-          >
-            {copied ? "Copied!" : "Copy"}
-            <span
-              className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45"
-              style={{ backgroundColor: intPsychTheme.primary }}
-            ></span>
+          <div className="bg-slate-800 text-white text-xs py-1 px-2 rounded shadow-lg whitespace-nowrap">
+            {copied ? "Copied!" : "Copy to clipboard"}
           </div>
+          {/* Arrow */}
+          <div
+            className="absolute left-1/2 bottom-[-4px] w-2 h-2 bg-slate-800 transform -translate-x-1/2 rotate-45"
+            aria-hidden="true"
+          />
         </div>
       )}
     </>
+  );
+}
+
+// Custom Checkbox component that matches the style of date range controls
+export function Checkbox({
+  checked,
+  onChange,
+  label,
+  color,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label: string;
+  color: string;
+}) {
+  return (
+    <div
+      onClick={() => onChange(!checked)}
+      className="flex items-center gap-2 cursor-pointer select-none group"
+    >
+      <div
+        className={`w-5 h-5 rounded-sm flex items-center justify-center transition-all ${
+          checked
+            ? "border-b-2"
+            : "bg-white border text-stone-300 hover:border-stone-400 border-stone-300 shadow-sm"
+        }`}
+        style={{
+          backgroundColor: checked ? color : undefined,
+          // Use a darker shade of the color for border-b or generic dark
+          borderColor: checked ? "rgba(0,0,0,0.2)" : undefined,
+          borderBottomWidth: checked ? 3 : 1,
+          borderBottomColor: checked ? "rgba(0,0,0,0.2)" : undefined,
+        }}
+      >
+        {checked && <Check className="w-3.5 h-3.5 text-white stroke-[3px]" />}
+      </div>
+      <span
+        className="text-sm font-bold uppercase tracking-wide transition-colors"
+        style={{ color: checked ? color : "#a8a29e" }}
+      >
+        {label}
+      </span>
+    </div>
   );
 }
 
@@ -176,9 +218,10 @@ export function Card({
 }) {
   return (
     <div
+      style={{ borderColor: sigmundTheme.border }}
       className={cx(
         "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl bg-white p-4 sm:p-6 text-left transition-all duration-300",
-        "border border-slate-200 border-b-4",
+        "border border-b-4",
         className
       )}
     >
@@ -186,7 +229,7 @@ export function Card({
         <div className="mb-2 flex items-baseline justify-between gap-3">
           <div
             className={`${dm_serif.className} flex items-center gap-2 text-slate-900 text-md sm:text-base md:text-lg font-semibold tracking-tight leading-snug sm:leading-[1.4]`}
-            style={{ color: intPsychTheme.primary }}
+            style={{ color: sigmundTheme.secondaryDark }}
           >
             {title}
           </div>
@@ -258,12 +301,12 @@ export function KV({
         className
       )}
     >
-      <span className="flex text-[12px] font-medium tracking-normal text-slate-500">
+      <span className="flex text-[12px] font-medium tracking-normal text-stone-500">
         {label}
       </span>
       <span
         title={typeof value === "string" ? tooltip || String(value) : tooltip}
-        className={`text-[12px] sm:text-[13px] text-slate-900 ${
+        className={`text-[12px] sm:text-[13px] text-stone-900 ${
           alignRight ? "text-right" : ""
         } ${
           truncate ? "max-w-[12rem] sm:max-w-[18rem] truncate" : "break-words"
@@ -298,8 +341,7 @@ export function Gauge({
   const isMax = pctClamped === 100;
 
   // Default gradient if no backgroundColor provided
-  const defaultGradient =
-    "linear-gradient(90deg, #b8e7f8ff 0%, #3a9ce2ff 50%, #05539cff 100%)";
+  const defaultGradient = `linear-gradient(90deg, #b8e7f8ff 0%, #3a9ce2ff 50%, ${intPsychTheme.accentDark} 100%)`;
 
   return (
     <div className="flex w-full flex-col">
@@ -363,6 +405,7 @@ export function AudioPlayer({
   const [isLoading, setIsLoading] = React.useState(true);
   const [isBuffering, setIsBuffering] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
+  const [isTranscribing, setIsTranscribing] = React.useState(false);
 
   // Determine source
   const finalSrc = React.useMemo(() => {
@@ -534,6 +577,36 @@ export function AudioPlayer({
     }
   };
 
+  const handleTranscribe = async () => {
+    if (!data || !fieldName) return;
+    const fileName = data[fieldName]?.audio?.fileName;
+    if (!fileName) return;
+
+    try {
+      setIsTranscribing(true);
+      const res = await fetch("/api/transcribe/trigger", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName,
+          fieldType: fieldName,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to trigger transcription");
+      }
+
+      // Ideally we would show a toast here, but simple alert or console for now
+      // The user might refresh later to see it
+      console.log("Transcription triggered");
+    } catch (err) {
+      console.error("Transcription error:", err);
+    } finally {
+      setIsTranscribing(false);
+    }
+  };
+
   const formatTime = (time: number) => {
     if (!Number.isFinite(time) || time === 0) return "--:--";
     const minutes = Math.floor(time / 60);
@@ -634,7 +707,7 @@ export function AudioPlayer({
         </div>
       </div>
 
-      {transcription && (
+      {transcription ? (
         <div className="relative mt-2 py-2 px-3 bg-slate-50 border border-slate-100 rounded-xl">
           <div className="flex items-center justify-between gap-2 mb-1.5">
             <div className="flex items-center gap-1.5">
@@ -649,6 +722,31 @@ export function AudioPlayer({
             {transcription}
           </p>
         </div>
+      ) : (
+        <div className="relative mt-2 py-2 px-3 bg-orange-50 border border-orange-100 rounded-xl">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1 bg-orange-100 rounded-md">
+                <RotateCw className="w-3.5 h-3.5 text-orange-600" />
+              </div>
+              <span className="text-[12px] font-medium text-orange-800">
+                Transcription incomplete
+              </span>
+            </div>
+            <button
+              onClick={handleTranscribe}
+              disabled={isTranscribing}
+              className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-orange-200 text-[11px] font-semibold text-orange-700 hover:bg-orange-50 active:translate-y-px transition-all disabled:opacity-50 disabled:cursor-wait shadow-sm"
+            >
+              {isTranscribing ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <RotateCw className="w-3 h-3" />
+              )}
+              {isTranscribing ? "Retrying..." : "Retry"}
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -659,7 +757,7 @@ export function ScrollableBox({
   children,
   className,
 }: {
-  title: string;
+  title?: string;
   children?: React.ReactNode;
   className?: string;
 }) {
@@ -706,9 +804,11 @@ export function ScrollableBox({
       )}
     >
       {/* Header with dark background */}
-      <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex-shrink-0">
-        <h4 className="text-sm font-semibold text-slate-900">{title}</h4>
-      </div>
+      {title && (
+        <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex-shrink-0">
+          <h4 className="text-sm font-semibold text-slate-900">{title}</h4>
+        </div>
+      )}
 
       {/* Scrollable content area */}
       <div className="relative flex-1 min-h-0 p-4">
@@ -871,16 +971,16 @@ export function SentimentChart({
               name,
             ]}
             contentStyle={{
-              backgroundColor: "#fff",
+              backgroundColor: intPsychTheme.card,
               borderRadius: "8px",
-              border: "1px solid #e2e8f0",
+              border: `1px solid ${sigmundTheme.border}`,
               boxShadow:
                 "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
               fontSize: "12px",
-              color: "#334155",
+              color: intPsychTheme.text,
               padding: "8px 12px",
             }}
-            itemStyle={{ color: "#334155", padding: 0 }}
+            itemStyle={{ color: intPsychTheme.text, padding: 0 }}
             cursor={false}
             isAnimationActive={false}
             wrapperStyle={{ pointerEvents: "none", outline: "none" }}

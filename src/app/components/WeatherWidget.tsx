@@ -7,7 +7,7 @@ import {
   Snowflake,
   CloudDrizzle,
 } from "lucide-react";
-import { intPsychTheme } from "./theme";
+import { sigmundTheme } from "./theme";
 import { WeatherData } from "../lib/hooks/useWeather";
 import { DM_Serif_Text } from "next/font/google";
 
@@ -44,19 +44,19 @@ export default function WeatherWidget({ weather }: WeatherWidgetProps) {
 
   return (
     <div
-      style={{ color: intPsychTheme.primary }}
+      style={{ color: sigmundTheme.secondaryDark }}
       className="flex items-center gap-2 rounded-xl px-4 py-2"
     >
       {getWeatherIcon(weather.icon)}
       <div className="flex flex-col">
         <span
-          style={{ color: intPsychTheme.primary }}
+          style={{ color: sigmundTheme.secondaryDark }}
           className={`${dm_serif.className} font-medium text-xl`}
         >
           {weather.temp}°F
         </span>
         <span
-          style={{ color: intPsychTheme.primary }}
+          style={{ color: sigmundTheme.secondaryDark }}
           className="text-xs capitalize"
         >
           {weather.condition.toLowerCase()}
