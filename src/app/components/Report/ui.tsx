@@ -634,8 +634,8 @@ export function AudioPlayer({
           disabled={isLoading}
           className="group relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-b-4 text-white hover:translate-y-[1px] active:translate-y-[2px] active:border-b-0 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           style={{
-            backgroundColor: intPsychTheme.secondary,
-            borderColor: intPsychTheme.secondaryDark,
+            backgroundColor: sigmundTheme.primary,
+            borderColor: sigmundTheme.primaryDark,
           }}
         >
           {showLoading ? (
@@ -670,7 +670,7 @@ export function AudioPlayer({
                   width: `${
                     validDuration > 0 ? (currentTime / validDuration) * 100 : 0
                   }%`,
-                  backgroundColor: intPsychTheme.secondary,
+                  backgroundColor: sigmundTheme.primary,
                 }}
               />
             </div>
@@ -698,7 +698,7 @@ export function AudioPlayer({
                 left: `${
                   validDuration > 0 ? (currentTime / validDuration) * 100 : 0
                 }%`,
-                borderColor: intPsychTheme.secondary,
+                borderColor: sigmundTheme.primary,
                 transform: `translateX(-50%)`,
                 opacity: validDuration > 0 ? 1 : 0,
               }}
