@@ -7,9 +7,14 @@ import {
   Snowflake,
   CloudDrizzle,
 } from "lucide-react";
-import { sigmundTheme } from "./theme";
+import { intPsychTheme, sigmundTheme } from "./theme";
 import { WeatherData } from "../lib/hooks/useWeather";
-import { DM_Serif_Text } from "next/font/google";
+import { DM_Sans, DM_Serif_Text } from "next/font/google";
+
+const dm_sans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 
@@ -18,22 +23,57 @@ interface WeatherWidgetProps {
 }
 
 export function getWeatherIcon(iconName: string) {
-  const iconProps = { className: "w-5 h-5" };
+  const iconProps = { className: "w-6 h-6" };
   switch (iconName) {
     case "sun":
-      return <Sun {...iconProps} />;
+      return (
+        <Sun
+          {...iconProps}
+          className={`w-6 h-6 text-[${intPsychTheme.secondary}]`}
+        />
+      ); // Secondary Orange
     case "cloud":
-      return <Cloud {...iconProps} />;
+      return (
+        <Cloud
+          {...iconProps}
+          className={`w-6 h-6 text-[${intPsychTheme.accent}]`}
+        />
+      ); // Accent Blue
     case "cloud-rain":
-      return <CloudRain {...iconProps} />;
+      return (
+        <CloudRain
+          {...iconProps}
+          className={`w-6 h-6 text-[${intPsychTheme.primary}]`}
+        />
+      ); // Primary Navy
     case "cloud-lightning":
-      return <CloudLightning {...iconProps} />;
+      return (
+        <CloudLightning
+          {...iconProps}
+          className={`w-6 h-6 text-[${intPsychTheme.primary}]`}
+        />
+      );
     case "snowflake":
-      return <Snowflake {...iconProps} />;
+      return (
+        <Snowflake
+          {...iconProps}
+          className={`w-6 h-6 text-[${intPsychTheme.accent}]`}
+        />
+      );
     case "cloud-drizzle":
-      return <CloudDrizzle {...iconProps} />;
+      return (
+        <CloudDrizzle
+          {...iconProps}
+          className={`w-6 h-6 text-[${intPsychTheme.accent}]`}
+        />
+      );
     default:
-      return <Cloud {...iconProps} />;
+      return (
+        <Cloud
+          {...iconProps}
+          className={`w-6 h-6 text-[${intPsychTheme.accent}]`}
+        />
+      );
   }
 }
 

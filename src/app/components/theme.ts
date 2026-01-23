@@ -31,6 +31,7 @@ export const sigmundTheme = {
   secondary: "#91654f",
   secondaryDark: "#463f3bff",
   accent: "#426459",
+  accentDark: "#2d463e",
   background: "#fafaf9", // stone-50
   border: "#e7e5e4", // stone-200
   hover: "#e9eee1ff", // light primary/sage

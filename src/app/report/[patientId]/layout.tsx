@@ -5,7 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { FileText, BookOpen, ChevronsLeft, ChevronsRight } from "lucide-react";
+import {
+  FileText,
+  BookOpen,
+  ChevronsLeft,
+  ChevronsRight,
+  LayoutDashboard,
+} from "lucide-react";
 import {
   Menu,
   MenuButton,
@@ -77,8 +83,14 @@ function PatientLayoutInner({
 
   const tabs = [
     {
-      name: "Intake",
+      name: "Dashboard",
       href: `/report/${patientId}`,
+      icon: LayoutDashboard,
+      color: `text-[${intPsychTheme.primary}]`,
+    },
+    {
+      name: "Intake",
+      href: `/report/${patientId}/intake`,
       icon: FileText,
       color: `text-[${sigmundTheme.accent}]`,
     },
@@ -368,10 +380,12 @@ function PatientLayoutInner({
         <main
           className={`bg-[${sigmundTheme.background}] flex-1 overflow-y-auto scroll-smooth`}
         >
-          {/* Patient Top Bar - shown on all pages */}
-          <div className="mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 sm:pt-6 pt-4">
-            <PatientTopBar patientId={patientId} />
-          </div>
+          {/* Patient Top Bar - hidden on dashboard (root level) */}
+          {pathname !== `/report/${patientId}` && (
+            <div className="mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 sm:pt-6 pt-4">
+              <PatientTopBar patientId={patientId} />
+            </div>
+          )}
 
           {/* Page Content */}
           {children}
