@@ -16,7 +16,7 @@ import { intPsychTheme, sigmundTheme } from "@/app/components/theme";
 import { DM_Serif_Text, DM_Sans } from "next/font/google";
 
 import Link from "next/link";
-import sigmund_logo from "@/assets/Sigmund Window.png";
+import sigmund_logo from "@/assets/Sigmund Chair.png";
 
 const dm_serif = DM_Serif_Text({ subsets: ["latin"], weight: ["400"] });
 const dm_sans = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "700"] });
@@ -159,8 +159,11 @@ export default function PatientDashboardPage() {
                 <div className="flex justify-end w-full">
                   <Link href={`/report/${patientId}/journals`}>
                     <button
-                      style={{ backgroundColor: sigmundTheme.accent }}
-                      className="cursor-pointer px-8 py-3 text-white rounded-xl font-bold hover:opacity-90 active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-stone-900/10"
+                      style={{
+                        backgroundColor: sigmundTheme.secondary,
+                        borderColor: sigmundTheme.secondaryDark,
+                      }}
+                      className="cursor-pointer px-6 py-2.5 text-white rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm border-b-4 translate-y-[-1px] hover:opacity-90 active:scale-95 transition-all flex items-center gap-2"
                     >
                       View Journals
                       <ArrowRight className="w-4 h-4" />
