@@ -107,7 +107,7 @@ export default function PatientDashboardPage() {
         {/* Header Area */}
         <div>
           <h1
-            className={`${dm_serif.className} text-4xl md:text-5xl mb-2 text-[#1c1917]`}
+            className={`${dm_serif.className} text-3xl sm:text-4xl md:text-5xl mb-2 text-[#1c1917]`}
           >
             Welcome,{" "}
             <span style={{ color: sigmundTheme.accent }}>
@@ -124,14 +124,14 @@ export default function PatientDashboardPage() {
           {/* Hero Card: Patient Journals */}
           <div
             style={{ borderColor: sigmundTheme.border }}
-            className="lg:col-span-2 bg-white rounded-2xl border-b-4 border-2 p-1 shadow-sm group hover:border-[#1c1917]/20 transition-all duration-300"
+            className="lg:col-span-2 bg-white rounded-2xl border-b-6 border-2 p-1  group hover:border-[#1c1917]/20 transition-all duration-300"
           >
             <div
               style={{ backgroundColor: sigmundTheme.background }}
               className={`rounded-[12px] p-6 h-full relative overflow-hidden flex flex-col sm:flex-row items-center gap-8`}
             >
               {/* Sigmund Image */}
-              <div className="w-80 h-80 relative flex-shrink-0">
+              <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 relative flex-shrink-0">
                 <div className="absolute inset-0 bg-[#e7e5e4] rounded-full blur-2xl opacity-50 transform translate-y-4" />
                 <Image
                   src={sigmund_logo}
@@ -140,17 +140,17 @@ export default function PatientDashboardPage() {
                   className="object-contain drop-shadow-md"
                 />
               </div>
-              <div className="flex-1 relative z-10 w-full flex flex-col items-end text-right">
+              <div className="flex-1 relative z-10 w-full flex flex-col items-center sm:items-end text-center sm:text-right">
                 <div className="inline-flex items-center gap-2 bg-white px-3 py-1 rounded-full text-sm font-bold mb-4 border border-[#e7e5e4] text-[#1c1917]">
                   <BookOpen className="w-4 h-4 text-[#1c1917]" />
                   PATIENT JOURNALS
                 </div>
                 <h2
-                  className={`${dm_serif.className} text-3xl mb-3 text-[#1c1917]`}
+                  className={`${dm_serif.className} text-2xl sm:text-3xl mb-3 text-[#1c1917]`}
                 >
                   Review {patientFirstName}'s Reflections
                 </h2>
-                <p className="text-[#44403c] text-lg leading-relaxed mb-8 max-w-md">
+                <p className="text-[#44403c] text-base sm:text-lg leading-relaxed mb-8 max-w-md">
                   Explore insights from {patientFirstName}'s journal entries to
                   gain a deeper understanding of their progress and emotional
                   states.
@@ -163,7 +163,7 @@ export default function PatientDashboardPage() {
                         backgroundColor: sigmundTheme.secondary,
                         borderColor: sigmundTheme.secondaryDark,
                       }}
-                      className="cursor-pointer px-6 py-2.5 text-white rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm border-b-4 translate-y-[-1px] hover:opacity-90 active:scale-95 transition-all flex items-center gap-2"
+                      className="cursor-pointer px-6 py-2.5 text-white rounded-lg text-xs font-bold uppercase tracking-wider border-b-4 hover:translate-y-[-2px] hover:brightness-105 active:translate-y-[2px] active:border-b-0 active:brightness-95 transition-all flex items-center gap-2"
                     >
                       View Journals
                       <ArrowRight className="w-4 h-4" />
@@ -177,11 +177,11 @@ export default function PatientDashboardPage() {
           {/* View Intake Card */}
           <div
             style={{ borderColor: sigmundTheme.border }}
-            className="lg:col-span-1 bg-white rounded-2xl border-b-4 border-2 p-6 shadow-sm flex flex-col items-center justify-center text-center gap-4 hover:opacity-90 transition-all cursor-pointer group relative overflow-hidden"
+            className="lg:col-span-1 bg-white rounded-2xl border-b-6 border-2 p-6 flex flex-col items-center justify-center text-center gap-4 transition-all group relative overflow-hidden"
           >
             <div
               style={{ backgroundColor: sigmundTheme.background }}
-              className="p-5 rounded-2xl mb-2 group-hover:scale-110 transition-transform duration-300 shadow-inner"
+              className="p-5 rounded-2xl mb-2 transition-transform duration-300 shadow-inner"
             >
               <FileText className="w-10 h-10 text-[#57534e]" />
             </div>
@@ -201,7 +201,7 @@ export default function PatientDashboardPage() {
                     color: sigmundTheme.accent,
                     borderColor: sigmundTheme.accent,
                   }}
-                  className="w-full bg-white px-6 py-2 rounded-xl font-bold border-2 hover:opacity-80 transition-all"
+                  className="w-full cursor-pointer active:brightness-105 hover:scale-102 active:scale-98 bg-white px-6 py-2 rounded-xl font-bold border-2 transition-all"
                 >
                   View Intake
                 </button>

@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]/route";
 
 /**
  * POST /api/transcribe/trigger
@@ -10,14 +8,15 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const session = await getServerSession(authOptions);
-    if (!(session?.user as any)?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = (session.user as any).id;
     const body = await request.json();
-    const { fileName, fieldType, bucket } = body;
+    const { userId, fileName, fieldType, bucket } = body;
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "userId is required" },
+        { status: 400 }
+      );
+    }
 
     // Validate required fields
     if (!fileName || !fieldType) {
@@ -28,9 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Trigger transcription service
-    const transcriptionEndpoint =
-      process.env.TRANSCRIPTION_SERVICE_URL ||
-      "https://intake-analysis-34615113909.us-east4.run.app/transcribe";
+    const transcriptionEndpoint = process.env.TRANSCRIPTION_SERVICE_URL;
 
     const bucketName = bucket || process.env.GCS_BUCKET_NAME;
 

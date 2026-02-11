@@ -60,7 +60,7 @@ export default function LoginPage() {
 
             <button
               onClick={() => signIn("google", { callbackUrl: callbackUrl })}
-              className="w-full cursor-pointer inline-flex items-center justify-center gap-3 rounded-full px-6 py-4 font-medium text-white transition-all duration-200 border-b-4 bg-[#463f3b] border-black/20 active:border-b-0 active:translate-y-1 hover:brightness-110"
+              className="w-full cursor-pointer inline-flex items-center justify-center gap-3 rounded-full px-6 py-4 font-medium text-white transition-all duration-200 border-b-4 bg-[#463f3b] border-black/20 hover:translate-y-[-2px] active:brightness-95 active:border-b-0 active:translate-y-[2px] hover:brightness-110"
             >
               <svg
                 width="20"

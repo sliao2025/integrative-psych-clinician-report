@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -11,6 +11,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   LayoutDashboard,
+  ChartCandlestick,
 } from "lucide-react";
 import {
   Menu,
@@ -64,12 +65,23 @@ function PatientLayoutInner({
       if (typeof window !== "undefined") {
         window.localStorage.setItem(
           "clinicianSidebarExpanded",
-          next ? "true" : "false"
+          next ? "true" : "false",
         );
       }
       return next;
     });
   };
+
+  // Auto-collapse on resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1100 && isExpanded) {
+        setIsExpanded(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isExpanded]);
 
   const getInitials = (name?: string | null) => {
     if (!name) return "C";
@@ -100,18 +112,19 @@ function PatientLayoutInner({
     //   icon: Route,
     //   color: `text-[${intPsychTheme.alternate}]`,
     // },
-    // {
-    //   name: "Scales",
-    //   href: `/report/${patientId}/scales`,
-    //   icon: ChartCandlestick,
-    //   color: `text-[${intPsychTheme.accent}]`,
-    // },
     {
       name: "Journals",
       href: `/report/${patientId}/journals`,
       icon: BookOpen,
       color: `text-[${sigmundTheme.accent}]`,
     },
+    {
+      name: "Scales",
+      href: `/report/${patientId}/scales`,
+      icon: ChartCandlestick,
+      color: `text-[${intPsychTheme.accent}]`,
+    },
+
     // {
     //   name: "Learn",
     //   href: `/report/${patientId}/learn`,
@@ -140,7 +153,9 @@ function PatientLayoutInner({
               src={sigmund_logo}
               alt="Sigmund logo"
               className={`relative object-contain transition-all duration-300 ${
-                isExpanded || isMobile ? "h-14 w-14" : "h-10 w-10"
+                isExpanded || isMobile
+                  ? "h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14"
+                  : "h-8 w-8 lg:h-10 lg:w-10"
               }`}
             />
           </div>

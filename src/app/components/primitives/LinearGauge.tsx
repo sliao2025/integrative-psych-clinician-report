@@ -38,7 +38,7 @@ const getScoreColor = (score: number): string => {
 const getSigmundMessage = (
   score: number,
   name: string,
-  isLoading?: boolean
+  isLoading?: boolean,
 ): string => {
   if (isLoading) {
     return `I am analyzing the emotional tone of ${name}'s entry...`;
@@ -79,7 +79,7 @@ export default function LinearGauge({
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       const currentScore = Math.round(
-        startScore + (endScore - startScore) * eased
+        startScore + (endScore - startScore) * eased,
       );
       setDisplayScore(currentScore);
 

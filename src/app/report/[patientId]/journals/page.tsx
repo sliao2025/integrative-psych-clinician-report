@@ -70,7 +70,7 @@ export default function JournalsPage({
   const [showSigmund, setShowSigmund] = useState(true);
   const [showMood, setShowMood] = useState(true);
   const [range, setRange] = useState<"7D" | "1M" | "3M" | "6M" | "1Y" | "All">(
-    "All"
+    "All",
   );
 
   // Prepare chart data
@@ -78,7 +78,7 @@ export default function JournalsPage({
     .slice()
     .sort(
       (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     )
     .map((e) => ({
       date: new Date(e.createdAt),
@@ -266,10 +266,10 @@ export default function JournalsPage({
               activeTab === "entries" ? sigmundTheme.secondaryDark : undefined,
             color: activeTab === "entries" ? "#ffffff" : undefined,
           }}
-          className={`cursor-pointer w-[10vw] rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
+          className={`cursor-pointer w-28 sm:w-32 rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
             activeTab === "entries"
               ? "shadow-sm border-b-4 translate-y-[-1px]"
-              : "border-stone-200 border text-stone-400 hover:text-stone-600 hover:bg-white bg-white hover:border-stone-300"
+              : "border-stone-200 border text-stone-400 hover:text-stone-600 hover:border-b-4 hover:translate-y-[-1px] active:border-b-1 active:translate-y-[1px] hover:border-stone-300 bg-white"
           }`}
         >
           Entries
@@ -283,10 +283,10 @@ export default function JournalsPage({
               activeTab === "trends" ? sigmundTheme.secondaryDark : undefined,
             color: activeTab === "trends" ? "#ffffff" : undefined,
           }}
-          className={`cursor-pointer w-[10vw] rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
+          className={`cursor-pointer w-28 sm:w-32 rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
             activeTab === "trends"
               ? "shadow-sm border-b-4 translate-y-[-1px]"
-              : "border-stone-200 border text-stone-400 hover:text-stone-600 hover:bg-white bg-white hover:border-stone-300"
+              : "border-stone-200 border text-stone-400 hover:text-stone-600 hover:border-b-4 hover:translate-y-[-1px] active:border-b-1 active:translate-y-[1px] hover:border-stone-300 bg-white"
           }`}
         >
           Trends
@@ -316,7 +316,7 @@ export default function JournalsPage({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-2.5">
               {entries.map((entry) => {
                 const moodColors = getMoodColor(entry.mood);
                 const moodLabel = getMoodLabel(entry.mood);
@@ -325,11 +325,11 @@ export default function JournalsPage({
                   <div
                     key={entry.id}
                     onClick={() => setSelectedEntry(entry)}
-                    className="bg-white rounded-xl border border-[#e7e5e4] border-b-4 p-5 cursor-pointer hover:border-[#b2bfa2] hover:bg-[#e4e9dd] transition-all group"
+                    className="bg-white rounded-xl border border-[#e7e5e4] border-b-4 p-5 cursor-pointer hover:border-[#b2bfa2] hover:translate-y-[-2px] active:translate-y-[2px] active:border-b-1 transition-all group"
                   >
-                    <div className="flex items-start justify-between mb-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                       <div
-                        className={`flex items-center gap-2 bg-[${sigmundTheme.background}] px-3 py-1.5 rounded-lg text-xs font-bold text-stone-500 uppercase tracking-wide border border-[${sigmundTheme.border}]`}
+                        className={`flex items-center gap-2 bg-[${sigmundTheme.background}] px-3 py-1.5 rounded-lg text-xs font-bold text-stone-500 uppercase tracking-wide border border-[${sigmundTheme.border}] whitespace-nowrap`}
                       >
                         <Calendar className="w-3 h-3" />
                         {new Date(entry.createdAt).toLocaleDateString("en-US", {
@@ -342,7 +342,7 @@ export default function JournalsPage({
                         {entry.sentimentResult?.average_score !== undefined && (
                           <CircularGauge
                             score={normalizeScore(
-                              entry.sentimentResult?.average_score
+                              entry.sentimentResult?.average_score,
                             )}
                             size={32}
                             showLabel={false}
@@ -715,7 +715,7 @@ export default function JournalsPage({
                 >
                   <LinearGauge
                     score={normalizeScore(
-                      selectedEntry.sentimentResult?.average_score
+                      selectedEntry.sentimentResult?.average_score,
                     )}
                     name={firstName}
                     isLoading={false}

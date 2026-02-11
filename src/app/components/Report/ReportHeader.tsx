@@ -123,7 +123,7 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
         className={`group flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-all disabled:opacity-100 ${
           successPdf
             ? "bg-green-50 text-green-600"
-            : `text-slate-600 hover:bg-slate-50 hover:text-[${intPsychTheme.accent}]`
+            : `text-stone-600 hover:bg-stone-50 hover:text-[${intPsychTheme.accent}]`
         }`}
         title="Download Intake PDF"
       >
@@ -142,23 +142,23 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
       </button>
       {/* Tooltip - only show on small screens when label is hidden */}
       {!showLabel && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-slate-800 rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap pointer-events-none sm:hidden">
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-stone-800 rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap pointer-events-none sm:hidden">
           Download Intake
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-stone-800"></div>
         </div>
       )}
     </div>
   );
 
   return (
-    <header className="sticky top-0 z-10 border-b border-slate-200 bg-white">
+    <header className="sticky top-0 z-10 border-b-2 border-stone-200 bg-white">
       <div className="px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Left: Mobile Menu Toggle + Back Button */}
         <div className="flex items-center gap-1 sm:gap-4">
           {/* Mobile sidebar toggle - only visible below sm breakpoint */}
           <button
             onClick={toggleMobile}
-            className="sm:hidden p-2 -ml-2 rounded-lg hover:bg-slate-100 transition-colors"
+            className="sm:hidden p-2 -ml-2 rounded-lg hover:bg-stone-100 transition-colors"
             aria-label="Open sidebar"
           >
             <PanelLeft
@@ -169,11 +169,11 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
 
           <Link href="/search" className="group z-10 shrink-0">
             <span
-              className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all hover:bg-slate-50"
+              className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all hover:bg-stone-50"
               style={{ color: sigmundTheme.text }}
             >
               <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-              <span className="hidden sm:inline">Back to Search</span>
+              <span className="hidden sm:inline">Back to Patients</span>
               <span className="sm:hidden">Search</span>
             </span>
           </Link>
@@ -183,14 +183,14 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
         <div className="flex items-center gap-3 sm:gap-6">
           {/* For sliao@psych-nyc.com - show refresh buttons and download after Refresh Summary (desktop only) */}
           {patientId && isSliao && (
-            <div className="hidden sm:flex items-center gap-2 border-r border-slate-200 pr-6 mr-2">
+            <div className="hidden sm:flex items-center gap-2 border-r border-stone-200 pr-6 mr-2">
               <button
                 onClick={handleRefreshSentiment}
                 disabled={loadingSentiment || successSentiment}
                 className={`group flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-all disabled:opacity-100 ${
                   successSentiment
                     ? "bg-green-50 text-green-600"
-                    : `text-slate-600 hover:bg-slate-50 hover:text-[${intPsychTheme.accent}]`
+                    : `text-stone-600 hover:bg-stone-50 hover:text-[${intPsychTheme.accent}]`
                 }`}
                 title="Recompute Sentiment Analysis"
               >
@@ -211,7 +211,7 @@ export default function ReportHeader({ patientId }: { patientId?: string }) {
                 className={`group flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-all disabled:opacity-100 ${
                   successSummary
                     ? "bg-green-50 text-green-600"
-                    : `text-slate-600 hover:bg-slate-50 hover:text-[${intPsychTheme.accent}]`
+                    : `text-stone-600 hover:bg-stone-50 hover:text-[${intPsychTheme.accent}]`
                 }`}
                 title="Recompute Summary"
               >

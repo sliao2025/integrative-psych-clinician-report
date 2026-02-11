@@ -5,11 +5,8 @@ import { DM_Serif_Text } from "next/font/google";
 import {
   Pause,
   Play,
-  MessageSquareText,
-  Languages,
   ChevronUp,
   ChevronDown,
-  Maximize2,
   Eye,
   Copy,
   Check,
@@ -25,6 +22,7 @@ import {
   Sector,
   Tooltip,
 } from "recharts";
+import useSound from "use-sound";
 
 const dm_serif = DM_Serif_Text({
   subsets: ["latin"],
@@ -42,7 +40,6 @@ export function CopyButton({ text }: { text: string }) {
     left: 0,
   });
   const buttonRef = React.useRef<HTMLButtonElement>(null);
-
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
@@ -79,13 +76,13 @@ export function CopyButton({ text }: { text: string }) {
         onClick={handleCopy}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="relative flex items-center justify-center h-7 w-7 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 active:bg-slate-100 transition-all cursor-pointer"
+        className="relative flex items-center justify-center h-7 w-7 rounded-lg border border-stone-200 bg-white hover:bg-stone-50 hover:border-stone-300 active:bg-stone-100 transition-all cursor-pointer"
         aria-label="Copy to clipboard"
       >
         {copied ? (
           <Check className="h-3.5 w-3.5 text-emerald-600" />
         ) : (
-          <Copy className="h-3.5 w-3.5 text-slate-500 group-hover:text-slate-700" />
+          <Copy className="h-3.5 w-3.5 text-stone-500 group-hover:text-stone-700" />
         )}
       </button>
 
@@ -99,12 +96,12 @@ export function CopyButton({ text }: { text: string }) {
             transform: "translateX(-50%)",
           }}
         >
-          <div className="bg-slate-800 text-white text-xs py-1 px-2 rounded shadow-lg whitespace-nowrap">
+          <div className="bg-stone-800 text-white text-xs py-1 px-2 rounded shadow-lg whitespace-nowrap">
             {copied ? "Copied!" : "Copy to clipboard"}
           </div>
           {/* Arrow */}
           <div
-            className="absolute left-1/2 bottom-[-4px] w-2 h-2 bg-slate-800 transform -translate-x-1/2 rotate-45"
+            className="absolute left-1/2 bottom-[-4px] w-2 h-2 bg-stone-800 transform -translate-x-1/2 rotate-45"
             aria-hidden="true"
           />
         </div>
@@ -119,16 +116,34 @@ export function Checkbox({
   onChange,
   label,
   color,
+  uncheckedColor = "#a8a29e",
+  loading,
+  icon,
+  disabled,
+  cursor = "pointer",
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
   label: string;
   color: string;
+  uncheckedColor?: string;
+  loading?: boolean;
+  icon?: React.ReactNode;
+  disabled?: boolean;
+  cursor?: "pointer" | "default";
 }) {
+  const [playPop] = useSound("/sfx/ui-pop-up.wav");
+  const activeColor = checked ? color : uncheckedColor;
   return (
     <div
-      onClick={() => onChange(!checked)}
-      className="flex items-center gap-2 cursor-pointer select-none group"
+      onClick={() => {
+        if (loading || disabled) return;
+        onChange(!checked);
+        playPop();
+      }}
+      className={`flex items-center gap-2 select-none group ${
+        cursor === "pointer" ? "cursor-pointer" : "cursor-default"
+      } ${disabled ? "opacity-50" : ""}`}
     >
       <div
         className={`w-5 h-5 rounded-sm flex items-center justify-center transition-all ${
@@ -144,11 +159,16 @@ export function Checkbox({
           borderBottomColor: checked ? "rgba(0,0,0,0.2)" : undefined,
         }}
       >
-        {checked && <Check className="w-3.5 h-3.5 text-white stroke-[3px]" />}
+        {loading ? (
+          <Loader2 className="w-3 h-3 animate-spin text-white" />
+        ) : checked ? (
+          <Check className="w-3.5 h-3.5 text-white stroke-[3px]" />
+        ) : null}
       </div>
+      {icon && <span style={{ color: activeColor }}>{icon}</span>}
       <span
         className="text-sm font-bold uppercase tracking-wide transition-colors"
-        style={{ color: checked ? color : "#a8a29e" }}
+        style={{ color: activeColor }}
       >
         {label}
       </span>
@@ -160,7 +180,7 @@ export function Backdrop({ onClose }: { onClose: () => void }) {
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-sm"
+      className="fixed inset-0 z-40 bg-stone-900/30 backdrop-blur-sm"
       aria-hidden
     />
   );
@@ -181,8 +201,8 @@ export function CenterModal({
     <div className="fixed inset-0 z-50 grid place-items-center p-3 sm:p-4">
       <Backdrop onClose={onClose} />
       <div className={`relative z-50 w-full ${maxWidth}`}>
-        <div className="rounded-xl sm:rounded-2xl bg-white shadow-xl ring-1 ring-slate-200">
-          <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-100">
+        <div className="rounded-xl sm:rounded-2xl bg-white shadow-xl ring-1 ring-stone-200">
+          <header className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-stone-100">
             <h3
               className={`${dm_serif.className} text-base sm:text-lg font-semibold`}
               style={{ color: intPsychTheme.primary }}
@@ -191,12 +211,12 @@ export function CenterModal({
             </h3>
             <button
               onClick={onClose}
-              className="cursor-pointer font-semibold rounded-md px-2 py-1 text-slate-500 hover:bg-red-100"
+              className="cursor-pointer font-semibold rounded-md px-2 py-1 text-stone-500 hover:bg-red-100"
             >
               ✕
             </button>
           </header>
-          <div className="max-h-[80vh] sm:max-h-[75vh] overflow-y-auto p-4 sm:p-6 text-[13px] sm:text-sm leading-relaxed text-slate-700 space-y-4">
+          <div className="max-h-[80vh] sm:max-h-[75vh] overflow-y-auto p-4 sm:p-6 text-[13px] sm:text-sm leading-relaxed text-stone-700 space-y-4">
             {children}
           </div>
         </div>
@@ -222,13 +242,13 @@ export function Card({
       className={cx(
         "group overflow-hidden relative block w-full break-inside-avoid rounded-2xl bg-white p-4 sm:p-6 text-left transition-all duration-300",
         "border border-b-4",
-        className
+        className,
       )}
     >
       {title && (
         <div className="mb-2 flex items-baseline justify-between gap-3">
           <div
-            className={`${dm_serif.className} flex items-center gap-2 text-slate-900 text-md sm:text-base md:text-lg font-semibold tracking-tight leading-snug sm:leading-[1.4]`}
+            className={`${dm_serif.className} flex items-center gap-2 text-stone-900 text-md sm:text-base md:text-lg font-semibold tracking-tight leading-snug sm:leading-[1.4]`}
             style={{ color: sigmundTheme.secondaryDark }}
           >
             {title}
@@ -237,7 +257,7 @@ export function Card({
             <button
               type="button"
               onClick={onExpand}
-              className="cursor-pointer flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] sm:text-[12px] font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 active:bg-slate-200 transition-all hover:shadow"
+              className="cursor-pointer flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-2.5 py-1.5 text-[11px] sm:text-[12px] font-medium text-stone-700 hover:bg-stone-50 hover:text-stone-900 hover:border-stone-300 active:bg-stone-200 transition-all hover:shadow"
             >
               <span className="hidden sm:inline">View Details</span>
               <span className="sm:hidden">Details</span>
@@ -271,7 +291,7 @@ export function Pill({
       className={cx(
         "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium",
         map[tone],
-        className
+        className,
       )}
     >
       {children}
@@ -298,7 +318,7 @@ export function KV({
     <div
       className={cx(
         "flex items-baseline justify-between gap-10 py-1.5",
-        className
+        className,
       )}
     >
       <span className="flex text-[12px] font-medium tracking-normal text-stone-500">
@@ -341,19 +361,25 @@ export function Gauge({
   const isMax = pctClamped === 100;
 
   // Default gradient if no backgroundColor provided
-  const defaultGradient = `linear-gradient(90deg, #b8e7f8ff 0%, #3a9ce2ff 50%, ${intPsychTheme.accentDark} 100%)`;
+  const defaultGradient = `linear-gradient(90deg, ${sigmundTheme.primary} 0%, ${sigmundTheme.accent} 50%, ${sigmundTheme.accentDark} 100%)`;
 
   return (
     <div className="flex w-full flex-col">
       <div className="mb-1 flex items-center justify-between">
-        <p className="text-lg sm:text-xl font-bold text-slate-700">{label}</p>
-        <span className="text-lg sm:text-xl font-bold text-slate-900">
-          {score}/{max}
-        </span>
+        <p className="text-lg sm:text-xl font-bold text-stone-700">{label}</p>
+        <div>
+          <span
+            className="text-3xl font-bold"
+            style={{ color: sigmundTheme.accent }}
+          >
+            {score}
+          </span>
+          <span className="text-sm font-bold text-stone-900">/{max}</span>
+        </div>
       </div>
 
       {/* Track */}
-      <div className="relative h-3 w-full rounded-full bg-slate-200/80">
+      <div className="relative h-3 w-full border border-stone-200 rounded-full bg-stone-100">
         {/* Filled gradient up to score */}
         <div
           className="h-3 rounded-full"
@@ -366,20 +392,21 @@ export function Gauge({
         {/* Ticker at score position */}
         {showTicker && (
           <div
-            className="pointer-events-none rounded-full absolute -top-1 h-5 w-3 bg-white border border-slate-300 shadow-sm"
-            style={
-              isMax
+            className="pointer-events-none absolute -top-1 h-5 w-3 rounded-full border bg-white"
+            style={{
+              ...(isMax
                 ? { right: 0 }
                 : isMin
-                ? { left: 0 }
-                : { left: `calc(${pctClamped}% - 6px)` }
-            }
+                  ? { left: 0 }
+                  : { left: `calc(${pctClamped}% - 8px)` }),
+              borderColor: sigmundTheme.primary,
+            }}
             aria-hidden="true"
           />
         )}
       </div>
 
-      {caption && <p className="mt-1 text-[12px] text-slate-500">{caption}</p>}
+      {caption && <p className="mt-1 text-[12px] text-stone-500">{caption}</p>}
     </div>
   );
 }
@@ -390,12 +417,14 @@ export function AudioPlayer({
   label,
   src,
   className,
+  userId,
 }: {
   data?: any;
   fieldName?: string;
   label?: string;
   src?: string;
   className?: string;
+  userId?: string;
 }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = React.useState(false);
@@ -549,7 +578,7 @@ export function AudioPlayer({
   };
 
   const handleSeekEnd = (
-    e: React.MouseEvent<HTMLInputElement> | React.TouchEvent<HTMLInputElement>
+    e: React.MouseEvent<HTMLInputElement> | React.TouchEvent<HTMLInputElement>,
   ) => {
     setIsDragging(false);
     const time = Number((e.currentTarget as HTMLInputElement).value);
@@ -582,6 +611,14 @@ export function AudioPlayer({
     const fileName = data[fieldName]?.audio?.fileName;
     if (!fileName) return;
 
+    // We need userId for the trigger endpoint now
+    if (!userId) {
+      console.error(
+        "AudioPlayer: userId is missing, cannot trigger transcription",
+      );
+      return;
+    }
+
     try {
       setIsTranscribing(true);
       const res = await fetch("/api/transcribe/trigger", {
@@ -590,6 +627,7 @@ export function AudioPlayer({
         body: JSON.stringify({
           fileName,
           fieldType: fieldName,
+          userId,
         }),
       });
 
@@ -649,13 +687,13 @@ export function AudioPlayer({
 
         {/* Controls */}
         <div className="flex flex-1 flex-col gap-1.5">
-          <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+          <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-stone-400">
             <span>
               {formatTime(currentTime)} / {formatTime(validDuration)}
             </span>
             <button
               onClick={cycleSpeed}
-              className="rounded-md px-1.5 py-0.5 hover:bg-slate-100 transition-colors text-slate-500 hover:text-slate-700"
+              className="rounded-md px-1.5 py-0.5 hover:bg-stone-100 transition-colors text-stone-500 hover:text-stone-700"
             >
               {playbackRate}x
             </button>
@@ -663,7 +701,7 @@ export function AudioPlayer({
 
           <div className="group relative flex h-5 items-center">
             {/* Background Track */}
-            <div className="absolute h-2 w-full overflow-hidden rounded-full bg-slate-100">
+            <div className="absolute h-2 w-full overflow-hidden rounded-full bg-stone-100">
               <div
                 className="h-full transition-all duration-100 ease-linear"
                 style={{
@@ -708,17 +746,17 @@ export function AudioPlayer({
       </div>
 
       {transcription ? (
-        <div className="relative mt-2 py-2 px-3 bg-slate-50 border border-slate-100 rounded-xl">
+        <div className="relative mt-2 py-2 px-3 bg-stone-50 border border-stone-100 rounded-xl">
           <div className="flex items-center justify-between gap-2 mb-1.5">
             <div className="flex items-center gap-1.5">
-              <Pencil className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-              <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+              <Pencil className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+              <h4 className="text-[10px] font-bold text-stone-500 uppercase tracking-wide">
                 Transcription
               </h4>
             </div>
             <CopyButton text={transcription} />
           </div>
-          <p className="text-[13px] text-slate-700 leading-relaxed whitespace-pre-wrap break-words">
+          <p className="text-[13px] text-stone-700 leading-relaxed whitespace-pre-wrap break-words">
             {transcription}
           </p>
         </div>
@@ -799,14 +837,14 @@ export function ScrollableBox({
   return (
     <div
       className={cx(
-        "rounded-xl border border-slate-200 flex flex-col overflow-hidden",
-        className
+        "rounded-xl border border-stone-200 flex flex-col overflow-hidden",
+        className,
       )}
     >
       {/* Header with dark background */}
       {title && (
-        <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex-shrink-0">
-          <h4 className="text-sm font-semibold text-slate-900">{title}</h4>
+        <div className="px-4 py-3 border-b border-stone-200 bg-stone-50 flex-shrink-0">
+          <h4 className="text-sm font-semibold text-stone-900">{title}</h4>
         </div>
       )}
 
@@ -816,7 +854,7 @@ export function ScrollableBox({
         {showTopArrow && (
           <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-white to-transparent z-10 flex items-start justify-center pointer-events-none">
             <div className="animate-bounce bg-white p-[2px] rounded-full shadow-md">
-              <ChevronUp className="h-4 w-4 text-slate-600" />
+              <ChevronUp className="h-4 w-4 text-stone-600" />
             </div>
           </div>
         )}
@@ -836,7 +874,7 @@ export function ScrollableBox({
         {showBottomArrow && (
           <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white to-transparent z-10 flex items-end justify-center pointer-events-none">
             <div className="animate-bounce bg-white p-[2px] rounded-full shadow-md">
-              <ChevronDown className="h-4 w-4 text-slate-600" />
+              <ChevronDown className="h-4 w-4 text-stone-600" />
             </div>
           </div>
         )}
@@ -855,7 +893,7 @@ export function SentimentChart({
   onSliceClick?: (name: string) => void;
 }) {
   const [activeIndex, setActiveIndex] = React.useState<number | undefined>(
-    undefined
+    undefined,
   );
 
   const total = data.reduce((acc, cur) => acc + cur.value, 0);
@@ -884,7 +922,7 @@ export function SentimentChart({
         y={y}
         textAnchor={x > cx ? "start" : "end"}
         dominantBaseline="central"
-        className="text-[13px] text-slate-700 font-medium"
+        className="text-[13px] text-stone-700 font-medium"
       >
         {`${name} (${(percent * 100).toFixed(0)}%)`}
       </text>
@@ -894,12 +932,12 @@ export function SentimentChart({
   return (
     <div
       style={{ width: "100%", height }}
-      className="relative flex items-center justify-center font-medium text-slate-700"
+      className="relative flex items-center justify-center font-medium text-stone-700"
       onMouseLeave={onPieLeave}
     >
       {/* Always visible center text */}
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0">
-        <span className="text-sm font-semibold tracking-wider uppercase text-slate-700">
+        <span className="text-sm font-semibold tracking-wider uppercase text-stone-700">
           Sentiment
         </span>
       </div>
@@ -1007,7 +1045,7 @@ export function HealthBar({
           key={i}
           className={cx(
             "h-1.5 w-6 rounded-full transition-colors",
-            i < level ? "bg-emerald-500" : "bg-slate-200"
+            i < level ? "bg-emerald-500" : "bg-stone-200",
           )}
         />
       ))}

@@ -66,7 +66,13 @@ const formatPhoneNumber = (phone?: string) => {
 
 // Inside DetailPanels.tsx
 
-export function GoalsDetail({ data }: { data: ProfileJson }) {
+export function GoalsDetail({
+  data,
+  userId,
+}: {
+  data: ProfileJson;
+  userId?: string;
+}) {
   return (
     <div
       className="rounded-xl border border-slate-200 bg-white overflow-hidden"
@@ -80,7 +86,7 @@ export function GoalsDetail({ data }: { data: ProfileJson }) {
       <div className="p-4 space-y-4">
         {/* Audio Response - First */}
         {data.goals?.audio?.fileName && (
-          <AudioPlayer data={data} fieldName="goals" label="" />
+          <AudioPlayer data={data} fieldName="goals" label="" userId={userId} />
         )}
 
         {/* Written Response - Second */}
@@ -253,7 +259,13 @@ export function DemographicsDetail({ data }: { data: ProfileJson }) {
   );
 }
 
-export function SafetyDetail({ data }: { data: ProfileJson }) {
+export function SafetyDetail({
+  data,
+  userId,
+}: {
+  data: ProfileJson;
+  userId?: string;
+}) {
   const assessments = data.assessments;
   const isNewSchema =
     assessments?.kind === "adult" || assessments?.kind === "child";
@@ -553,9 +565,11 @@ export function SafetyDetail({ data }: { data: ProfileJson }) {
 export function StoryDetail({
   data,
   highlightField,
+  userId,
 }: {
   data: ProfileJson;
   highlightField?: string;
+  userId?: string;
 }) {
   // Auto-scroll to highlighted field when modal opens
   React.useEffect(() => {
@@ -651,7 +665,12 @@ export function StoryDetail({
             <div className="space-y-4">
               {/* Audio Response - First */}
               {storyAudioPath && (
-                <AudioPlayer data={data} fieldName="storyNarrative" label="" />
+                <AudioPlayer
+                  data={data}
+                  fieldName="storyNarrative"
+                  label=""
+                  userId={userId}
+                />
               )}
 
               {/* Written Response - Second */}
@@ -694,7 +713,12 @@ export function StoryDetail({
             <div className="space-y-4">
               {/* Audio Response - First */}
               {livingAudioPath && (
-                <AudioPlayer data={data} fieldName="livingSituation" label="" />
+                <AudioPlayer
+                  data={data}
+                  fieldName="livingSituation"
+                  label=""
+                  userId={userId}
+                />
               )}
 
               {/* Written Response - Second */}
@@ -740,6 +764,7 @@ export function StoryDetail({
                     data={data}
                     fieldName="cultureContext"
                     label=""
+                    userId={userId}
                   />
                 )}
 
@@ -1284,6 +1309,7 @@ export function StoryDetail({
                     }}
                     fieldName="question1Answer"
                     label=""
+                    userId={userId}
                   />
                 )}
                 {!data.followupQuestions.question1.answer?.text?.trim() &&
@@ -1338,6 +1364,7 @@ export function StoryDetail({
                     }}
                     fieldName="question2Answer"
                     label=""
+                    userId={userId}
                   />
                 )}
                 {!data.followupQuestions.question2.answer?.text?.trim() &&
@@ -1392,6 +1419,7 @@ export function StoryDetail({
                     }}
                     fieldName="question3Answer"
                     label=""
+                    userId={userId}
                   />
                 )}
                 {!data.followupQuestions.question3.answer?.text?.trim() &&
@@ -1432,7 +1460,13 @@ export function StoryDetail({
   );
 }
 
-export function MedsDetail({ data }: { data: ProfileJson }) {
+export function MedsDetail({
+  data,
+  userId,
+}: {
+  data: ProfileJson;
+  userId?: string;
+}) {
   const meds = data.currentMedications ?? [];
   const prev = data.previousMedications ?? [];
   return (
@@ -1497,7 +1531,13 @@ export function MedsDetail({ data }: { data: ProfileJson }) {
   );
 }
 
-export function AllergiesDetail({ data }: { data: ProfileJson }) {
+export function AllergiesDetail({
+  data,
+  userId,
+}: {
+  data: ProfileJson;
+  userId?: string;
+}) {
   return (
     <div className="space-y-3">
       {data.medicalAllergies?.length ? (
@@ -1521,7 +1561,13 @@ export function AllergiesDetail({ data }: { data: ProfileJson }) {
   );
 }
 
-export function HospitalizationsDetail({ data }: { data: ProfileJson }) {
+export function HospitalizationsDetail({
+  data,
+  userId,
+}: {
+  data: ProfileJson;
+  userId?: string;
+}) {
   const hasHosp =
     Array.isArray(data.previousHospitalizations) &&
     data.previousHospitalizations.length > 0;
@@ -1600,7 +1646,13 @@ export function HospitalizationsDetail({ data }: { data: ProfileJson }) {
   );
 }
 
-export function RelationshipsDetail({ data }: { data: ProfileJson }) {
+export function RelationshipsDetail({
+  data,
+  userId,
+}: {
+  data: ProfileJson;
+  userId?: string;
+}) {
   type Strength = "really_bad" | "not_great" | "pretty_good" | "really_good";
 
   const strengthLevel = (s: Strength): number => {
@@ -1707,7 +1759,13 @@ export function RelationshipsDetail({ data }: { data: ProfileJson }) {
   );
 }
 
-export function PrevTreatmentDetail({ data }: { data: ProfileJson }) {
+export function PrevTreatmentDetail({
+  data,
+  userId,
+}: {
+  data: ProfileJson;
+  userId?: string;
+}) {
   return (
     <div className="space-y-3">
       <div className="rounded-xl border border-slate-200 p-4">
@@ -1743,7 +1801,13 @@ export function PrevTreatmentDetail({ data }: { data: ProfileJson }) {
   );
 }
 
-export function GlanceDetail({ data }: { data: ProfileJson }) {
+export function GlanceDetail({
+  data,
+  userId,
+}: {
+  data: ProfileJson;
+  userId?: string;
+}) {
   const mapValsToLabels = (
     vals: string[] | undefined,
     options: { value: string; label: string }[]
@@ -1942,7 +2006,13 @@ export function GlanceDetail({ data }: { data: ProfileJson }) {
   );
 }
 
-export function ScalesDetail({ data }: { data: ProfileJson }) {
+export function ScalesDetail({
+  data,
+  userId,
+}: {
+  data: ProfileJson;
+  userId?: string;
+}) {
   const assessments = data.assessments;
   const isNewSchema =
     assessments?.kind === "adult" || assessments?.kind === "child";
@@ -2797,7 +2867,13 @@ export function ScalesDetail({ data }: { data: ProfileJson }) {
   );
 }
 
-export function MedicalHistoryDetail({ data }: { data: ProfileJson }) {
+export function MedicalHistoryDetail({
+  data,
+  userId,
+}: {
+  data: ProfileJson;
+  userId?: string;
+}) {
   if (!data.isChild) return null;
 
   const yn = (val?: boolean) => (val ? "Yes" : "No");

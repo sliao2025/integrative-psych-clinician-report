@@ -86,7 +86,7 @@ export default function ClinicianHome() {
     string | null
   >(null);
   const [successPdfPatientId, setSuccessPdfPatientId] = useState<string | null>(
-    null
+    null,
   );
 
   // Handle PDF download
@@ -200,8 +200,15 @@ export default function ClinicianHome() {
           break;
         case "date":
         default:
-          valA = new Date(a.profile?.firstSubmittedAt || 0).getTime();
-          valB = new Date(b.profile?.firstSubmittedAt || 0).getTime();
+          // Patients without firstSubmittedAt (legacy Qualtrics) go to the end
+          // We use a very large/small number based on sort direction
+          const hasDateA = !!a.profile?.firstSubmittedAt;
+          const hasDateB = !!b.profile?.firstSubmittedAt;
+          if (!hasDateA && !hasDateB) return 0; // Both legacy, keep order
+          if (!hasDateA) return 1; // A goes to end
+          if (!hasDateB) return -1; // B goes to end
+          valA = new Date(a.profile!.firstSubmittedAt!).getTime();
+          valB = new Date(b.profile!.firstSubmittedAt!).getTime();
           break;
       }
 
@@ -280,7 +287,7 @@ export default function ClinicianHome() {
         className="relative z-10 w-full max-w-3xl px-4 sm:px-5"
       >
         <div
-          className={`rounded-4xl border border-stone-200 border-b-4 bg-white shadow-sm ${dm_sans.className}`}
+          className={`rounded-4xl border-2 border-stone-200 border-b-6 shadow-sm bg-white ${dm_sans.className}`}
         >
           <div className="p-5 sm:p-6 md:p-8">
             {/* Header */}
@@ -344,7 +351,7 @@ export default function ClinicianHome() {
                           <span className="block truncate">
                             {
                               clinicianOptions.find(
-                                (c) => c.value === filterClinician
+                                (c) => c.value === filterClinician,
                               )?.label
                             }
                           </span>
@@ -497,19 +504,23 @@ export default function ClinicianHome() {
                       const clinicianName = patient.clinician || "Unassigned";
                       const submittedDate = patient.profile?.firstSubmittedAt
                         ? new Date(
-                            patient.profile.firstSubmittedAt
+                            patient.profile.firstSubmittedAt,
                           ).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
-                            year: "numeric",
                           })
                         : "—";
+
+                      // Check if this is a legacy Qualtrics patient (no firstSubmittedAt or marked as legacy)
+                      const isLegacy =
+                        !patient.profile?.firstSubmittedAt ||
+                        profileData._legacyQualtrics === true;
 
                       return (
                         <button
                           key={patient.id}
                           onClick={() => router.push(`/report/${patient.id}`)}
-                          className="w-full p-4 rounded-2xl cursor-pointer border border-stone-200 border-b-4 hover:bg-stone-50 active:border-b-0 active:translate-y-1 transition-all text-left group relative"
+                          className="w-full p-4 rounded-2xl cursor-pointer border-2 border-stone-200 border-b-4 hover:translate-y-[-2px] hover:border-[#b2bfa2] active:border-b-2 active:translate-y-[2px] transition-all text-left group relative"
                         >
                           <div className="flex items-start gap-4">
                             {/* Profile Picture */}
@@ -542,6 +553,11 @@ export default function ClinicianHome() {
                                     style={{ color: sigmundTheme.accent }}
                                   >
                                     {firstName} {lastName}
+                                    {isLegacy && (
+                                      <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800">
+                                        Legacy
+                                      </span>
+                                    )}
                                   </h3>
                                   {/* Clinician Name Display */}
                                   <div className="text-xs font-medium text-stone-500 mb-1">

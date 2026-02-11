@@ -63,16 +63,18 @@ export default function Drawer({
             className="fixed right-0 top-0 bottom-0 w-full max-w-2xl bg-white shadow-2xl z-50 overflow-y-auto"
           >
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+            <div className="sticky top-0 bg-white px-6 py-4 flex items-center justify-between z-10">
               {title && (
-                <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+                <h2 className={`text-xl font-semibold text-gray-900`}>
+                  {title}
+                </h2>
               )}
               <button
                 onClick={onClose}
-                className="ml-auto p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer"
+                className="ml-auto p-2 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-400 cursor-pointer group"
                 aria-label="Close drawer"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-gray-500 group-hover:text-red-600" />
               </button>
             </div>
 

@@ -8,21 +8,15 @@ import {
   Eye,
   TrendingUp,
   TrendingDown,
-  Sparkles,
-  ChevronDown,
-  ChevronUp,
   ChevronLeft,
   ChevronRight,
   BrainCircuit,
   MessageCircleMore,
   UserRound,
-  Laugh,
-  Frown,
-  Meh,
-  Smile,
   MapPin,
 } from "lucide-react";
-import { KV, Gauge, SentimentChart } from "./ui";
+import { TbMoodSpark } from "react-icons/tb";
+import { KV, SentimentChart } from "./ui";
 import { ProfileJson } from "../types";
 import React, { useEffect, useState } from "react";
 import { DM_Serif_Text } from "next/font/google";
@@ -61,7 +55,7 @@ export function DemographicsHeader({
     value ? options.find((o) => o.value === value)?.label ?? value : undefined;
   return (
     <div
-      className="relative rounded-2xl bg-white p-4 sm:p-6 border border-b-4"
+      className="relative rounded-2xl bg-white p-4 sm:p-6 border-2 border-b-6"
       style={{ borderColor: sigmundTheme.border }}
     >
       <div className="grid grid-cols-12 gap-3 sm:gap-4 md:gap-5 items-start">
@@ -439,16 +433,28 @@ export function InsightsBlock({
     type: "positive" | "negative";
   }) => {
     const percentage = Math.round(sentence.score * 100);
-    const bgColor = type === "positive" ? "bg-emerald-50" : "bg-rose-50";
-    const borderColor =
-      type === "positive" ? "border-emerald-200" : "border-rose-200";
+
+    // Match colors from SentimentChart
+    // Positive: #9decaeff (approx #9decae)
+    // Negative: #f27d85ff (approx #f27d85)
+
+    const bgColor = type === "positive" ? "bg-[#9decae]/25" : "bg-[#f27d85]/15";
     const hoverBgColor =
-      type === "positive" ? "hover:bg-emerald-100" : "hover:bg-rose-100";
+      type === "positive" ? "hover:bg-[#9decae]/40" : "hover:bg-[#f27d85]/25";
+
+    // Text needs to be readable, so we use darker shades that harmonize
     const textColor =
-      type === "positive" ? "text-emerald-900" : "text-rose-900";
+      type === "positive" ? "text-emerald-950" : "text-rose-950";
     const accentColor =
-      type === "positive" ? "text-emerald-700" : "text-rose-700";
-    const iconColor = type === "positive" ? "#059669" : "#dc2626";
+      type === "positive" ? "text-emerald-800" : "text-rose-800";
+
+    // For icons/graphics, we use the brand colors (or slightly saturated versions for visibility)
+    const iconColor = type === "positive" ? "#4ade80" : "#f27d85";
+    const progressBarColor =
+      type === "positive" ? "bg-[#9decae]" : "bg-[#f27d85]";
+    const borderTopColor =
+      type === "positive" ? "border-[#9decae]/50" : "border-[#f27d85]/50";
+
     const fieldLabel = fieldLabels[sentence.field] || sentence.field;
 
     return (
@@ -504,11 +510,9 @@ export function InsightsBlock({
                 {fieldLabel}
               </span>
               <div className="flex items-center gap-2">
-                <div className="h-1.5 w-16 sm:w-20 2xl:w-12 bg-white/50 rounded-full overflow-hidden">
+                <div className="h-1.5 w-16 sm:w-20 2xl:w-12 bg-white/60 rounded-full overflow-hidden">
                   <div
-                    className={`h-full ${
-                      type === "positive" ? "bg-emerald-600" : "bg-rose-600"
-                    } rounded-full transition-all`}
+                    className={`h-full ${progressBarColor} rounded-full transition-all`}
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
@@ -524,9 +528,7 @@ export function InsightsBlock({
 
         {/* Bottom hint */}
         <div
-          className={`mt-2 pt-2 border-t ${
-            type === "positive" ? "border-emerald-200/50" : "border-rose-200/50"
-          } opacity-0 group-hover:opacity-100 transition-opacity`}
+          className={`mt-2 pt-2 border-t ${borderTopColor} opacity-0 group-hover:opacity-100 transition-opacity`}
         >
           <p
             className={`text-[10px] sm:text-[11px] 2xl:text-[9px] ${accentColor} font-medium text-center`}
@@ -597,8 +599,8 @@ export function InsightsBlock({
               className={`${dm_serif.className} text-md sm:text-base md:text-lg font-semibold flex items-center gap-2`}
               style={{ color: sigmundTheme.secondaryDark }}
             >
-              <TrendingUp className="h-4 w-4 text-[${sigmundTheme.secondaryDark}]" />
-              Emotional Tone Analysis
+              <TbMoodSpark className="h-6 w-6 text-[${sigmundTheme.secondaryDark}]" />
+              Sigmund's Index
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
               {sentimentData.total_sentences} sentences analyzed across all
@@ -616,17 +618,17 @@ export function InsightsBlock({
                     {
                       name: "Positive",
                       value: sentimentData.breakdown.positive,
-                      color: "#6ee7b7",
+                      color: "#90efc7ff",
                     },
                     {
                       name: "Neutral",
                       value: sentimentData.breakdown.neutral,
-                      color: "#cbd5e1",
+                      color: "#e7e5e4",
                     },
                     {
                       name: "Negative",
                       value: sentimentData.breakdown.negative,
-                      color: "#fda4af",
+                      color: "#f27d85ff",
                     },
                   ]}
                   height={300}
@@ -660,7 +662,7 @@ export function InsightsBlock({
                                 : prev - 1
                             )
                           }
-                          className="flex items-center justify-center h-8 w-8 rounded-full border border-emerald-300 bg-white hover:bg-emerald-50 transition-colors"
+                          className="flex items-center justify-center h-8 w-8 rounded-full border border-[#90efc7] bg-white hover:bg-[#90efc7]/20 transition-colors"
                           aria-label="Previous positive sentence"
                         >
                           <ChevronLeft className="h-4 w-4 text-emerald-700" />
@@ -672,8 +674,8 @@ export function InsightsBlock({
                               onClick={() => setPositiveIndex(idx)}
                               className={`h-2 rounded-full transition-all ${
                                 idx === positiveIndex
-                                  ? "w-6 bg-emerald-600"
-                                  : "w-2 bg-emerald-300 hover:bg-emerald-400"
+                                  ? "w-6 bg-[#90efc7]"
+                                  : "w-2 bg-[#90efc7]/40 hover:bg-[#90efc7]/60"
                               }`}
                               aria-label={`Go to positive sentence ${idx + 1}`}
                             />
@@ -687,7 +689,7 @@ export function InsightsBlock({
                                 : prev + 1
                             )
                           }
-                          className="flex items-center justify-center h-8 w-8 rounded-full border border-emerald-300 bg-white hover:bg-emerald-50 transition-colors"
+                          className="flex items-center justify-center h-8 w-8 rounded-full border border-[#90efc7] bg-white hover:bg-[#90efc7]/20 transition-colors"
                           aria-label="Next positive sentence"
                         >
                           <ChevronRight className="h-4 w-4 text-emerald-700" />
@@ -728,7 +730,7 @@ export function InsightsBlock({
                                 : prev - 1
                             )
                           }
-                          className="flex items-center justify-center h-8 w-8 rounded-full border border-rose-300 bg-white hover:bg-rose-50 transition-colors"
+                          className="flex items-center justify-center h-8 w-8 rounded-full border border-[#f27d85] bg-white hover:bg-[#f27d85]/20 transition-colors"
                           aria-label="Previous negative sentence"
                         >
                           <ChevronLeft className="h-4 w-4 text-rose-700" />
@@ -740,8 +742,8 @@ export function InsightsBlock({
                               onClick={() => setNegativeIndex(idx)}
                               className={`h-2 rounded-full transition-all ${
                                 idx === negativeIndex
-                                  ? "w-6 bg-rose-600"
-                                  : "w-2 bg-rose-300 hover:bg-rose-400"
+                                  ? "w-6 bg-[#f27d85]"
+                                  : "w-2 bg-[#f27d85]/40 hover:bg-[#f27d85]/60"
                               }`}
                               aria-label={`Go to negative sentence ${idx + 1}`}
                             />
@@ -755,7 +757,7 @@ export function InsightsBlock({
                                 : prev + 1
                             )
                           }
-                          className="flex items-center justify-center h-8 w-8 rounded-full border border-rose-300 bg-white hover:bg-rose-50 transition-colors"
+                          className="flex items-center justify-center h-8 w-8 rounded-full border border-[#f27d85] bg-white hover:bg-[#f27d85]/20 transition-colors"
                           aria-label="Next negative sentence"
                         >
                           <ChevronRight className="h-4 w-4 text-rose-700" />

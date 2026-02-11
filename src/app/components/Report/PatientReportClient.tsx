@@ -178,7 +178,7 @@ export default function PatientReportClient({ id }: { id: string }) {
           {/* Left Column: Clinical Insights (2XL: col-span-4) */}
           <div className="2xl:col-span-4 space-y-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-2xl bg-white border border-stone-200 flex items-center justify-center">
                 <BrainCircuit
                   className="w-6 h-6"
                   style={{ color: sigmundTheme.accent }}
@@ -225,6 +225,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                               data={data}
                               fieldName="goals"
                               label=""
+                              userId={id}
                             />
                           )}
 
@@ -258,7 +259,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -268,7 +273,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -278,7 +287,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -288,7 +301,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -298,7 +315,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -308,7 +329,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -318,7 +343,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -329,7 +358,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -339,7 +372,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -349,7 +386,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -359,7 +400,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -369,7 +414,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -379,7 +428,11 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} highlightField={field} />,
+                      <StoryDetail
+                        data={data}
+                        highlightField={field}
+                        userId={id}
+                      />,
                       "max-w-6xl",
                       field
                     ),
@@ -396,7 +449,7 @@ export default function PatientReportClient({ id }: { id: string }) {
           {/* Right Column: Patient Details (2XL: col-span-8) */}
           <div className="2xl:col-span-8 space-y-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-slate-100 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-2xl bg-white border border-stone-200 flex items-center justify-center">
                 <FileText
                   className="w-6 h-6"
                   style={{ color: sigmundTheme.accent }}
@@ -423,7 +476,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <ShieldAlert className="h-4 w-4 inline-block mr-2" />
                         Suicide Risk
                       </>,
-                      <SafetyDetail data={data} />
+                      <SafetyDetail data={data} userId={id} />
                     )
                   }
                 />
@@ -437,7 +490,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <ClipboardList className="h-4 w-4 inline-block mr-2" />
                         Presenting Goal(s)
                       </>,
-                      <GoalsDetail data={data} />
+                      <GoalsDetail data={data} userId={id} />
                     )
                   }
                 />
@@ -451,7 +504,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <Activity className="h-4 w-4 inline-block mr-2" />
                         Scale Details
                       </>,
-                      <ScalesDetail data={data} />,
+                      <ScalesDetail data={data} userId={id} />,
                       "max-w-7xl"
                     )
                   }
@@ -466,7 +519,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <BookOpen className="h-4 w-4 inline-block mr-2" />
                         Story / History
                       </>,
-                      <StoryDetail data={data} />,
+                      <StoryDetail data={data} userId={id} />,
                       "max-w-6xl"
                     )
                   }
@@ -483,7 +536,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                             <FileText className="h-4 w-4 inline-block mr-2" />
                             Previous Treatment
                           </>,
-                          <PrevTreatmentDetail data={data} />
+                          <PrevTreatmentDetail data={data} userId={id} />
                         )
                       }
                     />
@@ -500,7 +553,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <Info className="h-4 w-4 inline-block mr-2" />
                         At a Glance
                       </>,
-                      <GlanceDetail data={data} />
+                      <GlanceDetail data={data} userId={id} />
                     )
                   }
                 />
@@ -515,7 +568,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                           <HeartPulse className="h-4 w-4 inline-block mr-2" />
                           Medical History
                         </>,
-                        <MedicalHistoryDetail data={data} />,
+                        <MedicalHistoryDetail data={data} userId={id} />,
                         "max-w-6xl"
                       )
                     }
@@ -532,7 +585,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <UsersIcon className="h-4 w-4 inline-block mr-2" />
                         Relationships
                       </>,
-                      <RelationshipsDetail data={data} />
+                      <RelationshipsDetail data={data} userId={id} />
                     )
                   }
                 />
@@ -547,7 +600,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <PillIcon className="h-4 w-4 inline-block mr-2" />
                         Medications
                       </>,
-                      <MedsDetail data={data} />
+                      <MedsDetail data={data} userId={id} />
                     )
                   }
                 />
@@ -561,7 +614,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <Syringe className="h-4 w-4 inline-block mr-2" />
                         Allergies
                       </>,
-                      <AllergiesDetail data={data} />
+                      <AllergiesDetail data={data} userId={id} />
                     )
                   }
                 />
@@ -575,7 +628,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <Stethoscope className="h-4 w-4 inline-block mr-2" />
                         Hospitalizations & Injuries
                       </>,
-                      <HospitalizationsDetail data={data} />
+                      <HospitalizationsDetail data={data} userId={id} />
                     )
                   }
                 />
