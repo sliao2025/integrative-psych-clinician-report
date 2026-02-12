@@ -50,9 +50,11 @@ export function DemographicsHeader({
 }) {
   const labelFor = (
     options: { value: string; label: string }[],
-    value?: string | null
+    value?: string | null,
   ) =>
-    value ? options.find((o) => o.value === value)?.label ?? value : undefined;
+    value
+      ? (options.find((o) => o.value === value)?.label ?? value)
+      : undefined;
   return (
     <div
       className="relative rounded-2xl bg-white p-4 sm:p-6 border-2 border-b-6"
@@ -230,7 +232,7 @@ export function InsightsBlock({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sentimentData, setSentimentData] = useState<SentimentResult | null>(
-    null
+    null,
   );
   const [summaryData, setSummaryData] = useState<Summary | null>(null);
   const [positiveIndex, setPositiveIndex] = useState(0);
@@ -279,7 +281,7 @@ export function InsightsBlock({
                 if (responseData.success && responseData.result) {
                   setSentimentData(responseData.result);
                 }
-              })
+              }),
           );
         } else {
           setSentimentData(existingSentiment);
@@ -297,7 +299,7 @@ export function InsightsBlock({
                 if (responseData.success && responseData.summary) {
                   setSummaryData(responseData.summary);
                 }
-              })
+              }),
           );
         } else {
           setSummaryData(existingSummary);
@@ -355,8 +357,8 @@ export function InsightsBlock({
         <div className="flex flex-col items-center justify-center py-12 space-y-5">
           {/* Simple Spinner */}
           <div
-            style={{ borderTopColor: intPsychTheme.secondary }}
-            className="rounded-full h-10 w-10 border-4 border-gray-200 border-t-4 animate-spin"
+            style={{ borderColor: "#e7e5e4", borderTopColor: "#b2bfa2" }}
+            className="rounded-full w-10 h-10 border-4 animate-spin"
           />
 
           {/* Rotating Text with Fade Transition */}
@@ -368,8 +370,8 @@ export function InsightsBlock({
                   index === loadingPhrase
                     ? "opacity-100 translate-y-0"
                     : index < loadingPhrase
-                    ? "opacity-0 -translate-y-4"
-                    : "opacity-0 translate-y-4"
+                      ? "opacity-0 -translate-y-4"
+                      : "opacity-0 translate-y-4"
                 }`}
                 style={{ color: intPsychTheme.primary }}
               >
@@ -659,7 +661,7 @@ export function InsightsBlock({
                             setPositiveIndex((prev) =>
                               prev === 0
                                 ? positiveSentences.length - 1
-                                : prev - 1
+                                : prev - 1,
                             )
                           }
                           className="flex items-center justify-center h-8 w-8 rounded-full border border-[#90efc7] bg-white hover:bg-[#90efc7]/20 transition-colors"
@@ -686,7 +688,7 @@ export function InsightsBlock({
                             setPositiveIndex((prev) =>
                               prev === positiveSentences.length - 1
                                 ? 0
-                                : prev + 1
+                                : prev + 1,
                             )
                           }
                           className="flex items-center justify-center h-8 w-8 rounded-full border border-[#90efc7] bg-white hover:bg-[#90efc7]/20 transition-colors"
@@ -727,7 +729,7 @@ export function InsightsBlock({
                             setNegativeIndex((prev) =>
                               prev === 0
                                 ? negativeSentences.length - 1
-                                : prev - 1
+                                : prev - 1,
                             )
                           }
                           className="flex items-center justify-center h-8 w-8 rounded-full border border-[#f27d85] bg-white hover:bg-[#f27d85]/20 transition-colors"
@@ -754,7 +756,7 @@ export function InsightsBlock({
                             setNegativeIndex((prev) =>
                               prev === negativeSentences.length - 1
                                 ? 0
-                                : prev + 1
+                                : prev + 1,
                             )
                           }
                           className="flex items-center justify-center h-8 w-8 rounded-full border border-[#f27d85] bg-white hover:bg-[#f27d85]/20 transition-colors"

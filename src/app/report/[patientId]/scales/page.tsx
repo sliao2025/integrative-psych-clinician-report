@@ -1,5 +1,7 @@
 "use client";
 
+import PageLoadingSpinner from "@/app/components/PageLoadingSpinner";
+
 import React, { useState, useEffect, use } from "react";
 import {
   ClipboardList,
@@ -357,6 +359,10 @@ export default function ScalesPage({
     }
   };
 
+  if (loading) {
+    return <PageLoadingSpinner message="Loading scales..." />;
+  }
+
   return (
     <div
       className={`mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 pb-20 ${dm_sans.className}`}
@@ -599,14 +605,7 @@ export default function ScalesPage({
                 )}
               </div>
 
-              {loading ? (
-                <div className="p-12 flex justify-center">
-                  <div
-                    style={{ borderTopColor: intPsychTheme.secondary }}
-                    className="rounded-full h-12 w-12 mx-auto border-4 border-gray-300 border-t-4 border-t-transparent animate-spin"
-                  ></div>
-                </div>
-              ) : filteredScales.length === 0 ? (
+              {filteredScales.length === 0 ? (
                 <div className="p-12 text-center">
                   <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-4">
                     <ClipboardList className="w-8 h-8 text-stone-400" />

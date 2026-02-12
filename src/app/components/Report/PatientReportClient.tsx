@@ -1,5 +1,6 @@
 "use client";
 
+import PageLoadingSpinner from "@/app/components/PageLoadingSpinner";
 import React, { useEffect, useState } from "react";
 import {
   ClipboardList,
@@ -64,7 +65,7 @@ export default function PatientReportClient({ id }: { id: string }) {
     content: React.ReactNode,
     maxWidth?: string,
     fieldToHighlight?: string,
-    textToHighlight?: string
+    textToHighlight?: string,
   ) => {
     setHighlightField(fieldToHighlight || null);
     setHighlightText(textToHighlight || null);
@@ -129,20 +130,7 @@ export default function PatientReportClient({ id }: { id: string }) {
   const data: ProfileJson = (patient?.profile as any)?.json ?? {};
   console.log(data);
   if (loading) {
-    return (
-      <div
-        className={`fixed inset-0 min-h-[100svh] h-dvh flex items-center justify-center ${dm_sans.className}`}
-        style={{ background: intPsychTheme.card, color: theme.text }}
-      >
-        <div className="animate-pulse text-center">
-          <div
-            style={{ borderTopColor: intPsychTheme.secondary }}
-            className="rounded-full h-12 w-12 mx-auto mb-4 border-4 border-gray-300 border-t-4 border-t-transparent animate-spin"
-          />
-          <p className="text-gray-700 font-medium">Preparing your report…</p>
-        </div>
-      </div>
-    );
+    return <PageLoadingSpinner message="Preparing your report…" />;
   }
 
   if (error) {
@@ -251,7 +239,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         </div>
                       </div>,
                       undefined,
-                      "goals"
+                      "goals",
                     ),
                   livingSituation: () =>
                     open(
@@ -265,7 +253,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                   storyNarrative: () =>
                     open(
@@ -279,7 +267,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                   cultureContext: () =>
                     open(
@@ -293,7 +281,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                   upbringingEnvironments: () =>
                     open(
@@ -307,7 +295,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                   upbringingWhoWith: () =>
                     open(
@@ -321,7 +309,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                   childhoodNegativeReason: () =>
                     open(
@@ -335,7 +323,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                   familyHistoryElaboration: () =>
                     open(
@@ -349,7 +337,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                   // Support both old and new field name formats for followup questions
                   followupQuestion1: () =>
@@ -364,7 +352,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                   followupQuestion2: () =>
                     open(
@@ -378,7 +366,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                   followupQuestion3: () =>
                     open(
@@ -392,7 +380,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                   "followupQuestions.question1": () =>
                     open(
@@ -406,7 +394,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                   "followupQuestions.question2": () =>
                     open(
@@ -420,7 +408,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                   "followupQuestions.question3": () =>
                     open(
@@ -434,7 +422,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         userId={id}
                       />,
                       "max-w-6xl",
-                      field
+                      field,
                     ),
                 };
 
@@ -476,7 +464,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <ShieldAlert className="h-4 w-4 inline-block mr-2" />
                         Suicide Risk
                       </>,
-                      <SafetyDetail data={data} userId={id} />
+                      <SafetyDetail data={data} userId={id} />,
                     )
                   }
                 />
@@ -490,7 +478,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <ClipboardList className="h-4 w-4 inline-block mr-2" />
                         Presenting Goal(s)
                       </>,
-                      <GoalsDetail data={data} userId={id} />
+                      <GoalsDetail data={data} userId={id} />,
                     )
                   }
                 />
@@ -505,7 +493,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         Scale Details
                       </>,
                       <ScalesDetail data={data} userId={id} />,
-                      "max-w-7xl"
+                      "max-w-7xl",
                     )
                   }
                 />
@@ -520,7 +508,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         Story / History
                       </>,
                       <StoryDetail data={data} userId={id} />,
-                      "max-w-6xl"
+                      "max-w-6xl",
                     )
                   }
                 />
@@ -536,7 +524,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                             <FileText className="h-4 w-4 inline-block mr-2" />
                             Previous Treatment
                           </>,
-                          <PrevTreatmentDetail data={data} userId={id} />
+                          <PrevTreatmentDetail data={data} userId={id} />,
                         )
                       }
                     />
@@ -553,7 +541,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <Info className="h-4 w-4 inline-block mr-2" />
                         At a Glance
                       </>,
-                      <GlanceDetail data={data} userId={id} />
+                      <GlanceDetail data={data} userId={id} />,
                     )
                   }
                 />
@@ -569,7 +557,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                           Medical History
                         </>,
                         <MedicalHistoryDetail data={data} userId={id} />,
-                        "max-w-6xl"
+                        "max-w-6xl",
                       )
                     }
                   />
@@ -585,7 +573,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <UsersIcon className="h-4 w-4 inline-block mr-2" />
                         Relationships
                       </>,
-                      <RelationshipsDetail data={data} userId={id} />
+                      <RelationshipsDetail data={data} userId={id} />,
                     )
                   }
                 />
@@ -600,7 +588,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <PillIcon className="h-4 w-4 inline-block mr-2" />
                         Medications
                       </>,
-                      <MedsDetail data={data} userId={id} />
+                      <MedsDetail data={data} userId={id} />,
                     )
                   }
                 />
@@ -614,7 +602,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <Syringe className="h-4 w-4 inline-block mr-2" />
                         Allergies
                       </>,
-                      <AllergiesDetail data={data} userId={id} />
+                      <AllergiesDetail data={data} userId={id} />,
                     )
                   }
                 />
@@ -628,7 +616,7 @@ export default function PatientReportClient({ id }: { id: string }) {
                         <Stethoscope className="h-4 w-4 inline-block mr-2" />
                         Hospitalizations & Injuries
                       </>,
-                      <HospitalizationsDetail data={data} userId={id} />
+                      <HospitalizationsDetail data={data} userId={id} />,
                     )
                   }
                 />

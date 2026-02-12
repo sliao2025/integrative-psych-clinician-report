@@ -1,5 +1,7 @@
 "use client";
 
+import PageLoadingSpinner from "@/app/components/PageLoadingSpinner";
+
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -81,29 +83,7 @@ export default function PatientDashboardPage() {
   const patientFirstName = patientData?.firstName || "Patient";
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-[60vh]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative w-16 h-16 flex items-center justify-center">
-            <span
-              style={{
-                borderTopColor: intPsychTheme.accent,
-                borderRightColor: intPsychTheme.accentLight,
-                borderBottomColor: intPsychTheme.accentLight,
-                borderLeftColor: intPsychTheme.accentLight,
-              }}
-              className="absolute inset-0 border-4 rounded-full animate-spin"
-            />
-            <span
-              className={`absolute inset-2 bg-[${intPsychTheme.accent}] rounded-full opacity-0`}
-            />
-          </div>
-          <div className="font-medium text-stone-500 animate-pulse">
-            Loading dashboard...
-          </div>
-        </div>
-      </div>
-    );
+    return <PageLoadingSpinner message="Loading dashboard..." />;
   }
 
   return (

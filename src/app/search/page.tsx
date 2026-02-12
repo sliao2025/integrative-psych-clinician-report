@@ -443,9 +443,12 @@ export default function ClinicianHome() {
               {loadingPatients ? (
                 <div className="py-12 text-center">
                   <div
-                    style={{ borderTopColor: intPsychTheme.secondary }}
-                    className="inline-block h-8 w-8 animate-spin rounded-full border-3 border-stone-300 border-t-transparent"
-                  ></div>
+                    style={{
+                      borderColor: "#e7e5e4",
+                      borderTopColor: "#b2bfa2",
+                    }}
+                    className="inline-block w-10 h-10 animate-spin rounded-full border-4"
+                  />
                   <p className="mt-3 text-sm text-stone-600">
                     Loading patients...
                   </p>

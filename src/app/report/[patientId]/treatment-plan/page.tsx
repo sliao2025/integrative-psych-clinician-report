@@ -325,9 +325,12 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
                   <div className="py-20 flex flex-col items-center justify-center gap-6">
                     {/* Spinner */}
                     <div
-                      style={{ borderTopColor: intPsychTheme.secondary }}
-                      className="rounded-full h-12 w-12 border-4 border-gray-300 border-t-4 border-t-transparent animate-spin"
-                    ></div>
+                      style={{
+                        borderColor: "#e7e5e4",
+                        borderTopColor: "#b2bfa2",
+                      }}
+                      className="rounded-full w-10 h-10 border-4 animate-spin"
+                    />
 
                     {/* Shiny Text with Transition */}
                     <div className="h-8 relative flex items-center justify-center w-full">
@@ -363,7 +366,7 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
                 ) : actionItems ? (
                   <div className="divide-y divide-slate-200">
                     {Object.entries(actionItems).map(([key, items]) =>
-                      renderCategory(key, items as Recommendation[])
+                      renderCategory(key, items as Recommendation[]),
                     )}
                   </div>
                 ) : (
@@ -412,9 +415,12 @@ const TreatmentPlanPage: React.FC<TreatmentPlanPageProps> = ({ params }) => {
                   <div className="py-20 flex flex-col items-center justify-center gap-6">
                     {/* Spinner */}
                     <div
-                      style={{ borderTopColor: intPsychTheme.secondary }}
-                      className="rounded-full h-12 w-12 border-4 border-gray-300 border-t-4 border-t-transparent animate-spin"
-                    ></div>
+                      style={{
+                        borderColor: "#e7e5e4",
+                        borderTopColor: "#b2bfa2",
+                      }}
+                      className="rounded-full w-10 h-10 border-4 animate-spin"
+                    />
 
                     {/* Shiny Text with Transition */}
                     <div className="h-8 relative flex items-center justify-center w-full">

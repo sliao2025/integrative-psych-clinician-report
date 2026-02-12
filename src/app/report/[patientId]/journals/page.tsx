@@ -1,5 +1,7 @@
 "use client";
 
+import PageLoadingSpinner from "@/app/components/PageLoadingSpinner";
+
 import { useState, useEffect, use } from "react";
 import { BookOpen, Calendar, TrendingUp, Meh as MehIcon } from "lucide-react";
 import {
@@ -225,6 +227,10 @@ export default function JournalsPage({
     }
   };
 
+  if (loading) {
+    return <PageLoadingSpinner message="Loading journals..." />;
+  }
+
   return (
     <div
       className={`mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 pb-20 ${dm_sans.className}`}
@@ -321,11 +327,7 @@ export default function JournalsPage({
 
       {activeTab === "entries" ? (
         <>
-          {loading ? (
-            <div className="text-center py-12 text-stone-400 font-bold">
-              Loading journal entries...
-            </div>
-          ) : error ? (
+          {error ? (
             <div className="bg-rose-50 rounded-2xl p-12 text-center border border-rose-200">
               <div className="w-16 h-16 rounded-full bg-rose-100 flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="w-8 h-8 text-rose-400" />
