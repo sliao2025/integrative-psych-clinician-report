@@ -10,10 +10,12 @@ import {
   ClipboardList,
   GraduationCap,
   FileText,
+  Settings,
 } from "lucide-react";
 import Image from "next/image";
 import { intPsychTheme, sigmundTheme } from "@/app/components/theme";
 import { DM_Serif_Text, DM_Sans } from "next/font/google";
+import { usePatientSettings } from "@/app/contexts/PatientSettingsContext";
 
 import Link from "next/link";
 import sigmund_logo from "@/assets/Sigmund Chair.png";
@@ -33,6 +35,9 @@ export default function PatientDashboardPage() {
   const patientId = params?.patientId as string;
   const [loading, setLoading] = useState(true);
   const [patientData, setPatientData] = useState<PatientData | null>(null);
+
+  // Shared settings from context — stays in sync with sidebar
+  const { settings, toggleSetting } = usePatientSettings();
 
   useEffect(() => {
     const fetchPatientData = async () => {
@@ -210,6 +215,112 @@ export default function PatientDashboardPage() {
           </div>
         </div>
 
+        {/* Patient Visibility Settings */}
+        <div className="pt-8 border-t border-stone-100">
+          <h2
+            className={`${dm_serif.className} text-xl text-[#1c1917] mb-6 flex items-center gap-3`}
+          >
+            <Settings className="w-5 h-5 text-stone-500" />
+            Patient Visibility
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Journal Toggle */}
+            <div
+              style={{ borderColor: sigmundTheme.border }}
+              className={`bg-white rounded-2xl border-2 p-6 flex items-center justify-between transition-all duration-300 ${
+                settings.journalEnabled
+                  ? "border-emerald-200 bg-emerald-50/30"
+                  : ""
+              }`}
+            >
+              <div className="flex items-center gap-4">
+                <div
+                  className={`p-3 rounded-xl transition-colors ${
+                    settings.journalEnabled ? "bg-emerald-100" : "bg-stone-100"
+                  }`}
+                >
+                  <BookOpen
+                    className={`w-6 h-6 ${
+                      settings.journalEnabled
+                        ? "text-emerald-600"
+                        : "text-stone-400"
+                    }`}
+                  />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[#1c1917]">Journal</h3>
+                  <p className="text-sm text-stone-500">
+                    {settings.journalEnabled
+                      ? "Visible to patient"
+                      : "Hidden from patient"}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => toggleSetting("journalEnabled")}
+                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-200 cursor-pointer ${
+                  settings.journalEnabled ? "bg-emerald-500" : "bg-stone-300"
+                }`}
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                    settings.journalEnabled ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Scales Toggle */}
+            <div
+              style={{ borderColor: sigmundTheme.border }}
+              className={`bg-white rounded-2xl border-2 p-6 flex items-center justify-between transition-all duration-300 ${
+                settings.scalesEnabled
+                  ? "border-emerald-200 bg-emerald-50/30"
+                  : ""
+              }`}
+            >
+              <div className="flex items-center gap-4">
+                <div
+                  className={`p-3 rounded-xl transition-colors ${
+                    settings.scalesEnabled ? "bg-emerald-100" : "bg-stone-100"
+                  }`}
+                >
+                  <ClipboardList
+                    className={`w-6 h-6 ${
+                      settings.scalesEnabled
+                        ? "text-emerald-600"
+                        : "text-stone-400"
+                    }`}
+                  />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[#1c1917]">Scales</h3>
+                  <p className="text-sm text-stone-500">
+                    {settings.scalesEnabled
+                      ? "Visible to patient"
+                      : "Hidden from patient"}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => toggleSetting("scalesEnabled")}
+                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-200 cursor-pointer ${
+                  settings.scalesEnabled ? "bg-emerald-500" : "bg-stone-300"
+                }`}
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                    settings.scalesEnabled ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Coming Soon Section */}
         <div className="pt-8 border-t border-stone-100">
           <h2
@@ -220,7 +331,7 @@ export default function PatientDashboardPage() {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 opacity-60 grayscale-[0.5] pointer-events-none select-none">
-            {/* Feature 1: Clinical Scales */}
+            {/* Feature 1: Treatment Plan */}
             <div
               className={`bg-stone-50 rounded-2xl border-2 border-dashed border-stone-200 p-6 flex flex-col items-center text-center gap-4`}
             >
@@ -229,10 +340,10 @@ export default function PatientDashboardPage() {
               </div>
               <div>
                 <h3 className="font-bold text-stone-600 mb-1">
-                  Clinical Scales
+                  Treatment Plan
                 </h3>
                 <p className="text-sm text-stone-400">
-                  Track patient progress with standard psychiatric measures.
+                  Structured treatment planning and progress tracking.
                 </p>
               </div>
             </div>

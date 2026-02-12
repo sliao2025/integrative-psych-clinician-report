@@ -12,6 +12,8 @@ import {
   ChevronsRight,
   LayoutDashboard,
   ChartCandlestick,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import {
   Menu,
@@ -25,6 +27,10 @@ import { intPsychTheme, sigmundTheme } from "@/app/components/theme";
 import ReportHeader from "@/app/components/Report/ReportHeader";
 import PatientTopBar from "@/app/components/Report/PatientTopBar";
 import { SidebarProvider, useSidebar } from "@/app/contexts/SidebarContext";
+import {
+  PatientSettingsProvider,
+  usePatientSettings,
+} from "@/app/contexts/PatientSettingsContext";
 import logo from "@/assets/IP_Logo.png";
 import sigmund_logo from "@/assets/Sigmund Window.png";
 
@@ -44,6 +50,9 @@ function PatientLayoutInner({
   const pathname = usePathname();
   const { data: session } = useSession();
   const { isMobileOpen, setMobileOpen } = useSidebar();
+
+  // Patient visibility settings — shared with dashboard page via context
+  const { settings, toggleSetting } = usePatientSettings();
 
   // Initialize state from localStorage synchronously to prevent flash
   const [isExpanded, setIsExpanded] = useState(() => {
@@ -106,31 +115,20 @@ function PatientLayoutInner({
       icon: FileText,
       color: `text-[${sigmundTheme.accent}]`,
     },
-    // {
-    //   name: "Treatment Plan",
-    //   href: `/report/${patientId}/treatment-plan`,
-    //   icon: Route,
-    //   color: `text-[${intPsychTheme.alternate}]`,
-    // },
     {
       name: "Journals",
       href: `/report/${patientId}/journals`,
       icon: BookOpen,
       color: `text-[${sigmundTheme.accent}]`,
+      settingsKey: "journalEnabled" as const,
     },
     {
       name: "Scales",
       href: `/report/${patientId}/scales`,
       icon: ChartCandlestick,
       color: `text-[${intPsychTheme.accent}]`,
+      settingsKey: "scalesEnabled" as const,
     },
-
-    // {
-    //   name: "Learn",
-    //   href: `/report/${patientId}/learn`,
-    //   icon: Brain,
-    //   color: `text-[${intPsychTheme.alternate}]`,
-    // },
   ];
 
   const isActive = (href: string) => {
@@ -205,39 +203,67 @@ function PatientLayoutInner({
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const active = isActive(tab.href);
+          const hasToggle = "settingsKey" in tab && tab.settingsKey;
+          const isEnabled = hasToggle ? settings[tab.settingsKey!] : true;
 
           return (
             <div key={tab.href} className="relative group">
-              <Link
-                href={tab.href}
-                onClick={() => isMobile && setMobileOpen(false)}
-                className={`flex items-center ${
-                  isExpanded || isMobile ? "gap-4 px-4" : "justify-center px-0"
-                } py-4 rounded-xl text-base font-medium transition-all duration-200 relative overflow-hidden group ${
-                  active
-                    ? `bg-[#e9eee1] text-[#426459] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border-2 border-[${sigmundTheme.border}]`
-                    : `text-stone-500 hover:bg-stone-100 hover:text-[#426459] border border-transparent`
-                }`}
-              >
-                {/* Active Indicator Pill */}
-                {active && (
-                  <div
-                    className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#91654f] rounded-r-full`}
-                  />
-                )}
-
-                <Icon
-                  className={`w-6 h-6 transition-transform duration-300 group-hover:scale-110 ${
+              <div className="flex gap-2 items-center">
+                <Link
+                  href={tab.href}
+                  onClick={() => isMobile && setMobileOpen(false)}
+                  className={`flex-1 flex items-center ${
+                    isExpanded || isMobile
+                      ? "gap-4 px-4"
+                      : "justify-center px-0"
+                  } py-4 rounded-xl text-base font-medium transition-all duration-200 relative overflow-hidden group ${
                     active
-                      ? tab.color
-                      : `text-stone-500 group-hover:text-[#426459]`
+                      ? `bg-[#e9eee1] text-[#426459] shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] border-2 border-[${sigmundTheme.border}]`
+                      : `text-stone-500 hover:bg-stone-100 hover:text-[#426459] border border-transparent`
                   }`}
-                  strokeWidth={2}
-                />
-                {(isExpanded || isMobile) && (
-                  <span className="tracking-wide">{tab.name}</span>
+                >
+                  {/* Active Indicator Pill */}
+                  {active && (
+                    <div
+                      className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#91654f] rounded-r-full`}
+                    />
+                  )}
+
+                  <Icon
+                    className={`w-6 h-6 transition-transform duration-300 group-hover:scale-110 ${
+                      active
+                        ? tab.color
+                        : `text-stone-500 group-hover:text-[#426459]`
+                    }`}
+                    strokeWidth={2}
+                  />
+                  {(isExpanded || isMobile) && (
+                    <span className="tracking-wide">{tab.name}</span>
+                  )}
+                </Link>
+
+                {/* Patient Visibility Toggle */}
+                {hasToggle && (isExpanded || isMobile) && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleSetting(tab.settingsKey!);
+                    }}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 cursor-pointer flex-shrink-0 ${
+                      isEnabled ? "bg-emerald-500" : "bg-stone-300"
+                    }`}
+                    title={`Patient can${isEnabled ? "" : "not"} see ${tab.name}`}
+                  >
+                    <span
+                      className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                        isEnabled ? "translate-x-4.5" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
                 )}
-              </Link>
+              </div>
 
               {/* Tooltip for collapsed state - only on desktop */}
               {!isExpanded && !isMobile && (
@@ -246,6 +272,15 @@ function PatientLayoutInner({
                   className="absolute left-full top-1/2 -translate-y-1/2 ml-4 px-4 py-2 text-white text-sm font-medium rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-[9999] shadow-xl pointer-events-none"
                 >
                   {tab.name}
+                  {hasToggle && (
+                    <span
+                      className={`ml-2 text-xs ${
+                        isEnabled ? "text-emerald-300" : "text-stone-400"
+                      }`}
+                    >
+                      ({isEnabled ? "visible" : "hidden"} to patient)
+                    </span>
+                  )}
                   <div
                     style={{ borderRightColor: sigmundTheme.secondaryDark }}
                     className="absolute right-full top-1/2 -translate-y-1/2 border-8 border-transparent border-r-white"
@@ -421,7 +456,11 @@ export default function PatientLayout({
 
   return (
     <SidebarProvider>
-      <PatientLayoutInner patientId={patientId}>{children}</PatientLayoutInner>
+      <PatientSettingsProvider patientId={patientId}>
+        <PatientLayoutInner patientId={patientId}>
+          {children}
+        </PatientLayoutInner>
+      </PatientSettingsProvider>
     </SidebarProvider>
   );
 }

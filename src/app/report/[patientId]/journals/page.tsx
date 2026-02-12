@@ -10,6 +10,7 @@ import {
   FaRegFaceTired,
 } from "react-icons/fa6";
 import { intPsychTheme, sigmundTheme } from "@/app/components/theme";
+import { usePatientSettings } from "@/app/contexts/PatientSettingsContext";
 import { DM_Serif_Text, DM_Sans } from "next/font/google";
 import Drawer from "@/app/components/Drawer";
 import LinearGauge from "@/app/components/primitives/LinearGauge";
@@ -58,6 +59,7 @@ export default function JournalsPage({
   params: Promise<{ patientId: string }>;
 }) {
   const { patientId } = use(params);
+  const { settings, toggleSetting } = usePatientSettings();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -228,23 +230,47 @@ export default function JournalsPage({
       className={`mx-auto max-w-[1600px] xl:max-w-[2000px] px-4 sm:px-6 pb-20 ${dm_sans.className}`}
     >
       <div className="mt-6">
-        <div className="flex items-center gap-4 mb-3">
-          <div className="w-12 h-12 rounded-2xl bg-white border border-stone-100 flex items-center justify-center">
-            <BookOpen
-              className="w-6 h-6"
-              style={{ color: sigmundTheme.accent }}
-            />
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white border border-stone-100 flex items-center justify-center">
+              <BookOpen
+                className="w-6 h-6"
+                style={{ color: sigmundTheme.accent }}
+              />
+            </div>
+            <div>
+              <h2
+                className={`${dm_serif.className} text-3xl font-normal`}
+                style={{ color: sigmundTheme.accent }}
+              >
+                Patient Journals
+              </h2>
+              <p className="text-sm text-stone-500">
+                View patient journal entries and mood tracking
+              </p>
+            </div>
           </div>
-          <div>
-            <h2
-              className={`${dm_serif.className} text-3xl font-normal`}
-              style={{ color: sigmundTheme.accent }}
+          {/* Patient Visibility Toggle */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-medium text-stone-400">
+              {settings.journalEnabled
+                ? "Visible to patient"
+                : "Hidden from patient"}
+            </span>
+            <button
+              type="button"
+              onClick={() => toggleSetting("journalEnabled")}
+              className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-200 cursor-pointer ${
+                settings.journalEnabled ? "bg-emerald-500" : "bg-stone-300"
+              }`}
+              title={`Patient can${settings.journalEnabled ? "" : "not"} see Journals`}
             >
-              Patient Journals
-            </h2>
-            <p className="text-sm text-stone-500">
-              View patient journal entries and mood tracking
-            </p>
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                  settings.journalEnabled ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
           </div>
         </div>
       </div>

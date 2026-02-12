@@ -20,6 +20,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { intPsychTheme, sigmundTheme } from "@/app/components/theme";
+import { usePatientSettings } from "@/app/contexts/PatientSettingsContext";
 import { DM_Serif_Text, DM_Sans } from "next/font/google";
 import Drawer from "@/app/components/Drawer";
 import ScaleDetailDrawer from "@/app/components/ScaleDetailDrawer";
@@ -84,6 +85,7 @@ export default function ScalesPage({
   params: Promise<{ patientId: string }>;
 }) {
   const { patientId } = use(params);
+  const { settings, toggleSetting } = usePatientSettings();
   const [scales, setScales] = useState<Scale[]>([]);
   const [pendingScales, setPendingScales] = useState<Scale[]>([]);
   const [loading, setLoading] = useState(true);
@@ -361,23 +363,47 @@ export default function ScalesPage({
     >
       <div className="mt-6 space-y-8">
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-white border border-stone-200 flex items-center justify-center">
-            <ClipboardList
-              className="w-6 h-6"
-              style={{ color: sigmundTheme.accent }}
-            />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white border border-stone-200 flex items-center justify-center">
+              <ClipboardList
+                className="w-6 h-6"
+                style={{ color: sigmundTheme.accent }}
+              />
+            </div>
+            <div>
+              <h2
+                className={`${dm_serif.className} text-3xl font-normal`}
+                style={{ color: sigmundTheme.accent }}
+              >
+                Scales
+              </h2>
+              <p className="text-sm text-stone-500">
+                Assign new scales and view patient history
+              </p>
+            </div>
           </div>
-          <div>
-            <h2
-              className={`${dm_serif.className} text-3xl font-normal`}
-              style={{ color: sigmundTheme.accent }}
+          {/* Patient Visibility Toggle */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-medium text-stone-400">
+              {settings.scalesEnabled
+                ? "Visible to patient"
+                : "Hidden from patient"}
+            </span>
+            <button
+              type="button"
+              onClick={() => toggleSetting("scalesEnabled")}
+              className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-200 cursor-pointer ${
+                settings.scalesEnabled ? "bg-emerald-500" : "bg-stone-300"
+              }`}
+              title={`Patient can${settings.scalesEnabled ? "" : "not"} see Scales`}
             >
-              Scales
-            </h2>
-            <p className="text-sm text-stone-500">
-              Assign new scales and view patient history
-            </p>
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                  settings.scalesEnabled ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
           </div>
         </div>
 
